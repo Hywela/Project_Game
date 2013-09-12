@@ -68,9 +68,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Display.h" />
+    <ClInclude Include="Hull.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Display.cpp" />
+    <ClCompile Include="Hull.cpp" />
     <ClCompile Include="Testcpp.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
