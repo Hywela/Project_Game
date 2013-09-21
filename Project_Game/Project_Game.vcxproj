@@ -68,7 +68,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Display.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="Hull.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="Module_Gun.h" />
@@ -76,7 +76,6 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Display.cpp" />
     <ClCompile Include="Hull.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="Module_Gun.cpp" />

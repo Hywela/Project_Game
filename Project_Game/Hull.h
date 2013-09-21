@@ -1,12 +1,11 @@
 #pragma once
-#include "display.h"
-#include <SDL.h>
 #include <string>
+#include <SDL.h>
 using namespace std;
 
 
 
-class Hull : private Display
+class Hull
 {
 private:
 	SDL_Surface *icon;	//The image of this chassis tile.

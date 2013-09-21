@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Module.h"
 
 
@@ -6,9 +8,9 @@ Module::Module()
 {
 }
 
-Module::Module(string ico, int namId, int maxHp, int acc)
+Module::Module(SDL_Renderer *ren, string ico, int namId, int maxHp, int acc)
 {
-	icon = NULL;
+	icon = SDL_CreateTextureFromSurface(ren, NULL);
 	nameId = namId;
 	maxHealth = maxHp;
 	currentHealth = maxHealth;
@@ -57,4 +59,9 @@ void Module::onHit(int dmg)
 		currentHealth = 0;
 	}
 	cout << ".\n";
+}
+
+void Module::draw(SDL_Renderer *ren)
+{
+
 }

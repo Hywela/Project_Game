@@ -1,6 +1,6 @@
-#include "Module_Gun.h"
 #include <iostream>
-using namespace std;
+
+#include "Module_Gun.h"
 
 
 
@@ -8,7 +8,7 @@ Module_Gun::Module_Gun()
 {
 }
 
-Module_Gun::Module_Gun(string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow) : Module(ico, namId, maxHp, acc)
+Module_Gun::Module_Gun(SDL_Renderer *ren, string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow) : Module(ren, ico, namId, maxHp, acc)
 {
 	requiredPower = reqPow;
 	damage = dmg;

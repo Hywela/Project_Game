@@ -1,5 +1,8 @@
 #pragma once
-#include "module.h"
+#include <string>
+
+#include "Module.h"
+using namespace std;
 
 
 
@@ -12,7 +15,7 @@ private:
 
 public:
 	Module_Gun();
-	Module_Gun(string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow);
+	Module_Gun(SDL_Renderer *ren, string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow);
 	~Module_Gun();
 
 	void printData();	//Shows the data listed in console
