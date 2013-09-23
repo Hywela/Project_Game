@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project_Game", "Project_Game\Project_Game.vcxproj", "{3918EBF4-EC64-4927-A998-EDA20DF7740C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project_Game", "Project_Game\Project_Game.vcxproj", "{4A0762EC-1F6B-4347-9714-922B49864E50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3918EBF4-EC64-4927-A998-EDA20DF7740C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{3918EBF4-EC64-4927-A998-EDA20DF7740C}.Debug|Win32.Build.0 = Debug|Win32
-		{3918EBF4-EC64-4927-A998-EDA20DF7740C}.Release|Win32.ActiveCfg = Release|Win32
-		{3918EBF4-EC64-4927-A998-EDA20DF7740C}.Release|Win32.Build.0 = Release|Win32
+		{4A0762EC-1F6B-4347-9714-922B49864E50}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4A0762EC-1F6B-4347-9714-922B49864E50}.Debug|Win32.Build.0 = Debug|Win32
+		{4A0762EC-1F6B-4347-9714-922B49864E50}.Release|Win32.ActiveCfg = Release|Win32
+		{4A0762EC-1F6B-4347-9714-922B49864E50}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

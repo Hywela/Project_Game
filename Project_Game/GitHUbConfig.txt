@@ -1,9 +1,0 @@
-http://www.codeproject.com/Articles/581907/IntegratingplusandplusUsingplusGithubplusinplusVis 
-
-This is for intergration into visual studio(git) if you chose to do it another way good for you,
-
-1) Click the link above and install the reguired stuff ..
-
-2) Read it again and do what it says . you do not need to publish it ... you can just do a pull request . iv already set it up.
-
-3) proably best to use the command prom window for that.
