@@ -32,10 +32,12 @@ Window::Window()
 		window_state = 3;
 	}
 
+
 	//Load image, check for errors
 	string img_dir = DIR_BACKGROUNDS + "Space.bmp";
 	const char *img_str = img_dir.c_str();
-	bmp = SDL_LoadBMP(img_str);
+	bmp = IMG_Load(img_str);
+
 	if (bmp == nullptr)
 	{
 		cout << "SDL_LoadBMP Error: " << SDL_GetError() << endl;
@@ -96,6 +98,7 @@ void Window::handleEvents()
 					isFullscreen = !isFullscreen;
 					if (isFullscreen)
 					{
+
 						SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN_DESKTOP);
 						SDL_SetWindowSize(win, MAX_RESOLUTION_WIDTH, MAX_RESOLUTION_HEIGHT);
 					}
@@ -170,17 +173,18 @@ void Window::runWindow()
 		}
 		cout << "\n\n";
 	}
-
+   
 	while (!quit)
 	{
 		//Reset screen
 		SDL_RenderClear(ren);
-
+        //ship[1][1]->draw(ren);
 		//Draw background
-		SDL_RenderCopy(ren, tex, NULL, NULL);
-
+		SDL_RenderCopy( ren, tex, NULL, NULL);
+    
 		//Draw other stuff
 		//...
+ //ship[1][1]->draw(ren);
 
 		//Render screen
 		SDL_RenderPresent(ren);

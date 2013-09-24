@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <SDL.h>
+#include <SDL_image.h>
 using namespace std;
 
 
@@ -8,7 +9,8 @@ using namespace std;
 class Module
 {
 private:
-	SDL_Texture *icon;	//Image of this module tile
+    SDL_Surface *iconIMG; //
+	
 	int nameId;			//Refrence to string arrayslot
 	int maxHealth;		//Maximum health level
 	int currentHealth;	//Current health level
@@ -20,7 +22,7 @@ public:
 	Module();
 	Module(SDL_Renderer *ren, string ico, int namId, int maxHp, int acc);
 	~Module();
-
+SDL_Texture *icon;	//Image of this module tile
 	void printData();				//Shows the data listed in console
 	int getMaxHealth();				//Returns max health
 	int getCurrentHealth();			//Returns current health

@@ -10,7 +10,10 @@ Module::Module()
 
 Module::Module(SDL_Renderer *ren, string ico, int namId, int maxHp, int acc)
 {
-	icon = SDL_CreateTextureFromSurface(ren, NULL);
+    const char *img_str = ico.c_str();
+    iconIMG = IMG_Load(img_str);
+	icon = SDL_CreateTextureFromSurface(ren, iconIMG); 
+
 	nameId = namId;
 	maxHealth = maxHp;
 	currentHealth = maxHealth;
@@ -63,5 +66,9 @@ void Module::onHit(int dmg)
 
 void Module::draw(SDL_Renderer *ren)
 {
+
+
+    SDL_RenderCopy(ren, icon, NULL, NULL);
+
 
 }
