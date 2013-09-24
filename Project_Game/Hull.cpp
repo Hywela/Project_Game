@@ -1,11 +1,20 @@
 #include "Hull.h"
 
 
-Hull::Hull(void)
+Hull::Hull()
 {
+	//Not in use
 }
 
-
-Hull::~Hull(void)
+Hull::Hull(string ico, int arm, int spAtk, int spDef)
 {
+	icon = new SDL_Surface();
+	armor = arm;
+	specialAttack = spAtk;
+	specialDefence = spDef;
+}
+
+Hull::~Hull()
+{
+
 }

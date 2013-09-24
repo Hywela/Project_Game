@@ -1,16 +1,21 @@
+#pragma once
+#include "Window.h"
 
-#include "SDL.h"
-#include <iostream>
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
  
-int main(int argc, char **argv){
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
-		std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
-		return 1;
-	}
-	SDL_Quit();
+int main(int argc, char** argv) {
+	//Open the main window
+	Window *mainWindow = new Window();
 
-	return 0;
+	//Start window activity
+	mainWindow->runWindow();
+
+	//Grab state
+	int mainWindowState = mainWindow->getWindowState();
+
+	//Delete main window
+	delete mainWindow;
+
+	//Return state of the main window
+	return mainWindowState;
 }
