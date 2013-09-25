@@ -8,7 +8,7 @@ Module_Gun::Module_Gun()
 {
 }
 
-Module_Gun::Module_Gun(SDL_Renderer *ren, string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow) : Module(ren, ico, namId, maxHp, acc)
+Module_Gun::Module_Gun(SDL_Renderer *ren, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow) : Module(ren, src, dst, ico, namId, maxHp, acc)
 {
 	requiredPower = reqPow;
 	damage = dmg;

@@ -8,11 +8,11 @@ Module::Module()
 {
 }
 
-Module::Module(SDL_Renderer *ren, string ico, int namId, int maxHp, int acc)
+Module::Module(SDL_Renderer *ren, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc)
 {
-    const char *img_str = ico.c_str();
-    iconIMG = IMG_Load(img_str);
-	icon = SDL_CreateTextureFromSurface(ren, iconIMG); 
+	icon = IMG_LoadTexture(ren, ico.c_str());
+	srcRect = new SDL_Rect(src);
+	dstRect = new SDL_Rect(dst);
 
 	nameId = namId;
 	maxHealth = maxHp;
@@ -66,9 +66,45 @@ void Module::onHit(int dmg)
 
 void Module::draw(SDL_Renderer *ren)
 {
+	SDL_RenderCopy(ren, icon, srcRect, dstRect);
+}
 
+SDL_Rect Module::getSource()
+{
+	return SDL_Rect(*srcRect);
+}
 
-    SDL_RenderCopy(ren, icon, NULL, NULL);
+SDL_Rect Module::getDestination()
+{
+	return SDL_Rect(*dstRect);
+}
 
+void Module::onMouseClick(SDL_Event event)
+{
+	int mouseX = event.button.x;
+	int mouseY = event.button.y;
+	
+	if (isMouseOver(event)) {
+		cout << "[OnClick Event]: You hit me!\n";
+	}
+}
 
+bool Module::isMouseOver(SDL_Event event)
+{
+	bool isOver = false;
+	int mouseX = event.button.x;
+	int mouseY = event.button.y;
+
+	//Check if inside x-boundry
+	if (mouseX >= dstRect->x && mouseX <= dstRect->x + dstRect->w)
+	{
+		//Check if inside y-boundry
+		if (mouseY >= dstRect->y && mouseY <= dstRect->y + dstRect->h)
+		{
+			isOver = true;
+		}
+	}
+
+	//Return result
+	return isOver;
 }
