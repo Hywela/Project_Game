@@ -173,18 +173,19 @@ void Window::runWindow()
 		}
 		cout << "\n\n";
 	}
-   
+    ship[1][1]->setPostion(20,20);
+    ship[1][1]->setSize(20,20);
 	while (!quit)
 	{
 		//Reset screen
 		SDL_RenderClear(ren);
-        //ship[1][1]->draw(ren);
+       
 		//Draw background
 		SDL_RenderCopy( ren, tex, NULL, NULL);
-    
+        ship[1][1]->draw(ren);
 		//Draw other stuff
 		//...
- //ship[1][1]->draw(ren);
+ 
 
 		//Render screen
 		SDL_RenderPresent(ren);

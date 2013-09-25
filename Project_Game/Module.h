@@ -17,6 +17,7 @@ private:
 	int currentPower;	//Current power stored
 	int disabled;		//Turns disabled
 	int accuracy;		//Chance to hit
+    SDL_Rect postion;   //Postion of the icon
 
 public:
 	Module();
@@ -28,4 +29,7 @@ SDL_Texture *icon;	//Image of this module tile
 	int getCurrentHealth();			//Returns current health
 	void onHit(int dmg);			//When THIS module is hit
 	void draw(SDL_Renderer *ren);	//Draw the module
+    void setPostion(int x, int y);
+    void setSize(int w, int h);
+    SDL_Rect getPostion();
 };

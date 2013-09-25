@@ -66,9 +66,17 @@ void Module::onHit(int dmg)
 
 void Module::draw(SDL_Renderer *ren)
 {
+    SDL_Rect clipp;
+    clipp.w = postion.w;
+    clipp.h = postion.h;
+    SDL_RenderCopy(ren, icon, &clipp, &postion);
+}
 
-
-    SDL_RenderCopy(ren, icon, NULL, NULL);
-
-
+void Module::setPostion(int x, int y){
+    postion.x = x;
+    postion.y = y;
+}
+void Module::setSize(int w, int h){
+    postion.w = w;
+    postion.h = h;
 }
