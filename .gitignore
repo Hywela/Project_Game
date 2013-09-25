@@ -5,8 +5,8 @@
 *.suo
 *.user
 *.sln.docstates
-##*.sln
-##*.vcxproj
+*.sln
+*.vcxproj
 
 # Build results
 

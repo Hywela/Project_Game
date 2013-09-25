@@ -8,7 +8,7 @@ Hull::Hull()
 
 Hull::Hull(string ico, int arm, int spAtk, int spDef)
 {
-	icon = new SDL_Surface();
+	//icon = new SDL_Texture();
 	armor = arm;
 	specialAttack = spAtk;
 	specialDefence = spDef;
@@ -17,4 +17,9 @@ Hull::Hull(string ico, int arm, int spAtk, int spDef)
 Hull::~Hull()
 {
 
+}
+
+void Hull::draw(SDL_Renderer *ren)
+{
+	//SDL_RenderCopy(ren, icon, srcRect, dstRect);
 }

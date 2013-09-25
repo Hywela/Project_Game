@@ -2,8 +2,14 @@
 
 #include "Window.h"
 #include "Constants.h"
+#include "Module.h"
 #include "Module_Gun.h"
+#include "Module_Shield.h"
 using namespace std;
+
+
+
+Module *ship[SHIP_HEIGHT][SHIP_WIDTH];
 
 
 
@@ -32,12 +38,10 @@ Window::Window()
 		window_state = 3;
 	}
 
-
 	//Load image, check for errors
 	string img_dir = DIR_BACKGROUNDS + "Space.bmp";
 	const char *img_str = img_dir.c_str();
-	bmp = IMG_Load(img_str);
-
+	bmp = SDL_LoadBMP(img_str);
 	if (bmp == nullptr)
 	{
 		cout << "SDL_LoadBMP Error: " << SDL_GetError() << endl;
@@ -98,7 +102,6 @@ void Window::handleEvents()
 					isFullscreen = !isFullscreen;
 					if (isFullscreen)
 					{
-
 						SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN_DESKTOP);
 						SDL_SetWindowSize(win, MAX_RESOLUTION_WIDTH, MAX_RESOLUTION_HEIGHT);
 					}
@@ -129,17 +132,24 @@ void Window::handleEvents()
 			{
 				case SDL_BUTTON_LEFT:
 				{
-					cout << "Left button";
+					cout << "Left button\n";
+					//Draw the space ship
+					for (int y = 0; y < SHIP_HEIGHT; y++)
+					{
+						for (int x = 0; x < SHIP_WIDTH; x++)
+						{
+							ship[y][x]->onMouseClick(event);
+						}
+					}
 					break;
 				}
 				
 				default:
 				{
-					cout << button << " (Unhandeled button!)";
+					cout << button << " (Unhandeled button!)\n";
 					break;
 				}
 			}
-			cout << endl;
 		}
 	}
 }
@@ -147,21 +157,30 @@ void Window::handleEvents()
 void Window::runWindow()
 {
 	//Create space ship
-	const int SHIP_WIDTH = 3;
-	const int SHIP_HEIGHT = 3;
-	Module *ship[SHIP_HEIGHT][SHIP_WIDTH];
+	SDL_Rect tmp_src;
+	tmp_src.w = 64;
+	tmp_src.h = 64;
+	tmp_src.x = 0;
+	tmp_src.y = 0;
+
+	SDL_Rect tmp_dst = tmp_src;
+	const int OFFSET_X = 40;
+	const int OFFSET_Y = 100;
 
 	for (int y = 0; y < SHIP_HEIGHT; y++)
 	{
+		tmp_dst.y = OFFSET_Y + (y * tmp_dst.h) + y;
 		for (int x = 0; x < SHIP_WIDTH; x++)
 		{
-			ship[y][x] = new Module(ren, DIR_MODULES + "Empty.png", 0, 0, 0);
+			tmp_dst.x = OFFSET_X + (x * tmp_dst.w) + x;
+			ship[y][x] = new Module(ren, tmp_src, tmp_dst, DIR_MODULES + "Empty.png", 0, 0, 0);
 		}
 	}
 
 	//Swap center module for testing
+	tmp_dst = ship[1][1]->getDestination();
 	delete ship[1][1];
-	ship[1][1] = new Module_Gun(ren, DIR_MODULES + "Turret.png", 1, 10, 75, 2, 5, 0);
+	ship[1][1] = new Module_Gun(ren, tmp_src, tmp_dst, DIR_MODULES + "Turret.png", 1, 10, 75, 2, 5, 0);
 
 	//Draw the space ship
 	for (int y = 0; y < SHIP_HEIGHT; y++)
@@ -173,19 +192,23 @@ void Window::runWindow()
 		}
 		cout << "\n\n";
 	}
-    ship[1][1]->setPostion(20,20);
-    ship[1][1]->setSize(20,20);
+
 	while (!quit)
 	{
 		//Reset screen
 		SDL_RenderClear(ren);
-       
+
 		//Draw background
-		SDL_RenderCopy( ren, tex, NULL, NULL);
-        ship[1][1]->draw(ren);
-		//Draw other stuff
-		//...
- 
+		SDL_RenderCopy(ren, tex, NULL, NULL);
+
+		//Draw ships
+		for (int y = 0; y < SHIP_HEIGHT; y++)
+		{
+			for (int x = 0; x < SHIP_WIDTH; x++)
+			{
+				ship[y][x]->draw(ren);
+			}
+		}
 
 		//Render screen
 		SDL_RenderPresent(ren);
