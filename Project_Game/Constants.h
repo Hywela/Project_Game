@@ -5,7 +5,7 @@ using namespace std;
 
 
 //Settings
-const char *GAME_NAME = "Space Game"; 
+extern const char *GAME_NAME; 
 const int RESOLUTION_WIDTH = 640;
 const int RESOLUTION_HEIGHT = 480;
 const int MAX_RESOLUTION_WIDTH = 1920;
