@@ -10,8 +10,6 @@ private:
 	SDL_Renderer *ren;
 	SDL_Surface *bmp;
 	SDL_Texture *tex;
-	int win_w;
-	int win_h;
 	int window_state;
 	bool isFullscreen;
 	bool quit;

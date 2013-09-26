@@ -2,8 +2,14 @@
 
 #include "Window.h"
 #include "Constants.h"
-#include "Space_Ship.h"
+#include "Module.h"
+#include "Module_Gun.h"
+#include "Module_Shield.h"
 using namespace std;
+
+
+
+Module *ship[SHIP_HEIGHT][SHIP_WIDTH];
 
 
 
@@ -127,6 +133,14 @@ void Window::handleEvents()
 				case SDL_BUTTON_LEFT:
 				{
 					cout << "Left button\n";
+					//Draw the space ship
+					for (int y = 0; y < SHIP_HEIGHT; y++)
+					{
+						for (int x = 0; x < SHIP_WIDTH; x++)
+						{
+							ship[y][x]->onMouseClick(event);
+						}
+					}
 					break;
 				}
 				
@@ -142,8 +156,42 @@ void Window::handleEvents()
 
 void Window::runWindow()
 {
-	//Create player one ship
-	Space_Ship *player = new Space_Ship(ren);
+	//Create space ship
+	SDL_Rect tmp_src;
+	tmp_src.w = 64;
+	tmp_src.h = 64;
+	tmp_src.x = 0;
+	tmp_src.y = 0;
+
+	SDL_Rect tmp_dst = tmp_src;
+	const int OFFSET_X = 40;
+	const int OFFSET_Y = 100;
+
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		tmp_dst.y = OFFSET_Y + (y * tmp_dst.h) + y;
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			tmp_dst.x = OFFSET_X + (x * tmp_dst.w) + x;
+			ship[y][x] = new Module(ren, tmp_src, tmp_dst, DIR_MODULES + "Empty.png", 0, 0, 0);
+		}
+	}
+
+	//Swap center module for testing
+	tmp_dst = ship[1][1]->getDestination();
+	delete ship[1][1];
+	ship[1][1] = new Module_Gun(ren, tmp_src, tmp_dst, DIR_MODULES + "Turret.png", 1, 10, 75, 2, 5, 0);
+
+	//Draw the space ship
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			//ship[y][x]->draw(ren);
+			cout << "[" << ship[y][x]->getCurrentHealth() << "/" << ship[y][x]->getMaxHealth() << "]\t";
+		}
+		cout << "\n\n";
+	}
 
 	while (!quit)
 	{
@@ -153,8 +201,14 @@ void Window::runWindow()
 		//Draw background
 		SDL_RenderCopy(ren, tex, NULL, NULL);
 
-		//Draw players ship
-		player->draw(ren);
+		//Draw ships
+		for (int y = 0; y < SHIP_HEIGHT; y++)
+		{
+			for (int x = 0; x < SHIP_WIDTH; x++)
+			{
+				ship[y][x]->draw(ren);
+			}
+		}
 
 		//Render screen
 		SDL_RenderPresent(ren);
