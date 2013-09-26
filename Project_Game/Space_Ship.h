@@ -13,7 +13,10 @@ private:
 	SDL_Rect *position;	//Where the ship is position (top-left corner)
 	Hull *hull_layer[SHIP_HEIGHT][SHIP_WIDTH];
 	Module *module_layer[SHIP_HEIGHT][SHIP_WIDTH];
+<<<<<<< HEAD
 	int selected_hull;
+=======
+>>>>>>> bfe799df62696198cadf424b62317c3fcdd6f084
 
 public:
 	Space_Ship();
