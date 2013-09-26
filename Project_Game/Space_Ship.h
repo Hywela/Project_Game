@@ -14,7 +14,10 @@ private:
 	Hull *hull_layer[SHIP_HEIGHT][SHIP_WIDTH];
 	Module *module_layer[SHIP_HEIGHT][SHIP_WIDTH];
 <<<<<<< HEAD
+<<<<<<< HEAD
 	int selected_hull;
+=======
+>>>>>>> bfe799df62696198cadf424b62317c3fcdd6f084
 =======
 >>>>>>> bfe799df62696198cadf424b62317c3fcdd6f084
 

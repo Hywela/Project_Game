@@ -18,7 +18,10 @@ Space_Ship::Space_Ship(SDL_Renderer *ren)
 	position->x = SDL_floor(renW / 2) - (position->w / 2);
 	position->y = SDL_floor(renH / 2) - (position->h / 2);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	selected_hull = 0;
+=======
+>>>>>>> bfe799df62696198cadf424b62317c3fcdd6f084
 =======
 >>>>>>> bfe799df62696198cadf424b62317c3fcdd6f084
 
@@ -107,8 +110,13 @@ bool Space_Ship::buildHull(SDL_Renderer *ren)
 {
 	bool build_hull = true;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	SDL_Event event;
 	
+=======
+	int selected_hull = 0;
+	SDL_Event event;
+>>>>>>> bfe799df62696198cadf424b62317c3fcdd6f084
 =======
 	int selected_hull = 0;
 	SDL_Event event;
@@ -187,10 +195,14 @@ bool Space_Ship::buildHull(SDL_Renderer *ren)
 				{
 					cout << "Right button\n";
 <<<<<<< HEAD
+<<<<<<< HEAD
 					cout << "HullType before: " << selected_hull << endl;
 					selected_hull = (++selected_hull) % 3;
 					cout << "HullType = " << selected_hull << " (1 = NORMAL | 2 = ELECTRICAL | 3 = REINFORCED)\n";
 					break;
+=======
+					selected_hull = (selected_hull + 1) % 3;
+>>>>>>> bfe799df62696198cadf424b62317c3fcdd6f084
 =======
 					selected_hull = (selected_hull + 1) % 3;
 >>>>>>> bfe799df62696198cadf424b62317c3fcdd6f084

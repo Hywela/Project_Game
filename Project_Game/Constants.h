@@ -21,7 +21,11 @@ const int SHIP_HEIGHT = 5;
 
 enum hull_action {NOTHING, PLACE, MOVE, REMOVE};
 <<<<<<< HEAD
+<<<<<<< HEAD
 enum hull_type {NORMAL, ELECTRICAL, REINFORCED};
+=======
+enum hull_type {NORMAL, ELECTRICAL, REINFORCED};
+>>>>>>> bfe799df62696198cadf424b62317c3fcdd6f084
 =======
 enum hull_type {NORMAL, ELECTRICAL, REINFORCED};
 >>>>>>> bfe799df62696198cadf424b62317c3fcdd6f084
