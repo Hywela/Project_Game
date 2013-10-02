@@ -18,6 +18,7 @@ Space_Ship::Space_Ship(SDL_Renderer *ren)
 	position->x = SDL_floor(renW / 2) - (position->w / 2);
 	position->y = SDL_floor(renH / 2) - (position->h / 2);
 	selected_hull = 0;
+	selected_module = 0;
 
 	//Calculate central tile
 	int approxCenterX = (int)SDL_floor(SHIP_WIDTH / 2);
@@ -75,10 +76,63 @@ Space_Ship::Space_Ship(SDL_Renderer *ren)
 			}
 		}
 
-	//Render screen
-	SDL_RenderPresent(ren);
+		//Render screen
+		SDL_RenderPresent(ren);
 
-	build_hull = buildHull(ren);
+		build_hull = buildHull(ren);
+	}
+
+	//Reset rectangles
+	dstRect = srcRect;
+
+	//Find all possible module slots
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		dstRect.y = position->y + (srcRect.h * y) + (y * TILE_OFFSET);
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			dstRect.x = position->x + (srcRect.w * x) + (x * TILE_OFFSET);
+			if (hull_layer[y][x]->isNotUsed())
+			{
+				//Delete the unused hull
+				delete hull_layer[y][x];
+				hull_layer[y][x] = NULL;
+
+				//This tile can't be used for modules either
+				module_layer[y][x] = NULL;
+			}
+			else
+			{
+				//Set empty module
+				module_layer[y][x] = new Module(ren, srcRect, dstRect, DIR_MODULES + "Empty.png", 1, 0, 0);
+			}
+		}
+	}
+
+	bool build_module = true;
+
+	while (build_module)
+	{
+		//Clear renderer
+		SDL_RenderClear(ren);
+
+		//Draw all hull tiles
+		for (int y = 0; y < SHIP_HEIGHT; y++)
+		{
+			for (int x = 0; x < SHIP_WIDTH; x++)
+			{
+				if (module_layer[y][x] != NULL)
+				{
+					hull_layer[y][x]->draw(ren);
+					module_layer[y][x]->draw(ren);
+				}
+			}
+		}
+
+		//Render screen
+		SDL_RenderPresent(ren);
+
+		build_module = buildModules(ren);
 	}
 }
 
@@ -88,16 +142,24 @@ Space_Ship::~Space_Ship()
 
 void Space_Ship::draw(SDL_Renderer *ren)
 {
-	//Draw hulls
+	//Draw the ship parts
 	for (int y = 0; y < SHIP_HEIGHT; y++)
 	{
 		for (int x = 0; x < SHIP_WIDTH; x++)
 		{
-			hull_layer[y][x]->draw(ren);
+			//The hulls
+			if (hull_layer[y][x] != NULL)
+			{
+				hull_layer[y][x]->draw(ren);
+			}
+
+			//The modules
+			if (module_layer[y][x] != NULL)
+			{
+				module_layer[y][x]->draw(ren);
+			}
 		}
 	}
-	
-	//Draw modules
 }
 
 bool Space_Ship::buildHull(SDL_Renderer *ren)
@@ -152,16 +214,12 @@ bool Space_Ship::buildHull(SDL_Renderer *ren)
 							//Grab the action when clicking on the button
 							switch (hull_layer[y][x]->onMouseClick(event))
 							{
-								case PLACE:
+								case HUL_PLACE:
 								{
 									swapHull(ren, x, y, selected_hull);
 									break;
 								}
-								case MOVE:
-								{
-									break;
-								}
-								case REMOVE:
+								case HUL_REMOVE:
 								{
 									swapHull(ren, x, y, -1);
 									break;
@@ -178,9 +236,8 @@ bool Space_Ship::buildHull(SDL_Renderer *ren)
 				case SDL_BUTTON_RIGHT:
 				{
 					cout << "Right button\n";
-					cout << "HullType before: " << selected_hull << endl;
 					selected_hull = (++selected_hull) % 3;
-					cout << "HullType = " << selected_hull << " (1 = NORMAL | 2 = ELECTRICAL | 3 = REINFORCED)\n";
+					cout << "HullType = " << (selected_hull + 1) << " (1 = NORMAL | 2 = ELECTRICAL | 3 = REINFORCED)\n";
 					break;
 				}
 				default:
@@ -283,5 +340,122 @@ void Space_Ship::swapHull(SDL_Renderer *ren, int x, int y, int type)
 bool Space_Ship::buildModules(SDL_Renderer *ren)
 {
 	bool build_module = true;
+	SDL_Event event;
+	
+
+	//Configure hulls
+	while (SDL_PollEvent(&event))
+	{
+	//Check if a key was PRESSED
+	if (event.key.state == SDL_PRESSED)
+	{
+		//Figure out what the key does
+		SDL_Keycode key = event.key.keysym.sym;
+			
+		cout << "[BUILD-KEY]: ";
+		switch (key)
+		{
+			case SDLK_RETURN:
+			{
+				cout << "Return";
+				build_module = false;
+				break;
+			}
+				
+			default:
+			{
+				cout << (char)key << " (Unhandeled key!)";
+				break;
+			}
+		}
+		cout << endl;
+	}
+	else if (event.button.state == SDL_PRESSED)
+		{
+			//Figure out what the key does
+			SDL_Keycode button = event.button.button;
+			
+			cout << "[BUILD-EVENT]: ";
+			switch (button)
+			{
+				case SDL_BUTTON_LEFT:
+				{
+					cout << "Left button\n";
+					//Draw all hull tiles
+					for (int y = 0; y < SHIP_HEIGHT; y++)
+					{
+						for (int x = 0; x < SHIP_WIDTH; x++)
+						{
+							//Grab the action when clicking on the button
+							if (module_layer[y][x] != NULL)
+							{
+								switch (module_layer[y][x]->onMouseClick(event))
+								{
+									case HUL_PLACE:
+									{
+										swapModule(ren, x, y, selected_module);
+										break;
+									}
+									case HUL_REMOVE:
+									{
+										swapModule(ren, x, y, -1);
+										break;
+									}
+									default:
+									{
+										break;
+									}
+								}
+							}
+						}
+					}
+					break;
+				}
+				case SDL_BUTTON_RIGHT:
+				{
+					cout << "Right button\n";
+					selected_module = (++selected_module) % 2;
+					cout << "ModuleType = " << (selected_module + 1) << " (1 = COCKPIT | 2 = TURRET)\n";
+					break;
+				}
+				default:
+				{
+					cout << button << " (Unhandeled button!)\n";
+					break;
+				}
+			}
+		}
+	}
+
 	return build_module;
+}
+
+void Space_Ship::swapModule(SDL_Renderer *ren, int x, int y, int type)
+{
+	//Copy position
+	SDL_Rect tmpSrc = hull_layer[y][x]->getSource();
+	SDL_Rect tmpDst = hull_layer[y][x]->getDestination();
+
+	//Remove old
+	delete module_layer[y][x];
+
+	//Place new hull
+	switch (module_type(type))
+	{
+		case COCKPIT:
+		{
+			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Cockpit.png", 1, 10, 0);
+			break;
+		}
+		case TURRET:
+		{
+			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Turret.png", 1, 10, 0);
+			break;
+		}
+		default:
+		{
+			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Empty.png", 1, 0, 0);
+			break;
+		}
+	}
 }

@@ -55,7 +55,7 @@ hull_action Hull::onMouseClick(SDL_Event event)
 {
 	int mouseX = event.button.x;
 	int mouseY = event.button.y;
-	hull_action action = NOTHING;
+	hull_action action = HUL_NOTHING;
 	
 	if (isMouseOver(event)) {
 		cout << "[BUILD-CLICK]: ";
@@ -66,12 +66,12 @@ hull_action Hull::onMouseClick(SDL_Event event)
 		else if (isEmpty && isPlaceable)
 		{
 			cout << "This tile is EMPTY!";
-			action = PLACE;
+			action = HUL_PLACE;
 		}
 		else if (!isEmpty)
 		{
 			cout << "This hull is OPEN!";
-			action = REMOVE;
+			action = HUL_REMOVE;
 		}
 		else
 		{
@@ -144,4 +144,8 @@ int Hull::getAnchors()
 void Hull::setAnchors(int num)
 {
 	numAnchors = num;
+}
+
+bool Hull::isNotUsed() {
+	return isEmpty;
 }

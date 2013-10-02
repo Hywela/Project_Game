@@ -38,4 +38,5 @@ public:
 	void setPlaceable(bool state);		//Can you place a tile here
 	int getAnchors();					//How many sides are connected
 	void setAnchors(int num);			//Sets how many sides are connected
+	bool isNotUsed();						//Checks if the tile is not used
 };

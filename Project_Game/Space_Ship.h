@@ -14,6 +14,7 @@ private:
 	Hull *hull_layer[SHIP_HEIGHT][SHIP_WIDTH];
 	Module *module_layer[SHIP_HEIGHT][SHIP_WIDTH];
 	int selected_hull;
+	int selected_module;
 
 public:
 	Space_Ship();
@@ -24,5 +25,6 @@ public:
 	bool buildHull(SDL_Renderer *ren);
 	void swapHull(SDL_Renderer *ren, int x, int y, int type);
 	bool buildModules(SDL_Renderer *ren);
+	void swapModule(SDL_Renderer *ren, int x, int y, int type);
 };
 

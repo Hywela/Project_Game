@@ -79,14 +79,28 @@ SDL_Rect Module::getDestination()
 	return SDL_Rect(*dstRect);
 }
 
-void Module::onMouseClick(SDL_Event event)
+module_action Module::onMouseClick(SDL_Event event)
 {
 	int mouseX = event.button.x;
 	int mouseY = event.button.y;
+	module_action action = MOD_NOTHING;
 	
 	if (isMouseOver(event)) {
-		cout << "[OnClick Event]: You hit me!\n";
+		cout << "[BUILD-CLICK]: ";
+		if (maxHealth > 0)
+		{
+			cout << "This module is NOT EMPTY";
+			action = MOD_REMOVE;
+		}
+		else
+		{
+			cout << "This tile is EMPTY!";
+			action = MOD_PLACE;
+		}
+		cout << endl;
 	}
+
+	return action;
 }
 
 bool Module::isMouseOver(SDL_Event event)

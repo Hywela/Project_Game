@@ -2,6 +2,8 @@
 #include <string>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <iostream>
+#include "Constants.h"
 using namespace std;
 
 
@@ -31,6 +33,6 @@ public:
 	void draw(SDL_Renderer *ren);		//Draw the module
 	SDL_Rect getSource();				//Gets the source rectangle
 	SDL_Rect getDestination();			//Gets the destination rectangle
-	void onMouseClick(SDL_Event event);	//Clicked on the texture
+	module_action onMouseClick(SDL_Event event);	//Clicked on the texture
 	bool isMouseOver(SDL_Event event);	//Checks if mouse is in bounderies
 };

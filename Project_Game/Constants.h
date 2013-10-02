@@ -19,5 +19,8 @@ const string DIR_HULLS = DIR_TEXTURES + "Hulls/";
 const int SHIP_WIDTH = 5;
 const int SHIP_HEIGHT = 5;
 
-enum hull_action {NOTHING, PLACE, MOVE, REMOVE};
+enum hull_action {HUL_NOTHING, HUL_PLACE, HUL_REMOVE};
 enum hull_type {NORMAL, ELECTRICAL, REINFORCED};
+
+enum module_action {MOD_NOTHING, MOD_PLACE, MOD_REMOVE};
+enum module_type {COCKPIT, TURRET};
