@@ -39,8 +39,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files\SDL2_image-2.0.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\SDL2_image-2.0.0\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\SDL2-2.0.0\include;C:\Program Files\SDL2_image-2.0.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\SDL2-2.0.0\lib\x86;C:\Program Files\SDL2_image-2.0.0\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -78,6 +78,7 @@
     <ClInclude Include="Module_Gun.h" />
     <ClInclude Include="Module_Shield.h" />
     <ClInclude Include="Space_Ship.h" />
+    <ClInclude Include="Text.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +89,7 @@
     <ClCompile Include="Module_Shield.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Space_Ship.cpp" />
+    <ClCompile Include="Text.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>

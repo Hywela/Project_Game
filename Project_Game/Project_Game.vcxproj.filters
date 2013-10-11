@@ -36,6 +36,9 @@
     <ClInclude Include="Space_Ship.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Window.cpp">
@@ -56,10 +59,13 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Space_Ship.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Constants.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Space_Ship.cpp">
+    <ClCompile Include="Text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Constants.h"
 #include "Space_Ship.h"
+#include "Text.h"
 using namespace std;
 
 
@@ -17,7 +18,8 @@ Window::Window()
 	}
 
 	//Create window, check for errors
-    win = SDL_CreateWindow(GAME_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
+	const char *title = &GAME_NAME[0];
+	win = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
 	if (win == nullptr)
 	{
 		cout << "SDL_CreateWindow Error: " << SDL_GetError() << endl;
@@ -145,6 +147,14 @@ void Window::runWindow()
 	//Create player one ship
 	Space_Ship *player = new Space_Ship(ren);
 
+	//Create test text
+	string welcome_tip = "Welcome to " + GAME_NAME + "!";
+	Text *welcome = new Text(ren, welcome_tip, DIR_FONTS + "Custom_Gray.png");
+
+	//Try to set position
+	welcome->setPosition(160, 50);
+
+	//Start game loop
 	while (!quit)
 	{
 		//Reset screen
@@ -152,6 +162,9 @@ void Window::runWindow()
 
 		//Draw background
 		SDL_RenderCopy(ren, tex, NULL, NULL);
+
+		//test text
+		welcome->draw(ren);
 
 		//Draw players ship
 		player->draw(ren);
