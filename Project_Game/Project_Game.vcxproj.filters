@@ -30,32 +30,35 @@
     <ClInclude Include="Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hull.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Module.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Module_Gun.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Module_Shield.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hull.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="hello.bmp">
+    <Image Include="Textures\Modules\Empty.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\Modules\Turret.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\Backgrounds\Space.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
