@@ -2,7 +2,8 @@
 
 #include "Window.h"
 #include "Constants.h"
-#include "Module_Gun.h"
+#include "Space_Ship.h"
+#include "Text.h"
 using namespace std;
 
 
@@ -17,7 +18,8 @@ Window::Window()
 	}
 
 	//Create window, check for errors
-    win = SDL_CreateWindow(GAME_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
+	const char *title = &GAME_NAME[0];
+	win = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
 	if (win == nullptr)
 	{
 		cout << "SDL_CreateWindow Error: " << SDL_GetError() << endl;
@@ -126,51 +128,33 @@ void Window::handleEvents()
 			{
 				case SDL_BUTTON_LEFT:
 				{
-					cout << "Left button";
+					cout << "Left button\n";
 					break;
 				}
 				
 				default:
 				{
-					cout << button << " (Unhandeled button!)";
+					cout << button << " (Unhandeled button!)\n";
 					break;
 				}
 			}
-			cout << endl;
 		}
 	}
 }
 
 void Window::runWindow()
 {
-	//Create space ship
-	const int SHIP_WIDTH = 3;
-	const int SHIP_HEIGHT = 3;
-	Module *ship[SHIP_HEIGHT][SHIP_WIDTH];
+	//Create player one ship
+	Space_Ship *player = new Space_Ship(ren);
 
-	for (int y = 0; y < SHIP_HEIGHT; y++)
-	{
-		for (int x = 0; x < SHIP_WIDTH; x++)
-		{
-			ship[y][x] = new Module(ren, DIR_MODULES + "Empty.png", 0, 0, 0);
-		}
-	}
+	//Create test text
+	string welcome_tip = "Welcome to " + GAME_NAME + "!";
+	Text *welcome = new Text(ren, welcome_tip, DIR_FONTS + "Custom_Gray.png");
 
-	//Swap center module for testing
-	delete ship[1][1];
-	ship[1][1] = new Module_Gun(ren, DIR_MODULES + "Turret.png", 1, 10, 75, 2, 5, 0);
+	//Try to set position
+	welcome->setPosition(160, 50);
 
-	//Draw the space ship
-	for (int y = 0; y < SHIP_HEIGHT; y++)
-	{
-		for (int x = 0; x < SHIP_WIDTH; x++)
-		{
-			//ship[y][x]->draw(ren);
-			cout << "[" << ship[y][x]->getCurrentHealth() << "/" << ship[y][x]->getMaxHealth() << "]\t";
-		}
-		cout << "\n\n";
-	}
-
+	//Start game loop
 	while (!quit)
 	{
 		//Reset screen
@@ -179,8 +163,11 @@ void Window::runWindow()
 		//Draw background
 		SDL_RenderCopy(ren, tex, NULL, NULL);
 
-		//Draw other stuff
-		//...
+		//test text
+		welcome->draw(ren);
+
+		//Draw players ship
+		player->draw(ren);
 
 		//Render screen
 		SDL_RenderPresent(ren);

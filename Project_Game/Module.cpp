@@ -8,9 +8,12 @@ Module::Module()
 {
 }
 
-Module::Module(SDL_Renderer *ren, string ico, int namId, int maxHp, int acc)
+Module::Module(SDL_Renderer *ren, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc)
 {
-	icon = SDL_CreateTextureFromSurface(ren, NULL);
+	icon = IMG_LoadTexture(ren, ico.c_str());
+	srcRect = new SDL_Rect(src);
+	dstRect = new SDL_Rect(dst);
+
 	nameId = namId;
 	maxHealth = maxHp;
 	currentHealth = maxHealth;
@@ -63,5 +66,59 @@ void Module::onHit(int dmg)
 
 void Module::draw(SDL_Renderer *ren)
 {
+	SDL_RenderCopy(ren, icon, srcRect, dstRect);
+}
 
+SDL_Rect Module::getSource()
+{
+	return SDL_Rect(*srcRect);
+}
+
+SDL_Rect Module::getDestination()
+{
+	return SDL_Rect(*dstRect);
+}
+
+module_action Module::onMouseClick(SDL_Event event)
+{
+	int mouseX = event.button.x;
+	int mouseY = event.button.y;
+	module_action action = MOD_NOTHING;
+	
+	if (isMouseOver(event)) {
+		cout << "[BUILD-CLICK]: ";
+		if (maxHealth > 0)
+		{
+			cout << "This module is NOT EMPTY";
+			action = MOD_REMOVE;
+		}
+		else
+		{
+			cout << "This tile is EMPTY!";
+			action = MOD_PLACE;
+		}
+		cout << endl;
+	}
+
+	return action;
+}
+
+bool Module::isMouseOver(SDL_Event event)
+{
+	bool isOver = false;
+	int mouseX = event.button.x;
+	int mouseY = event.button.y;
+
+	//Check if inside x-boundry
+	if (mouseX >= dstRect->x && mouseX <= dstRect->x + dstRect->w)
+	{
+		//Check if inside y-boundry
+		if (mouseY >= dstRect->y && mouseY <= dstRect->y + dstRect->h)
+		{
+			isOver = true;
+		}
+	}
+
+	//Return result
+	return isOver;
 }
