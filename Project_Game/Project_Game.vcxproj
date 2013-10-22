@@ -18,12 +18,12 @@
     <ClInclude Include="Module_Shield.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Constants.cpp" />
     <ClCompile Include="Hull.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="Module_Gun.cpp" />
     <ClCompile Include="Module_Shield.cpp" />
-    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\Backgrounds\Space.bmp" />
