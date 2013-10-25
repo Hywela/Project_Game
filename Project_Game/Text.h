@@ -46,6 +46,8 @@ private:
 		FONT_APOSTROPHE = 255};	//Character[ ' ]
 	vector <SDL_Rect*> srcRects;	//Take this rectangles...
 	vector <SDL_Rect*> dstRects;	//...and place them here!
+	vector <SDL_Rect*> dstScaled;	//...scaled to this
+	float currentScale;
 
 public:
 	Text();
@@ -55,4 +57,8 @@ public:
 	void draw(SDL_Renderer *ren);
 	void setText(string txt);
 	void setPosition(int x, int y);
+	int getWidth();
+	int getHeight();
+	string getText();
+	void setFont(SDL_Renderer *ren, string newFont);
 };

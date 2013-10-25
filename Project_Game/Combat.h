@@ -1,5 +1,8 @@
 #pragma once
 #include "Space_Ship.h"
+#include <windows.h>
+
+
 
 class Combat
 {
@@ -10,7 +13,7 @@ private:
 
 public:
 	Combat();
-	Combat(Space_Ship yourShip, Space_Ship enemyShip, bool yourTurn);
+	Combat(Space_Ship yourShip, Space_Ship enemyShip, bool youStart);
 	void makeMoves();
 	void listenForMoves();
 };

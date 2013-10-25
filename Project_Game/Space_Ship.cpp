@@ -6,8 +6,12 @@ Space_Ship::Space_Ship()
 {
 	//Not in use
 }
-Space_Ship::Space_Ship(SDL_Renderer *ren)
+Space_Ship::Space_Ship(SDL_Renderer *ren, SDL_Texture *bg)
 {
+	//Make instructions
+	Text *tutorialHull = new Text(ren, "Build hull:\n =LEFT MOUSE= Place or remove hull.\n =RIGHT MOUSE= Change material.\n =ENTER= to continue...");
+	Text *tutorialModule = new Text(ren, "Build module:\n =LEFT MOUSE= Place or remove module.\n =RIGHT MOUSE= Change module.\n =ENTER= to save...");
+
 	//Set size and position
 	const int TILE_OFFSET = 2;
 	int renW, renH;
@@ -67,6 +71,9 @@ Space_Ship::Space_Ship(SDL_Renderer *ren)
 		//Clear renderer
 		SDL_RenderClear(ren);
 
+		//Draw background
+		SDL_RenderCopy(ren, bg, NULL, NULL);
+
 		//Draw all hull tiles
 		for (int y = 0; y < SHIP_HEIGHT; y++)
 		{
@@ -75,6 +82,9 @@ Space_Ship::Space_Ship(SDL_Renderer *ren)
 				hull_layer[y][x]->drawBuild(ren);
 			}
 		}
+
+		//Draw tutorial
+		tutorialHull->draw(ren);
 
 		//Render screen
 		SDL_RenderPresent(ren);
@@ -116,6 +126,9 @@ Space_Ship::Space_Ship(SDL_Renderer *ren)
 		//Clear renderer
 		SDL_RenderClear(ren);
 
+		//Draw background
+		SDL_RenderCopy(ren, bg, NULL, NULL);
+
 		//Draw all hull tiles
 		for (int y = 0; y < SHIP_HEIGHT; y++)
 		{
@@ -128,6 +141,9 @@ Space_Ship::Space_Ship(SDL_Renderer *ren)
 				}
 			}
 		}
+
+		//Draw tutorial
+		tutorialModule->draw(ren);
 
 		//Render screen
 		SDL_RenderPresent(ren);
