@@ -1,10 +1,4 @@
-#include <iostream>
-
 #include "Window.h"
-#include "Constants.h"
-#include "Space_Ship.h"
-#include "Text.h"
-using namespace std;
 
 
 
@@ -34,34 +28,16 @@ Window::Window()
 		window_state = 3;
 	}
 
-	//Load image, check for errors
-	string img_dir = DIR_BACKGROUNDS + "Space.bmp";
-	const char *img_str = img_dir.c_str();
-	bmp = SDL_LoadBMP(img_str);
-	if (bmp == nullptr)
-	{
-		cout << "SDL_LoadBMP Error: " << SDL_GetError() << endl;
-		window_state = 4;
-	}
-
-	//Create texture from image, check for errors
-	tex = SDL_CreateTextureFromSurface(ren, bmp);
-	SDL_FreeSurface(bmp);
-	if (tex == nullptr)
-	{
-		cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << endl;
-		window_state = 5;
-	}
-
 	//Set start state
 	quit = false;
 	isFullscreen = false;
+	playerShip = NULL;
 }
 
 Window::~Window()
 {
 	//Close program
-	SDL_DestroyTexture(tex);
+	SDL_DestroyTexture(background);
 	SDL_DestroyRenderer(ren);
 	SDL_DestroyWindow(win);
 	SDL_Quit();
@@ -72,87 +48,29 @@ int Window::getWindowState()
 	return window_state;
 }
 
-void Window::handleEvents()
+void Window::mainMenu()
 {
-	//Check for new events
-	while (SDL_PollEvent(&event))
-	{
-		//Check if a key was PRESSED
-		if (event.key.state == SDL_PRESSED)
-		{
-			//Figure out what the key does
-			SDL_Keycode key = event.key.keysym.sym;
-			
-			cout << "[KEY-EVENT]: ";
-			switch (key)
-			{
-				case SDLK_ESCAPE:
-				{
-					cout << "Escape";
-					quit = true;
-					break;
-				}
-				case SDLK_TAB:
-				{
-					cout << "Tab";
-					isFullscreen = !isFullscreen;
-					if (isFullscreen)
-					{
-						SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN_DESKTOP);
-						SDL_SetWindowSize(win, MAX_RESOLUTION_WIDTH, MAX_RESOLUTION_HEIGHT);
-					}
-					else
-					{
-						SDL_SetWindowFullscreen(win, SDL_WINDOW_MAXIMIZED);
-						SDL_SetWindowSize(win, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-					}
-					
-					break;
-				}
-				
-				default:
-				{
-					cout << (char)key << " (Unhandeled key!)";
-					break;
-				}
-			}
-			cout << endl;
-		}
-		else if (event.button.state == SDL_PRESSED)
-		{
-			//Figure out what the key does
-			SDL_Keycode button = event.button.button;
-			
-			cout << "[MOUSE-EVENT]: ";
-			switch (button)
-			{
-				case SDL_BUTTON_LEFT:
-				{
-					cout << "Left button\n";
-					break;
-				}
-				
-				default:
-				{
-					cout << button << " (Unhandeled button!)\n";
-					break;
-				}
-			}
-		}
-	}
-}
+	vector <Button*> buttons;
+	SDL_GetWindowSize(win, &winW, &winH);
 
-void Window::runWindow()
-{
-	//Create player one ship
-	Space_Ship *player = new Space_Ship(ren);
+	//Create texture from image, check for errors
+	string bgStr = DIR_BACKGROUNDS + "Main_Menu.png";
+	background = IMG_LoadTexture(ren, bgStr.c_str());
 
-	//Create test text
-	string welcome_tip = "Welcome to " + GAME_NAME + "!";
-	Text *welcome = new Text(ren, welcome_tip, DIR_FONTS + "Custom_Gray.png");
+	//Set up button properties
+	btnWidth = 200;
+	btnHeight = 40;
+	startY = 220;
+	offsetY = 20;
+	btnX = (winW / 2) - (btnWidth / 2);
+	btnY = startY - (((btnHeight + 10) * 4) / 2);
+	scaleX = btnX;
+	scaleY = btnY;
 
-	//Try to set position
-	welcome->setPosition(160, 50);
+	//Set up buttons
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, "Build Ship", btnWidth, btnHeight));
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Green.png", btnX, btnY + ((btnHeight + offsetY) * 1), "Battle", btnWidth, btnHeight));
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 2), "Settings", btnWidth, btnHeight));
 
 	//Start game loop
 	while (!quit)
@@ -161,18 +79,173 @@ void Window::runWindow()
 		SDL_RenderClear(ren);
 
 		//Draw background
-		SDL_RenderCopy(ren, tex, NULL, NULL);
+		SDL_RenderCopy(ren, background, NULL, NULL);
 
-		//test text
-		welcome->draw(ren);
-
-		//Draw players ship
-		player->draw(ren);
+		//Draw buttons
+		for (int i = 0; i < buttons.size(); i++)
+		{
+			buttons[i]->draw(ren);
+		}
 
 		//Render screen
 		SDL_RenderPresent(ren);
 
 		//Handle incomming events
-		handleEvents();
+		while (SDL_PollEvent(&event))
+		{
+			//Mouse events for the buttons
+			for (int i = 0; i < buttons.size(); i++)
+			{
+				//Check if the mouse are hovering over any buttons
+				buttons[i]->isMouseOver(event);
+
+				//Check if it clicked it
+				string hit = buttons[i]->onMouseClick(event);
+				if (hit == "Build Ship")
+				{
+					//Navigate to build space ship
+					cout << "Go to editor...\n";
+					build();
+					buttons[1]->setStyle(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
+				}
+				else if (hit == "Battle")
+				{
+					//If you have a valid ship, go to battle
+					if (playerShip != NULL)
+					{
+						cout << "Go to battle...\n";
+						battle();
+					}
+					else {
+						cout << "You have not built a ship yet!\n";
+					}
+				}
+				else if (hit == "Settings")
+				{
+					//Go to settings
+					cout << "Go to settings...\n";
+					settings();
+
+					//Check if any adjustments were made
+					for (int i = 0; i < buttons.size(); i++)
+					{
+						buttons[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
+						cout << "setPosition(" << scaleX << ", " << scaleY << ")\n";
+					}
+				}
+			}
+		}
+	}
+}
+
+void Window::build()
+{
+	//Swap background
+	string bgStr = DIR_BACKGROUNDS + "Space.png";
+	background = IMG_LoadTexture(ren, bgStr.c_str());
+
+	//Reset player ship
+	delete playerShip;
+
+	//Create new player ship
+	playerShip = new Space_Ship(ren, background);
+
+	//Change background back
+	string bgStr1 = DIR_BACKGROUNDS + "Main_Menu.png";
+	background = IMG_LoadTexture(ren, bgStr1.c_str());
+}
+
+void Window::battle()
+{
+	//Generate a ship like yours to fight (for now...)
+	Space_Ship *generatedEnemy = new Space_Ship(*playerShip);
+
+	//Start the combat
+	Combat *combat = new Combat(*playerShip, *generatedEnemy, true);
+}
+
+void Window::settings()
+{
+	bool done = false;
+	vector <Button*> buttons;
+	int btnBackY = RESOLUTION_HEIGHT - btnHeight - offsetY;
+
+	//Create the buttons
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Cyan.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, "  Toggle\nFullscreen", btnWidth, btnHeight));
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnBackY, "Back", btnWidth, btnHeight));
+
+	//Check resolution
+	for (int i = 0; i < buttons.size(); i++)
+	{
+		buttons[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
+	}
+
+	//Start game loop
+	while (!done)
+	{
+		//Reset screen
+		SDL_RenderClear(ren);
+
+		//Draw background
+		SDL_RenderCopy(ren, background, NULL, NULL);
+
+		//Draw buttons
+		for (int i = 0; i < buttons.size(); i++)
+		{
+			buttons[i]->draw(ren);
+		}
+
+		//Render screen
+		SDL_RenderPresent(ren);
+
+		//Handle incomming events
+		while (SDL_PollEvent(&event))
+		{
+			//Mouse events for the buttons
+			for (int i = 0; i < buttons.size(); i++)
+			{
+				//Check if the mouse are hovering over any buttons
+				buttons[i]->isMouseOver(event);
+
+				//Check if it clicked it
+				string hit = buttons[i]->onMouseClick(event);
+				if (hit == "  Toggle\nFullscreen")
+				{
+					//Change fullscreen setting
+					cout << "Toggle fullscreen...\n";
+					isFullscreen = !isFullscreen;
+					if (isFullscreen)
+					{
+						//Set fullscreen on
+						SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN_DESKTOP);
+						SDL_SetWindowSize(win, MAX_RESOLUTION_WIDTH, MAX_RESOLUTION_HEIGHT);
+					}
+					else
+					{
+						//Set fullscreen off
+						SDL_SetWindowFullscreen(win, SDL_WINDOW_MAXIMIZED);
+						SDL_SetWindowSize(win, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+					}
+
+					//Calculate changes
+					SDL_GetWindowSize(win, &winW, &winH);
+					float scaled = winW / RESOLUTION_WIDTH;
+					scaleX = (winW / 2) - (btnWidth / 2);
+					scaleY = (startY * scaled) - (((btnHeight + 10) * 4) / 2);
+
+					//Update positions
+					for (int i = 0; i < buttons.size(); i++)
+					{
+						buttons[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
+					}
+				}
+				else if (hit == "Back")
+				{
+					//Return to main menu
+					cout << "Go to back...\n";
+					done = true;
+				}
+			}
+		}
 	}
 }

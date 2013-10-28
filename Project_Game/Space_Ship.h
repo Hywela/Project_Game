@@ -4,6 +4,7 @@
 #include "Module_Gun.h"
 #include "Module_Shield.h"
 #include "Constants.h"
+#include "Text.h"
 
 
 
@@ -18,7 +19,7 @@ private:
 
 public:
 	Space_Ship();
-	Space_Ship(SDL_Renderer *ren);
+	Space_Ship(SDL_Renderer *ren, SDL_Texture *bg);
 	~Space_Ship();
 
 	void draw(SDL_Renderer *ren);

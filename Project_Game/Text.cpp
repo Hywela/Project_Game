@@ -191,6 +191,7 @@ Text::Text(SDL_Renderer *ren, string txt, string fnt, string bg)
 	}
 
 	rows = curRow + 1;
+	currentScale = 1;
 	cout << endl << '"' << endl;
 }
 
@@ -230,13 +231,25 @@ void Text::draw(SDL_Renderer *ren)
 		//Draw letter
 		if (srcRects[i]->w == 14)
 		{
-			//Flip comma to be the right way
-			SDL_RenderCopyEx(ren, font, srcRects[i], dstRects[i], NULL, NULL, SDL_FLIP_HORIZONTAL);
+			if (currentScale != 1)
+			{
+				SDL_RenderCopyEx(ren, font, srcRects[i], dstScaled[i], NULL, NULL, SDL_FLIP_HORIZONTAL);
+			}
+			else {
+				//Flip comma to be the right way
+				SDL_RenderCopyEx(ren, font, srcRects[i], dstRects[i], NULL, NULL, SDL_FLIP_HORIZONTAL);
+			}
 		}
 		else
 		{
-			//Draw normal
-			SDL_RenderCopy(ren, font, srcRects[i], dstRects[i]);
+			if (currentScale != 1)
+			{
+				SDL_RenderCopy(ren, font, srcRects[i], dstScaled[i]);
+			}
+			else {
+				//Draw normal
+				SDL_RenderCopy(ren, font, srcRects[i], dstRects[i]);
+			}
 		}
 	}
 }
@@ -263,4 +276,24 @@ void Text::setPosition(int x, int y)
 	//Update absolute position
 	positionX = x;
 	positionY = y;
+}
+
+int Text::getWidth()
+{
+	return (width * (charSize->w - OFFSET));
+}
+
+int Text::getHeight()
+{
+	return (rows * charSize->h);
+}
+
+string Text::getText()
+{
+	return text;
+}
+
+void Text::setFont(SDL_Renderer *ren, string newFont)
+{
+	font = IMG_LoadTexture(ren, newFont.c_str());
 }
