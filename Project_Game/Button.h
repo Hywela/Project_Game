@@ -1,5 +1,6 @@
 #pragma once
 #include "Text.h"
+#include <SDL_mixer.h>
 
 
 
@@ -14,6 +15,7 @@ private:
 	bool highlight;
 	int buttonCentreX;
 	int buttonCentreY;
+	Mix_Chunk *soundClick;
 
 	float currentScale;
 

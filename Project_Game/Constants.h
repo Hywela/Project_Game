@@ -17,6 +17,10 @@ const string DIR_MODULES = DIR_TEXTURES + "Modules/";
 const string DIR_HULLS = DIR_TEXTURES + "Hulls/";
 const string DIR_FONTS = DIR_TEXTURES + "Fonts/";
 const string DIR_BUTTONS = DIR_TEXTURES + "Buttons/";
+const string DIR_EDITTEXTS = DIR_TEXTURES + "EditTexts/";
+const string DIR_AUDIO = "Audio/";
+const string DIR_EFFECTS = DIR_AUDIO + "Effects/";
+const string DIR_MUSIC = DIR_AUDIO + "Music/";
 
 const int SHIP_WIDTH = 5;
 const int SHIP_HEIGHT = 5;
