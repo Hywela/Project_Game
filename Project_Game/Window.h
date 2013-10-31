@@ -6,7 +6,8 @@
 #include "Text.h"
 #include "Button.h"
 #include "Combat.h"
-#include "Network.h"
+#include "EditText.h"
+#include <SDL_mixer.h>
 using namespace std;
 
 
@@ -17,6 +18,7 @@ private:
 	SDL_Window *win;
 	SDL_Renderer *ren;
 	SDL_Texture *background;
+	Mix_Chunk *music;
 	int win_w;
 	int win_h;
 	int window_state;
@@ -39,17 +41,16 @@ private:
 	//Ship:
 	Space_Ship *playerShip;
 
-	//Network
-	Network *server;
-
 public:
     Window();
     ~Window();
 	
 	int getWindowState();
+	void login();
 	void mainMenu();
 	void build();
 	void battle();
 	void settings();
+	bool validateLogin(string user, string code);
 };
 

@@ -8,6 +8,10 @@ Button::Button()
 
 Button::Button(SDL_Renderer *ren, string img, string font, int x, int y, string tip, int w, int h)
 {
+	//Load background music
+	string soundStr = DIR_EFFECTS + "Button Click.wav";
+	soundClick = Mix_LoadWAV(soundStr.c_str());
+
 	//Set button style
 	string imgHighlight = DIR_BUTTONS + "Highlight.png";
 	style = IMG_LoadTexture(ren, img.c_str());
@@ -88,6 +92,7 @@ string Button::onMouseClick(SDL_Event event)
 	if (highlight && event.button.state == SDL_PRESSED) {
 		hit = tooltip->getText();
 		cout << "[BUTTON-CLICK]: " << hit << endl;
+		Mix_PlayChannelTimed(1, soundClick, 0, NULL);
 	}
 
 	//Return text of the button

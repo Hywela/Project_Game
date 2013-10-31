@@ -28,6 +28,11 @@ Window::Window()
 		window_state = 3;
 	}
 
+	if (SDL_Init(SDL_INIT_AUDIO) == -1)
+	{
+        printf("Error In Init");
+	}
+
 	//Set start state
 	quit = false;
 	isFullscreen = false;
@@ -49,15 +54,26 @@ int Window::getWindowState()
 	return window_state;
 }
 
-void Window::mainMenu()
+void Window::login()
 {
 
 	vector <Button*> buttons;
+	vector <EditText*> queryLogin;
+
 	SDL_GetWindowSize(win, &winW, &winH);
 
 	//Create texture from image, check for errors
 	string bgStr = DIR_BACKGROUNDS + "Main_Menu.png";
 	background = IMG_LoadTexture(ren, bgStr.c_str());
+
+	Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG);
+	Mix_OpenAudio(41000, MIX_DEFAULT_FORMAT, 2, 4096);
+
+	//Load background music
+	string musicStr = DIR_MUSIC + "Harmonic Space.wav";
+	music = Mix_LoadWAV(musicStr.c_str());
+	Mix_VolumeChunk(music, 10);
+	Mix_PlayChannelTimed(0, music, -1, NULL); //channel, sound, numLoops, playFor
 
 	//Set up button properties
 	btnWidth = 200;
@@ -65,17 +81,158 @@ void Window::mainMenu()
 	startY = 220;
 	offsetY = 20;
 	btnX = (winW / 2) - (btnWidth / 2);
-	btnY = startY - (((btnHeight + 10) * 4) / 2);
+	btnY = (winH / 3) - (btnHeight / 2);
 	scaleX = btnX;
 	scaleY = btnY;
+
+	//Set up buttons
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX - (btnWidth / 2) - 10, btnY * 3, "Create account", btnWidth, btnHeight));
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX + (btnWidth / 2) + 10, btnY * 3, "Login", btnWidth, btnHeight));
+
+	queryLogin.push_back(new EditText(ren, DIR_EDITTEXTS + "White.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, btnWidth, btnHeight, "", "Enter username..."));
+	queryLogin.push_back(new EditText(ren, DIR_EDITTEXTS + "White.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + btnHeight + 20, btnWidth, btnHeight, "", "Enter password...", true));
+	bool writeBlock = false;
+	bool caps = false;
+	bool tabbed = false;
+
+	//Start game loop
+	while (!quit)
+	{
+		//Reset screen
+		SDL_RenderClear(ren);
+
+		//Draw background
+		SDL_RenderCopy(ren, background, NULL, NULL);
+
+		//Draw buttons
+		for (int i = 0; i < buttons.size(); i++)
+		{
+			buttons[i]->draw(ren);
+		}
+
+		//Draw queryLogin
+		for (int i = 0; i < queryLogin.size(); i++)
+		{
+			queryLogin[i]->draw(ren);
+		}
+
+		//Render screen
+		SDL_RenderPresent(ren);
+
+		//Handle incomming events
+		while (SDL_PollEvent(&event))
+		{
+			//Mouse events for the buttons
+			for (int i = 0; i < buttons.size(); i++)
+			{
+				//Check if the mouse are hovering over any buttons
+				buttons[i]->isMouseOver(event);
+
+				//Check if it clicked it
+				string hit = buttons[i]->onMouseClick(event);
+				if (hit == "Create account")
+				{
+					//Navigate to account creation
+					cout << "Go to new account...\n";
+					//crateAccount();
+				}
+				else if (hit == "Login")
+				{
+					string u = queryLogin[0]->getContent();
+					string p = queryLogin[1]->getContent();
+					if (validateLogin(u, p))
+					{
+						cout << "Go to menu...\n";
+						mainMenu();
+					}
+					else
+					{
+						cout << "Wrong login!\n";
+						queryLogin[0]->clearContent();
+						queryLogin[1]->clearContent();				
+					}
+				}
+			}
+
+			for (int i = 0; i < queryLogin.size(); i++)
+			{
+				queryLogin[i]->onMouseClick(event);
+
+				//Figure out what the key does
+				SDL_Keycode key = event.key.keysym.sym;
+
+				if (event.key.state == SDL_PRESSED && !writeBlock && queryLogin[i]->isWriting())
+				{
+					if (key == SDLK_BACKSPACE)
+					{
+						queryLogin[i]->backspace();
+						writeBlock = true;
+					}
+					else if (key == SDLK_LSHIFT)
+					{
+						caps = true;
+					}
+					else if (key == SDLK_TAB && !tabbed)
+					{
+						tabbed = true;
+						queryLogin[i]->setActive(false);
+						int next = (i + 1) % queryLogin.size();
+						queryLogin[next]->setActive(true);
+						writeBlock = true;
+					}
+					else if (key == SDLK_RETURN)
+					{
+						queryLogin[i]->setActive(false);
+					}
+					else
+					{
+						char c = ((caps) ? char(key - 32) : char(key));
+						queryLogin[i]->addChar(c);
+						writeBlock = true;
+					}
+				}
+				else if (event.key.state == SDL_RELEASED)
+				{
+					if (key == SDLK_LSHIFT)
+					{
+						caps = false;
+					}
+					if (key == SDLK_TAB)
+					{
+						tabbed = false;
+					}
+					writeBlock = false;
+				}
+			}
+		}
+	}
+}
+
+void Window::mainMenu()
+{
+	bool done = false;
+	vector <Button*> buttons;
+	SDL_GetWindowSize(win, &winW, &winH);
+
+	//Create texture from image, check for errors
+	string bgStr = DIR_BACKGROUNDS + "Main_Menu.png";
+	background = IMG_LoadTexture(ren, bgStr.c_str());
 
 	//Set up buttons
 	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, "Build Ship", btnWidth, btnHeight));
 	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Green.png", btnX, btnY + ((btnHeight + offsetY) * 1), "Battle", btnWidth, btnHeight));
 	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 2), "Settings", btnWidth, btnHeight));
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 3), "Logout", btnWidth, btnHeight));
+
+	//Check if any adjustments were made
+	for (int i = 0; i < buttons.size(); i++)
+	{
+		buttons[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
+		cout << "setPosition(" << scaleX << ", " << scaleY << ")\n";
+	}
 
 	//Start game loop
-	while (!quit)
+	while (!done)
 	{
 		//Reset screen
 		SDL_RenderClear(ren);
@@ -134,6 +291,12 @@ void Window::mainMenu()
 						buttons[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
 						cout << "setPosition(" << scaleX << ", " << scaleY << ")\n";
 					}
+				}
+				else if (hit == "Logout")
+				{
+					//Go to settings
+					cout << "Go to login screen...\n";
+					done = true;
 				}
 			}
 		}
@@ -233,7 +396,7 @@ void Window::settings()
 					SDL_GetWindowSize(win, &winW, &winH);
 					float scaled = winW / RESOLUTION_WIDTH;
 					scaleX = (winW / 2) - (btnWidth / 2);
-					scaleY = (startY * scaled) - (((btnHeight + 10) * 4) / 2);
+					scaleY = (winH / 3) - (btnHeight / 2);
 
 					//Update positions
 					for (int i = 0; i < buttons.size(); i++)
@@ -250,4 +413,23 @@ void Window::settings()
 			}
 		}
 	}
+}
+
+bool Window::validateLogin(string user, string code)
+{
+	bool valid = false;
+	cout << "Username: " << user << "\nPassword: " << code << endl;
+
+	//Check if username exists
+	if (user == "admin")
+	{
+		//Check if password matches
+		if (code == "space")
+		{
+			//User is valid
+			valid = true;
+		}
+	}
+
+	return valid;
 }

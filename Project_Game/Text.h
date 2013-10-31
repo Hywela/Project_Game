@@ -48,6 +48,7 @@ private:
 	vector <SDL_Rect*> dstRects;	//...and place them here!
 	vector <SDL_Rect*> dstScaled;	//...scaled to this
 	float currentScale;
+	SDL_Renderer *renCopy;
 
 public:
 	Text();

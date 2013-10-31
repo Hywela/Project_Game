@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
 	Window *mainWindow = new Window();
 
 	//Start window activity
-	mainWindow->mainMenu();
+	mainWindow->login();
 
 	//Grab state
 	int mainWindowState = mainWindow->getWindowState();
