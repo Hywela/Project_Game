@@ -418,27 +418,18 @@ void Window::settings()
 
 bool Window::validateLogin(string user, string code)
 {
-	bool valid = false;
+	//Print data
 	cout << "Username: " << user << "\nPassword: " << code << endl;
-	string send = "-u "+user;
+
+	//Format message
+	string send = "-u "+ user;
+
+	//Send command message
 	server->handler_send((char * )"-u");
+
+	//Send data message
 	server->handler_send((char * )user.c_str());
 	
 	//Check if username exists
-	//if (user == "admin")
-	//{
-		//Check if password matches
-    if (server->handler_check_login())
-		{
-			//User is valid
-			valid = true;
-		}
-	if (server->handler_check_login())
-		{
-			//User is valid
-			valid = true;
-		}
-	//}
-
-	return valid;
+	return server->handler_check_login();
 }
