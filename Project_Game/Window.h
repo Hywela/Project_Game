@@ -8,6 +8,7 @@
 #include "Combat.h"
 #include "EditText.h"
 #include <SDL_mixer.h>
+#include "Network.h"
 using namespace std;
 
 
@@ -40,6 +41,9 @@ private:
 
 	//Ship:
 	Space_Ship *playerShip;
+
+	//Network
+	Network *server;
 
 public:
     Window();

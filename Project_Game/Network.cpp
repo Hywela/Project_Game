@@ -36,7 +36,7 @@ Network::Network()
         }
  
                 /* Open a socket on random port */
-        if (!(udpsock = SDLNet_UDP_Open(0)))
+        if (!(udpsock = SDLNet_UDP_Open(8880)))
         {
                 fprintf(stderr, "SDLNet_UDP_Open: %s\n", SDLNet_GetError());
                 exit(EXIT_FAILURE);
@@ -131,6 +131,19 @@ void Network :: handler_recive(){
 
 
 	}
+
+bool Network:: handler_check_login(){
+    SDL_Delay(200);
+	if (SDLNet_UDP_Recv(udpsock, packet))
+		{
+			
+			 data_from_packet= (char *)packet->data;
+			 std::cout << "\n    " << data_from_packet<< "\n";
+			if (data_from_packet =="OK")
+				return true;
+			else return false;
+	}
+}
 void Network::handler_send(char *input)
 {
 	
@@ -144,10 +157,6 @@ void Network::handler_send(char *input)
 		
 		packet->len = 24;
 		SDLNet_UDP_Send(udpsock, -1, packet); /* This sets the p->channel */
- 
-		
-	
-	
  
 
 }
