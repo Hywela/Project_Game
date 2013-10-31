@@ -5,9 +5,9 @@ using namespace std;
 
 
 //Settings
-extern const char *GAME_NAME;
-const int RESOLUTION_WIDTH = 640;
-const int RESOLUTION_HEIGHT = 480;
+const string GAME_NAME = "Space Game";
+const int RESOLUTION_WIDTH = 800;
+const int RESOLUTION_HEIGHT = 450;
 const int MAX_RESOLUTION_WIDTH = 1920;
 const int MAX_RESOLUTION_HEIGHT = 1080;
 const int TILE_SIZE = 64;
@@ -15,6 +15,12 @@ const string DIR_TEXTURES = "Textures/";
 const string DIR_BACKGROUNDS = DIR_TEXTURES + "Backgrounds/";
 const string DIR_MODULES = DIR_TEXTURES + "Modules/";
 const string DIR_HULLS = DIR_TEXTURES + "Hulls/";
+const string DIR_FONTS = DIR_TEXTURES + "Fonts/";
+const string DIR_BUTTONS = DIR_TEXTURES + "Buttons/";
+const string DIR_EDITTEXTS = DIR_TEXTURES + "EditTexts/";
+const string DIR_AUDIO = "Audio/";
+const string DIR_EFFECTS = DIR_AUDIO + "Effects/";
+const string DIR_MUSIC = DIR_AUDIO + "Music/";
 
 const int SHIP_WIDTH = 5;
 const int SHIP_HEIGHT = 5;

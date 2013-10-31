@@ -30,62 +30,71 @@
     <ClInclude Include="Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Combat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Space_Ship.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="database.h">
+    <ClInclude Include="Button.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hull.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Module.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Module_Gun.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Module_Shield.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Hull.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Constants.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Combat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Space_Ship.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="database.cpp">
+    <ClCompile Include="Button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Textures\Modules\Empty.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\Modules\Turret.png">
+      <Filter>Resource Files</Filter>
+    </Image>
     <Image Include="Textures\Backgrounds\Space.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Textures\Hulls\Cabled.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Textures\Hulls\Electrical.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Textures\Hulls\Empty.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Textures\Hulls\Normal.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Textures\Hulls\Reinforced.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
