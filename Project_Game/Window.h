@@ -6,6 +6,7 @@
 #include "Text.h"
 #include "Button.h"
 #include "Combat.h"
+#include "Network.h"
 using namespace std;
 
 
@@ -37,6 +38,9 @@ private:
 
 	//Ship:
 	Space_Ship *playerShip;
+
+	//Network
+	Network *server;
 
 public:
     Window();

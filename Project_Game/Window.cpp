@@ -32,6 +32,7 @@ Window::Window()
 	quit = false;
 	isFullscreen = false;
 	playerShip = NULL;
+	server = new Network();
 }
 
 Window::~Window()
@@ -50,6 +51,7 @@ int Window::getWindowState()
 
 void Window::mainMenu()
 {
+
 	vector <Button*> buttons;
 	SDL_GetWindowSize(win, &winW, &winH);
 

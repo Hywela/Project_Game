@@ -18,6 +18,7 @@
     <ClInclude Include="Module.h" />
     <ClInclude Include="Module_Gun.h" />
     <ClInclude Include="Module_Shield.h" />
+    <ClInclude Include="Network.h" />
     <ClInclude Include="Space_Ship.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Window.h" />
@@ -31,6 +32,7 @@
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="Module_Gun.cpp" />
     <ClCompile Include="Module_Shield.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="Space_Ship.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -74,13 +76,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\SDL2-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\SDL2_net-2.0.0\include;C:\SDL2_image-2.0.0\include;C:\SDL2-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SDL2-2.0.0\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\SDL2_net-2.0.0\lib\x86;C:\SDL2_image-2.0.0\lib\x86;C:\SDL2-2.0.0\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_net.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
