@@ -36,6 +36,9 @@
     <ClInclude Include="Space_Ship.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="database.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Window.cpp">
@@ -62,10 +65,31 @@
     <ClCompile Include="Space_Ship.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="database.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="hello.bmp">
+    <Image Include="Textures\Backgrounds\Space.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Textures\Hulls\Cabled.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\Hulls\Electrical.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\Hulls\Empty.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\Hulls\Normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Textures\Hulls\Reinforced.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>
