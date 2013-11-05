@@ -6,6 +6,7 @@ Space_Ship::Space_Ship()
 {
 	//Not in use
 }
+
 Space_Ship::Space_Ship(SDL_Renderer *ren, SDL_Texture *bg)
 {
 	//Make instructions
@@ -150,6 +151,9 @@ Space_Ship::Space_Ship(SDL_Renderer *ren, SDL_Texture *bg)
 
 		build_module = buildModules(ren);
 	}
+
+	//Determine energy
+	resetEnergy();
 }
 
 Space_Ship::~Space_Ship()
@@ -465,13 +469,126 @@ void Space_Ship::swapModule(SDL_Renderer *ren, int x, int y, int type)
 		}
 		case TURRET:
 		{
-			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Turret.png", 1, 10, 0);
+			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Turret.png", 1, 10, 0, 4, 5);
 			break;
 		}
 		default:
 		{
 			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Empty.png", 1, 0, 0);
 			break;
+		}
+	}
+}
+
+void Space_Ship::setPosition(int posX, int posY)
+{
+	//Calculate change
+	int changeX = posX - position->x;
+	int changeY = posY - position->y;
+
+	//Reposition the ship parts
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			//The hulls
+			if (hull_layer[y][x] != NULL)
+			{
+				hull_layer[y][x]->setPosition(changeX, changeY);
+			}
+
+			//The modules
+			if (module_layer[y][x] != NULL)
+			{
+				module_layer[y][x]->setPosition(changeX, changeY);
+			}
+		}
+	}
+
+	//Store new position
+	position->x = posX;
+	position->y = posY;
+}
+
+void Space_Ship::onMouseEvent(SDL_Event event)
+{
+	//Connect all the listeners
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			//The modules
+			if (module_layer[y][x] != NULL)
+			{
+				if (module_layer[y][x]->isMouseOver(event))
+				{
+					if (event.button.button == SDL_BUTTON_LEFT && energy)
+					{
+						if (module_layer[y][x]->addEnergy())
+						{
+							energy--;
+						}
+					}
+					else if (event.button.button == SDL_BUTTON_RIGHT)
+					{
+						if (module_layer[y][x]->removeEnergy())
+						{
+							energy++;
+						}
+					}
+					cout << "Energy: " << energy << " / 10\n";
+				}
+			}
+		}
+	}
+}
+
+void Space_Ship::resetEnergy()
+{
+	//Clear old energy
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			//The modules
+			if (module_layer[y][x] != NULL)
+			{
+				module_layer[y][x]->resetEnergy();
+			}
+		}
+	}
+
+	//Set new energy
+	energy = 10;
+}
+
+void Space_Ship::attack(int posX, int posY, int dmg)
+{
+	//The modules
+	if (module_layer[posY][posX] != NULL)
+	{
+		module_layer[posY][posX]->onHit(dmg);
+	}
+}
+
+void Space_Ship::activate(Space_Ship *target)
+{
+	//Clear old energy
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			//The modules
+			if (module_layer[y][x] != NULL)
+			{
+				if (module_layer[y][x]->activate())
+				{
+					int posX = 2;
+					int posY = 2;
+					int dmg = 2;
+					target->attack(posX, posY, dmg);
+				}
+			}
 		}
 	}
 }

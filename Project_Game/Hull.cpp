@@ -146,6 +146,13 @@ void Hull::setAnchors(int num)
 	numAnchors = num;
 }
 
-bool Hull::isNotUsed() {
+bool Hull::isNotUsed()
+{
 	return isEmpty;
+}
+
+void Hull::setPosition(int x, int y)
+{
+	dstRect->x += x;
+	dstRect->y += y;
 }

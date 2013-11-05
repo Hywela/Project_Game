@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 #include <iostream>
 #include "Constants.h"
+#include "Text.h"
 using namespace std;
 
 
@@ -21,9 +22,17 @@ private:
 	int disabled;		//Turns disabled
 	int accuracy;		//Chance to hit
 
+	int requiredPower;	//Power required to use
+	int damage;			//Damage this gun does
+	int disablePower;	//Turns this gun may disable on hit
+
+	Text *healthText;
+	SDL_Texture *iconPower;
+	SDL_Texture *iconPowerEmpty;
+
 public:
 	Module();
-	Module(SDL_Renderer *ren, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc);
+	Module(SDL_Renderer *ren, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow = 0, int dmg = 0, int disPow = 0);
 	~Module();
 
 	void printData();					//Shows the data listed in console
@@ -35,4 +44,9 @@ public:
 	SDL_Rect getDestination();			//Gets the destination rectangle
 	module_action onMouseClick(SDL_Event event);	//Clicked on the texture
 	bool isMouseOver(SDL_Event event);	//Checks if mouse is in bounderies
+	void setPosition(int posX, int posy);
+	bool addEnergy();
+	bool removeEnergy();
+	void resetEnergy();
+	bool activate();
 };

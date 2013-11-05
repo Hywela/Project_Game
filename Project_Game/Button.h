@@ -30,4 +30,5 @@ public:
 	string onMouseClick(SDL_Event event);
 	void draw(SDL_Renderer *ren);
 	void setStyle(SDL_Renderer *ren, string newStyle, string newFont = "");
+	void setText(string txt);
 };

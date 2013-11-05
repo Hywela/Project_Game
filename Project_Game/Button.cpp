@@ -144,3 +144,8 @@ void Button::setStyle(SDL_Renderer *ren, string newStyle, string newFont)
 		tooltip->setFont(ren, newFont);
 	}
 }
+
+void Button::setText(string txt)
+{
+	tooltip->setText(txt);
+}

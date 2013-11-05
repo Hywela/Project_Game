@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <sstream>
 using namespace std;
 
 
@@ -21,6 +22,7 @@ const string DIR_EDITTEXTS = DIR_TEXTURES + "EditTexts/";
 const string DIR_AUDIO = "Audio/";
 const string DIR_EFFECTS = DIR_AUDIO + "Effects/";
 const string DIR_MUSIC = DIR_AUDIO + "Music/";
+const string DIR_MISC = DIR_TEXTURES + "Misc/";
 
 const int SHIP_WIDTH = 5;
 const int SHIP_HEIGHT = 5;
@@ -30,3 +32,5 @@ enum hull_type {NORMAL, ELECTRICAL, REINFORCED};
 
 enum module_action {MOD_NOTHING, MOD_PLACE, MOD_REMOVE};
 enum module_type {COCKPIT, TURRET};
+
+string numToStr(int n);
