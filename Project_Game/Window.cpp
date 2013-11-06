@@ -42,6 +42,7 @@ Window::Window()
 
 Window::~Window()
 {
+	delete server;
 	//Close program
 	SDL_DestroyTexture(background);
 	SDL_DestroyRenderer(ren);
@@ -419,17 +420,20 @@ bool Window::validateLogin(string user, string code)
 {
 	bool valid = false;
 	cout << "Username: " << user << "\nPassword: " << code << endl;
-
+	string send = "-u "+user;
+	server->handler_send((char * )"-u");
+	server->handler_send((char * )user.c_str());
+	
 	//Check if username exists
-	if (user == "admin")
-	{
+	//if (user == "admin")
+	//{
 		//Check if password matches
-		if (code == "space")
+	if (server->handler_check_login())
 		{
 			//User is valid
 			valid = true;
 		}
-	}
+	//}
 
 	return valid;
 }

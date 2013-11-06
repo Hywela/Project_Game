@@ -26,5 +26,6 @@ public:
 	void handler_init(char *server_name, Uint16 port);
 	void handler_send(char *input);
 	void handler_recive();
+	bool handler_check_login();
 };
 
