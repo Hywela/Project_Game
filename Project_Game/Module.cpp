@@ -30,9 +30,18 @@ Module::Module(SDL_Renderer *ren, SDL_Rect src, SDL_Rect dst, string ico, int na
 	icoStr = DIR_MISC + "Energy_Empty.png";
 	iconPowerEmpty = IMG_LoadTexture(ren, icoStr.c_str());
 
+	icoStr = DIR_MODULES + "Highlight.png";
+	iconHighlight = IMG_LoadTexture(ren, icoStr.c_str());
+
+	icoStr = DIR_MISC + "Rocket.png";
+	iconBullet = IMG_LoadTexture(ren, icoStr.c_str());
+
 	requiredPower = reqPow;
 	damage = dmg;
 	disablePower = disPow;
+	hovered = false;
+	held = false;
+	clearTarget();
 }
 
 Module::~Module()
@@ -79,41 +88,62 @@ void Module::onHit(int dmg)
 	healthText->setText(tmpTxt.c_str());
 }
 
-void Module::draw(SDL_Renderer *ren)
+void Module::draw(SDL_Renderer *ren, bool computer)
 {
 	if (currentHealth > 0)
 	{
 		//Draw module tile
 		SDL_RenderCopy(ren, icon, srcRect, dstRect);
 
+		//Draw highlight if nessesary
+		if (hovered || held)
+		{
+			SDL_RenderCopy(ren, iconHighlight, srcRect, dstRect);
+		}
+
 		//Draw misc interface
 		healthText->draw(ren);
 
-		SDL_Rect *srcOrb = new SDL_Rect();
-		srcOrb->w = 10;
-		srcOrb->h = 10;
-		srcOrb->x = 0;
-		srcOrb->y = 0;
-
-		SDL_Rect *dstOrb = new SDL_Rect();
-		dstOrb->w = 10;
-		dstOrb->h = 10;
-		dstOrb->x = dstRect->x + 4;
-		dstOrb->y = dstRect->y + dstRect->h - dstOrb->h - 4;
-
-		//Draw energy load
-		for (int i = 0; i < requiredPower; i++)
+		if (!computer)
 		{
-			dstOrb->x = dstRect->x + 4 + ((dstOrb->w + 1) * i);
-			if (i < currentPower)
+			//Draw target line
+			if (targetX != -1)
 			{
-				//Draw filled
-				SDL_RenderCopy(ren, iconPower, srcOrb, dstOrb);
+				int x1 = dstRect->x + (dstRect->w / 2);
+				int y1 = dstRect->y + (dstRect->h / 2);
+				int x2 = targetPosX + (dstRect->w / 2);
+				int y2 = targetPosY + (dstRect->h / 2);
+
+				SDL_RenderDrawLine(ren, x1, y1, x2, y2);
+				SDL_SetRenderDrawColor(ren, 255, 255, 255, 1);
 			}
-			else
+
+			SDL_Rect *srcOrb = new SDL_Rect();
+			srcOrb->w = 10;
+			srcOrb->h = 10;
+			srcOrb->x = 0;
+			srcOrb->y = 0;
+
+			SDL_Rect *dstOrb = new SDL_Rect();
+			dstOrb->w = 10;
+			dstOrb->h = 10;
+			dstOrb->x = dstRect->x + 4;
+			dstOrb->y = dstRect->y + dstRect->h - dstOrb->h - 4;
+
+			//Draw energy load
+			for (int i = 0; i < requiredPower; i++)
 			{
-				//Draw empty
-				SDL_RenderCopy(ren, iconPowerEmpty, srcOrb, dstOrb);
+				dstOrb->x = dstRect->x + 4 + ((dstOrb->w + 1) * i);
+				if (i < currentPower)
+				{
+					//Draw filled
+					SDL_RenderCopy(ren, iconPower, srcOrb, dstOrb);
+				}
+				else
+				{
+					//Draw empty
+					SDL_RenderCopy(ren, iconPowerEmpty, srcOrb, dstOrb);
+				}
 			}
 		}
 	}
@@ -169,6 +199,8 @@ bool Module::isMouseOver(SDL_Event event)
 		}
 	}
 
+	hovered = isOver;
+
 	//Return result
 	return isOver;
 }
@@ -218,4 +250,52 @@ bool Module::activate()
 		charged = true;
 	}
 	return charged;
+}
+
+void Module::setHeld(bool state)
+{
+	held = state;
+	cout << "I'm now: " << ((state) ? "HELD" : "NOT HELD") << "!\n";
+}
+
+bool Module::getHeld()
+{
+	return held;
+}
+
+void Module::clearTarget()
+{
+	if (targetX != -1)
+	{
+		cout << "Cleared target!\n";
+		targetX = -1;
+		targetY = -1;
+		targetPosX = -1;
+		targetPosY = -1;
+	}
+}
+
+void Module::setTarget(int x, int y, int posX, int posY)
+{
+	if (targetX != x || targetY != y)
+	{
+		cout << "Target: " << x << ", " << y << endl;
+		targetX = x;
+		targetY = y;
+		targetPosX = posX;
+		targetPosY = posY;
+	}
+}
+
+void Module::getTarget(int &x, int &y, int &dmg)
+{
+	x = targetX;
+	y = targetY;
+	dmg = damage;
+}
+
+void Module::getPosition(int &posX, int &posY)
+{
+	posX = dstRect->x;
+	posY = dstRect->y;
 }

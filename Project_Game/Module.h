@@ -21,6 +21,8 @@ private:
 	int currentPower;	//Current power stored
 	int disabled;		//Turns disabled
 	int accuracy;		//Chance to hit
+	bool hovered;
+	bool held;
 
 	int requiredPower;	//Power required to use
 	int damage;			//Damage this gun does
@@ -29,6 +31,13 @@ private:
 	Text *healthText;
 	SDL_Texture *iconPower;
 	SDL_Texture *iconPowerEmpty;
+	SDL_Texture *iconHighlight;
+	SDL_Texture *iconBullet;
+
+	int targetX;
+	int targetY;
+	int targetPosX;
+	int targetPosY;
 
 public:
 	Module();
@@ -39,7 +48,7 @@ public:
 	int getMaxHealth();					//Returns max health
 	int getCurrentHealth();				//Returns current health
 	void onHit(int dmg);				//When THIS module is hit
-	void draw(SDL_Renderer *ren);		//Draw the module
+	void draw(SDL_Renderer *ren, bool computer);		//Draw the module
 	SDL_Rect getSource();				//Gets the source rectangle
 	SDL_Rect getDestination();			//Gets the destination rectangle
 	module_action onMouseClick(SDL_Event event);	//Clicked on the texture
@@ -49,4 +58,10 @@ public:
 	bool removeEnergy();
 	void resetEnergy();
 	bool activate();
+	void setHeld(bool state);
+	bool getHeld();
+	void clearTarget();
+	void setTarget(int x, int y, int posX, int posY);
+	void getTarget(int &x, int &y, int &dmg);
+	void getPosition(int &posX, int &posY);
 };
