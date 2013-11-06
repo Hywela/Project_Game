@@ -225,6 +225,11 @@ void Window::mainMenu()
 	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 2), "Settings", btnWidth, btnHeight));
 	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 3), "Logout", btnWidth, btnHeight));
 
+	if (playerShip != NULL)
+	{
+		buttons[1]->setStyle(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
+	}
+
 	//Check if any adjustments were made
 	for (int i = 0; i < buttons.size(); i++)
 	{
@@ -310,11 +315,13 @@ void Window::build()
 	string bgStr = DIR_BACKGROUNDS + "Space.png";
 	background = IMG_LoadTexture(ren, bgStr.c_str());
 
-	//Reset player ship
+	//Reset ships
 	delete playerShip;
+	delete enemyShip;
 
-	//Create new player ship
+	//Create new ships
 	playerShip = new Space_Ship(ren, background);
+	enemyShip = new Space_Ship(ren, background);
 
 	//Change background back
 	string bgStr1 = DIR_BACKGROUNDS + "Main_Menu.png";
@@ -323,11 +330,8 @@ void Window::build()
 
 void Window::battle()
 {
-	//Generate a ship like yours to fight (for now...)
-	Space_Ship *generatedEnemy = new Space_Ship(*playerShip);
-
 	//Start the combat
-	Combat *combat = new Combat(*playerShip, *generatedEnemy, true);
+	Combat *combat = new Combat(playerShip, enemyShip, true, ren, win);
 }
 
 void Window::settings()
@@ -418,22 +422,18 @@ void Window::settings()
 
 bool Window::validateLogin(string user, string code)
 {
-	bool valid = false;
+	//Print data
 	cout << "Username: " << user << "\nPassword: " << code << endl;
-	string send = "-u "+user;
+
+	//Format message
+	string send = "-u "+ user;
+
+	//Send command message
 	server->handler_send((char * )"-u");
+
+	//Send data message
 	server->handler_send((char * )user.c_str());
 	
 	//Check if username exists
-	//if (user == "admin")
-	//{
-		//Check if password matches
-	if (server->handler_check_login())
-		{
-			//User is valid
-			valid = true;
-		}
-	//}
-
-	return valid;
+	return true; //server->handler_check_login();
 }

@@ -5,20 +5,23 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_net.h>
+using namespace std;
+
+
 
 class Network
 {
-		UDPsocket udpsock; /* Socket descriptor */
-        IPaddress server_address; /* the server address */
-        UDPpacket *packet; /* Pointer to packet memory */
-        int quit;
-        int id;
-		std::string username, password;
-		std::string data_from_packet;
-		char switch_char;
-		char * server_name;
-		Uint16 port_number;
-		Uint16 default_client_port;
+	UDPsocket udpsock; /* Socket descriptor */
+    IPaddress server_address; /* the server address */
+    UDPpacket *packet; /* Pointer to packet memory */
+    int quit;
+    int id;
+	string username, password;
+	string data_from_packet;
+	char switch_char;
+	char * server_name;
+	Uint16 port_number;
+	Uint16 default_client_port;
 
 public:
 	Network();

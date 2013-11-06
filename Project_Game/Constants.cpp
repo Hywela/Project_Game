@@ -1,3 +1,8 @@
 #include "Constants.h"
 
-//Nothing requires initialization here yet...
+string numToStr(int n)
+{
+   stringstream ss;
+   ss << n;
+   return ss.str();
+}
