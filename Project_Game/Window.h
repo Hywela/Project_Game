@@ -41,6 +41,7 @@ private:
 
 	//Ship:
 	Space_Ship *playerShip;
+	Space_Ship *enemyShip;
 
 	//Network
 	Network *server;
