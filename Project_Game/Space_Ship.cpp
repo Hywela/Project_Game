@@ -138,7 +138,7 @@ Space_Ship::Space_Ship(SDL_Renderer *ren, SDL_Texture *bg)
 				if (module_layer[y][x] != NULL)
 				{
 					hull_layer[y][x]->draw(ren);
-					module_layer[y][x]->draw(ren);
+					module_layer[y][x]->draw(ren, computer);
 				}
 			}
 		}
@@ -154,6 +154,10 @@ Space_Ship::Space_Ship(SDL_Renderer *ren, SDL_Texture *bg)
 
 	//Determine energy
 	resetEnergy();
+
+	//Initialize target
+	target = NULL;
+	computer = false;
 }
 
 Space_Ship::~Space_Ship()
@@ -176,7 +180,7 @@ void Space_Ship::draw(SDL_Renderer *ren)
 			//The modules
 			if (module_layer[y][x] != NULL)
 			{
-				module_layer[y][x]->draw(ren);
+				module_layer[y][x]->draw(ren, computer);
 			}
 		}
 	}
@@ -520,23 +524,61 @@ void Space_Ship::onMouseEvent(SDL_Event event)
 			//The modules
 			if (module_layer[y][x] != NULL)
 			{
-				if (module_layer[y][x]->isMouseOver(event))
+				bool over = module_layer[y][x]->isMouseOver(event);
+
+				//Button down
+				if (event.button.type == SDL_MOUSEBUTTONDOWN)
 				{
-					if (event.button.button == SDL_BUTTON_LEFT && energy)
+					if (event.button.button == SDL_BUTTON_LEFT)
 					{
-						if (module_layer[y][x]->addEnergy())
+						if (over)
 						{
-							energy--;
+							module_layer[y][x]->setHeld(true);
 						}
 					}
-					else if (event.button.button == SDL_BUTTON_RIGHT)
+				}
+				//Button up
+				else if (event.button.type == SDL_MOUSEBUTTONUP)
+				{
+					if (event.button.button == SDL_BUTTON_LEFT)
+					{
+						module_layer[y][x]->setHeld(false);
+
+						if (energy && over)
+						{
+							if (module_layer[y][x]->addEnergy())
+							{
+								energy--;
+							}
+						}
+					}
+					else if (event.button.button == SDL_BUTTON_RIGHT && over)
 					{
 						if (module_layer[y][x]->removeEnergy())
 						{
 							energy++;
 						}
 					}
+
 					cout << "Energy: " << energy << " / 10\n";
+				}
+				else if (event.button.type == SDL_MOUSEMOTION && !over)
+				{
+					//Check if hovering a target
+					int tarX, tarY, tarPosX, tarPosY;
+					target->getHoveredModule(event, tarX, tarY, tarPosX, tarPosY);
+
+					if (module_layer[y][x]->getHeld())
+					{
+						if (tarX != -1)
+						{
+							module_layer[y][x]->setTarget(tarX, tarY, tarPosX, tarPosY);
+						}
+						else
+						{
+							module_layer[y][x]->clearTarget();
+						}
+					}
 				}
 			}
 		}
@@ -571,7 +613,7 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 	}
 }
 
-void Space_Ship::activate(Space_Ship *target)
+void Space_Ship::activate()
 {
 	//Clear old energy
 	for (int y = 0; y < SHIP_HEIGHT; y++)
@@ -583,12 +625,51 @@ void Space_Ship::activate(Space_Ship *target)
 			{
 				if (module_layer[y][x]->activate())
 				{
-					int posX = 2;
-					int posY = 2;
-					int dmg = 2;
-					target->attack(posX, posY, dmg);
+					int posX, posY, dmg;
+					module_layer[y][x]->getTarget(posX, posY, dmg);
+					if (posX != -1)
+					{
+						target->attack(posX, posY, dmg);
+						module_layer[y][x]->clearTarget();
+					}
 				}
 			}
 		}
 	}
+}
+
+void Space_Ship::setTarget(Space_Ship *tar)
+{
+	target = tar;
+}
+
+void Space_Ship::getHoveredModule(SDL_Event event, int &x1, int &y1, int &posX, int &posY)
+{
+	x1 = -1;
+	y1 = -1;
+	posX = -1;
+	posY = -1;
+
+	//Clear old energy
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			//The modules
+			if (module_layer[y][x] != NULL)
+			{
+				if (module_layer[y][x]->isMouseOver(event) && module_layer[y][x]->getCurrentHealth())
+				{
+					x1 = x;
+					y1 = y;
+					module_layer[y][x]->getPosition(posX, posY);
+				}
+			}
+		}
+	}
+}
+
+void Space_Ship::setComputer(bool state)
+{
+	computer = state;
 }

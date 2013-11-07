@@ -47,6 +47,13 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 	you->setPosition(ship1X, shipCentreY);
 	enemy->setPosition(ship2X, shipCentreY);
 
+	//Set targets
+	you->setTarget(enemy);
+	enemy->setTarget(you);
+
+	//Set enemy computer
+	enemy->setComputer(true);
+
 	//Ship health, calculates as a overall from modules. (Shields etc.)
 	int yourHealth = 100;
 	int enemyHealth = 100;
@@ -128,16 +135,13 @@ void Combat::makeMoves()
 				}
 			}
 
-			if (event.button.state == SDL_PRESSED)
-			{
-				//Connect events
-				you->onMouseEvent(event);
-			}
+			//Connect events
+			you->onMouseEvent(event);
 		}
 	}
 
 	//Activate modules
-	you->activate(enemy);
+	you->activate();
 }
 
 void Combat::listenForMoves(){

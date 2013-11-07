@@ -14,6 +14,8 @@ private:
 	int selected_hull;
 	int selected_module;
 	int energy;
+	bool computer;
+	Space_Ship *target;
 
 public:
 	Space_Ship();
@@ -29,5 +31,8 @@ public:
 	void onMouseEvent(SDL_Event event);
 	void resetEnergy();
 	void attack(int posX, int posY, int dmg);
-	void activate(Space_Ship *target);
+	void activate();
+	void setTarget(Space_Ship *tar);
+	void getHoveredModule(SDL_Event event, int &x1, int &y1, int &posX, int &posY);
+	void setComputer(bool state);
 };
