@@ -37,7 +37,8 @@ Window::Window()
 	quit = false;
 	isFullscreen = false;
 	playerShip = NULL;
-	server = new Network();
+	
+	
 }
 
 Window::~Window()
@@ -300,6 +301,7 @@ void Window::mainMenu()
 				}
 				else if (hit == "Logout")
 				{
+					delete server;
 					//Go to settings
 					cout << "Go to login screen...\n";
 					done = true;
@@ -422,18 +424,19 @@ void Window::settings()
 
 bool Window::validateLogin(string user, string code)
 {
+	server = new Network();
 	//Print data
 	cout << "Username: " << user << "\nPassword: " << code << endl;
-
+	
 	//Format message
-	string send = "-u "+ user;
+	string send = "l-"+ user+"/"+code;
 
 	//Send command message
-	server->handler_send((char * )"-u");
+	server->handler_check_server();
+	
+		server->handler_send(send);
 
-	//Send data message
-	server->handler_send((char * )user.c_str());
 	
 	//Check if username exists
-	return true; //server->handler_check_login();
+	return server->handler_check_login();
 }

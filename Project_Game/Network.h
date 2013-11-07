@@ -1,33 +1,37 @@
 #pragma once
-#include <stdio.h>
-#include <stdlib.h>
+
 #include <string>
 #include <iostream>
 #include <SDL.h>
 #include <SDL_net.h>
-using namespace std;
 
+using namespace std;
+const unsigned short PORT        = 1234; // The port we are connecting to
+const unsigned short BUFFER_SIZE = 512;
 
 
 class Network
 {
-	UDPsocket udpsock; /* Socket descriptor */
-    IPaddress server_address; /* the server address */
-    UDPpacket *packet; /* Pointer to packet memory */
-    int quit;
-    int id;
-	string username, password;
-	string data_from_packet;
-	char switch_char;
-	char * server_name;
-	Uint16 port_number;
-	Uint16 default_client_port;
+	const char *host;         // Where we store the host name
+	IPaddress serverIP;       // The IP we will connect to
+    TCPsocket clientSocket;   // The socket to use
+	string serverName;     // The server name
+	string userInput;    // A string to hold our user input
+    int inputLength;     // The length of our string in characters
+    char buffer[512]; // Array of character's we'll use to transmit our message. We get input into the userInput string for ease of use, then just copy it to this character array and send it.
+	bool shutdownClient;
+	int hostResolved;
+	SDLNet_SocketSet socketSet;
+	
+	
 
 public:
 	Network();
 	~Network();
-	void handler_init(char *server_name, Uint16 port);
-	void handler_send(char *input);
+		
+	bool handler_loggout();
+	void handler_check_server();
+	void handler_send(string input);
 	void handler_recive();
 	bool handler_check_login();
 };

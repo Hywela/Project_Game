@@ -3,158 +3,201 @@
 
 
 Network::Network()
-{
-	switch_char = 'm'; // default m has no function 
-	id = 0;
-	server_name = "128.39.169.189";  // This is the default server name, and creates enough memory to store other names from argv[1]
-	port_number = 8880;  // This is a default port that is overridden by argv[2]
-	default_client_port = 8881; // set to 0 for a random port
-		
-	fprintf(stderr, "Usage: udpclient host port (default: updclient %s %d ) \n", server_name, port_number);
+{   serverName = "localhost";
+	shutdownClient= false;
+	 // Initialise SDL_net
+    if (SDLNet_Init() < 0)
+    {
+        cout << "Failed to intialise SDN_net: " << SDLNet_GetError() << "\n";
+        exit(-1); // Quit!
+    }
 
-	/* Initialize SDL */
-	if (SDL_Init(0) < 0)
-	{
-			fprintf(stderr, "SDL_Init: \n");
-			exit(EXIT_FAILURE);
-	}
+	 socketSet = SDLNet_AllocSocketSet(1);
+    if (socketSet == NULL)
+    {
 
-	/* Initialize SDL_net */
-	if (SDLNet_Init() < 0)
-	{
-			fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
-			exit(EXIT_FAILURE);
-	}
+        cout << "Failed to allocate the socket set: " << SDLNet_GetError() << "\n";
+        exit(-1); // Quit!
+    }
+    else
+    {
+        cout << "Successfully allocated socket set." << endl;
+    }
+
+    // Try to resolve the host. If successful, this places the connection details in the serverIP object
+     hostResolved = SDLNet_ResolveHost(&serverIP, serverName.c_str(), PORT);
  
-	/* Open a socket */
-	if (!(udpsock = SDLNet_UDP_Open(default_client_port)))
-	{
-			fprintf(stderr, "SDLNet_UDP_Open: %s\n", SDLNet_GetError());
-			exit(EXIT_FAILURE);
-	}
+    if (hostResolved == -1)
+    {
+        cout << "Failed to resolve the server hostname: " << SDLNet_GetError() << "\nContinuing...\n";
+    }
+    else // If we successfully resolved the host then output the details
+    {
+        // Get our IP address in proper dot-quad format by breaking up the 32-bit unsigned host address and splitting it into an array of four 8-bit unsigned numbers...
+        Uint8 * dotQuad = (Uint8*)&serverIP.host;
  
-			/* Open a socket on random port */
-	if (!(udpsock = SDLNet_UDP_Open(8880)))
-	{
-			fprintf(stderr, "SDLNet_UDP_Open: %s\n", SDLNet_GetError());
-			exit(EXIT_FAILURE);
-	}
+        //... and then outputting them cast to integers. Then read the last 16 bits of the serverIP object to get the port number
+        cout << "Successfully resolved host to IP: " << (unsigned short)dotQuad[0] << "." << (unsigned short)dotQuad[1] << "." << (unsigned short)dotQuad[2] << "." << (unsigned short)dotQuad[3];
+        cout << " port " << SDLNet_Read16(&serverIP.port) << endl << endl;
+    }
  
-	/* Resolve server name into server address */
-	if (SDLNet_ResolveHost(&server_address, server_name, port_number) == -1)
-	{
-			fprintf(stderr, "SDLNet_ResolveHost(%s %d): %s\n",server_name ,port_number, SDLNet_GetError());
-			exit(EXIT_FAILURE);
-	}
-
-
-	/* Make space for the packet */
-	if (!(packet = SDLNet_AllocPacket(512)))
-	{
-			fprintf(stderr, "SDLNet_AllocPacket: %s\n", SDLNet_GetError());
-			exit(EXIT_FAILURE);
-	}
+    // Try to resolve the IP of the server, just for kicks
+    if ((host = SDLNet_ResolveIP(&serverIP)) == NULL)
+    {
+        cout << "Failed to resolve the server IP address: " << SDLNet_GetError() << endl;
+    }
+    else
+    {
+        cout << "Successfully resolved IP to host: " << host << endl;
+    }
+	
 }
 
 Network::~Network()
 {
-	SDLNet_FreePacket(packet);
-	SDLNet_Quit();
+ SDLNet_TCP_Close(clientSocket);
+ 
+    SDLNet_Quit();
 }
+void Network::handler_check_server(){
+	// Try to open a connection to the server and quit out if we can't connect
+    clientSocket = SDLNet_TCP_Open(&serverIP);
+    if (!clientSocket)
+    { 
+        cout << "Failed to open socket to server: " << SDLNet_GetError() << "\n";
+        exit(-1);
+    }
+    else // If we successfully opened a connection then check for the server response to our connection
+    {
+        cout << "Connection okay, about to read connection status from the server..." << endl;
+ 
+        // Add our socket to the socket set for polling
+        SDLNet_TCP_AddSocket(socketSet, clientSocket);
+ 
+        // Wait for up to five seconds for a response from the server
+        // Note: If we don't check the socket set and WAIT for the response, we'll be checking before the server can respond, and it'll look as if the server sent us nothing back
+        int activeSockets = SDLNet_CheckSockets(socketSet, 5000);
+ 
+        cout << "There are " << activeSockets << " socket(s) with data on them at the moment." << endl;
+		
+        // Check if we got a response from the server
+        int gotServerResponse = SDLNet_SocketReady(clientSocket);
+	
 
+        if (gotServerResponse != 0)
+        {
+            cout << "Got a response from the server... " << endl;
+            int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
+ 
+            cout << "Got the following from server: " << buffer << "(" << serverResponseByteCount << " bytes)" << endl;
+ 
+            // We got an okay from the server, so we can join!
+            if ( strcmp(buffer, "OK") == 0 )
+            {
+                // So set the flag to say we're not quitting out just yet
+                shutdownClient = false;
+ 
+                cout << "Joining server now..." << endl << endl;
+            }
+            else
+            {
+                cout << "Server is full... Terminating connection." << endl;
+            }
+        }
+        else
+        {
+            cout << "No response from server..." << endl;
+        }
+ 
+    } // End of if we managed to open a connection to the server condition
+}
 void Network::handler_recive()
 {
-	if (SDLNet_UDP_Recv(udpsock, packet))
-	{
-		switch_char='m';
-		data_from_packet= (char *)packet->data;
-		if (data_from_packet[0] == '*')
-			switch_char = data_from_packet[1];
-			
-		printf("UDP Packet incoming\n");
-		printf("\tChan:    %d\n", packet->channel);
-		printf("\tData:    %s\n", (char *)packet->data);
-		//printf("\tINFO:    %s\n", (char)p->data[2]);
-		printf("\tLen:     %d\n", packet->len);
-		printf("\tMaxlen:  %d\n", packet->maxlen);
-		printf("\tStatus:  %d\n", packet->status);
-		printf("\tAddress: %x %x\n", packet->address.host, packet->address.port);
 
-		switch (switch_char)
-		{
-			case 'a':
-			{
-				break;
-			}
-			
-			case 'b':
-			{
-				break;
-			}
-			
-			case 'c':
-			{
-				break;
-			}
-			
-			case 'd':
-			{
-				//db->handler_set_online(1);
-				break;
-			}
-			
-			case 'e':
-			{
-				break;
-			}
-			
-			case 'u':
-			{ 
-				cout << " package reviced";
-				break;
-			}
 
-			default:
-			{
-				SDL_Delay(20);
-				break;
-			}
+	int socketActive = SDLNet_CheckSockets(socketSet, 0);
+ 
+        //cout << "Sockets with data on them at the moment: " << activeSockets << endl;
+ 
+        if (socketActive != 0)
+        {
+            // Check if we got a response from the server
+            int messageFromServer = SDLNet_SocketReady(clientSocket);
+ 
+            if (messageFromServer != 0)
+            {
+                //cout << "Got a response from the server... " << endl;
+                int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
+ 
+                cout << "Received: " << buffer << endl;// "(" << serverResponseByteCount << " bytes)" << endl;
+ 
+                if (strcmp(buffer, "shutdown") == 0)
+                {
+                    cout << "Server is going down. Disconnecting..." << endl;
+                    shutdownClient = true;
+                }
+            }
+            else
+            {
+                //cout << "No response from server..." << endl;
+            }
 		}
-	}
 }
 
 bool Network::handler_check_login(){
-	int startTime = SDL_GetTicks();
-	cout << "Starting at: " << startTime << endl;
-	float timeUsed = 0;
-    int valid = -1;
+	bool valid = true;
+	if (handler_loggout()){
 
-	while (valid == -1)
-	{
-		timeUsed = (SDL_GetTicks() - startTime) / 1000.0f;
-		if (SDLNet_UDP_Recv(udpsock, packet))
-		{
-			data_from_packet = (char *)packet->data;
-			cout << "\n    " << data_from_packet << "\n";
-			valid = ((data_from_packet =="OK") ? 1 : 0);
-		}
-		else if (timeUsed >= 5 && false)
-		{
-			valid = 0;
-		}
-	}
+	}else valid = false;
 
-	cout << "Answer recieved within " << timeUsed << " seconds.\n";
 	return valid;
 }
 
-void Network::handler_send(char *input)
-{
-	strcpy_s((char *)packet->data, strlen(input)+1, input);
 
-	packet->address.host = server_address.host;	/* Set the destination host */
-	packet->address.port = server_address.port;	/* And destination port */
+void Network::handler_send(string input)
+{   
+	     // Copy our user's string into our char array called "buffer"
+ strcpy_s( buffer,input.c_str() );
+ inputLength = strlen(buffer) + 1;
+                // Calculate the length of our input and then add 1 (for the terminating character) to get the total number of characters we need to send
+             
+
+                // Send the message to the server
+                if (SDLNet_TCP_Send(clientSocket, (void *)buffer, inputLength) < inputLength)
+                {
+                    cout << "Failed to send message: " << SDLNet_GetError() << endl;
+                    exit(-1);
+                }
+}
+bool Network:: handler_loggout(){
+
+	bool check = false;
+	 int socketActive = SDLNet_CheckSockets(socketSet, 6000);
+ 
+        //cout << "Sockets with data on them at the moment: " << activeSockets << endl;
+ 
+        if (socketActive != 0)
+        {
+            // Check if we got a response from the server
+            int messageFromServer = SDLNet_SocketReady(clientSocket);
+ 
+            if (messageFromServer != 0)
+            {
+                //cout << "Got a response from the server... " << endl;
+                int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
+ 
+                cout << "Received: " << buffer << endl;
+			
+                if (strcmp(buffer, "OK") == 0)
+				{
+					check = true;
+				}
+            }
+            else
+            {check = false;
+                //cout << "No response from server..." << endl;
+            }
 		
-	packet->len = 24;
-	SDLNet_UDP_Send(udpsock, -1, packet); /* This sets the p->channel */
+        }
+ return check;
 }
