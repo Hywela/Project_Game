@@ -69,7 +69,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 void Combat::makeMoves()
 {
 	//For all attacks registered
-	for (int i = 0; i < enemyAction.size(); )
+	for (int i = 0; i < enemyAction.size(); i++)
 	{
 		//Reset screen
 		SDL_RenderClear(ren);
@@ -86,7 +86,7 @@ void Combat::makeMoves()
 
 		//Play some animation?
 		cout << "- " << enemyAction[i] << endl;
-		i++;
+		
 	}
 	enemyAction.clear();
 
