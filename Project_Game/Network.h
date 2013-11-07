@@ -12,6 +12,7 @@ const unsigned short BUFFER_SIZE = 512;
 
 class Network
 {
+private:
 	const char *host;         // Where we store the host name
 	IPaddress serverIP;       // The IP we will connect to
     TCPsocket clientSocket;   // The socket to use
@@ -19,7 +20,7 @@ class Network
 	string userInput;    // A string to hold our user input
     int inputLength;     // The length of our string in characters
     char buffer[512]; // Array of character's we'll use to transmit our message. We get input into the userInput string for ease of use, then just copy it to this character array and send it.
-	bool shutdownClient;
+    bool shutdownClient,isServerOnline;
 	int hostResolved;
 	SDLNet_SocketSet socketSet;
 	
@@ -34,5 +35,6 @@ public:
 	void handler_send(string input);
 	void handler_recive();
 	bool handler_check_login();
+    bool is_server_online();
 };
 

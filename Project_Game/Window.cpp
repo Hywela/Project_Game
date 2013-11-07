@@ -424,19 +424,21 @@ void Window::settings()
 
 bool Window::validateLogin(string user, string code)
 {
+    bool check=false;
 	server = new Network();
 	//Print data
 	cout << "Username: " << user << "\nPassword: " << code << endl;
 	
 	//Format message
 	string send = "l-"+ user+"/"+code;
-
+  
 	//Send command message
 	server->handler_check_server();
-	
+    if(server->is_server_online()){
 		server->handler_send(send);
-
+        check = server->handler_check_login();
+    }else delete server;
 	
 	//Check if username exists
-	return server->handler_check_login();
+	return check;
 }

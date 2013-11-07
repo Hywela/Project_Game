@@ -17,8 +17,6 @@
     <ClInclude Include="EditText.h" />
     <ClInclude Include="Hull.h" />
     <ClInclude Include="Module.h" />
-    <ClInclude Include="Module_Gun.h" />
-    <ClInclude Include="Module_Shield.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="Space_Ship.h" />
     <ClInclude Include="Text.h" />
@@ -32,8 +30,6 @@
     <ClCompile Include="Hull.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Module.cpp" />
-    <ClCompile Include="Module_Gun.cpp" />
-    <ClCompile Include="Module_Shield.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="Space_Ship.cpp" />
     <ClCompile Include="Text.cpp" />
