@@ -6,8 +6,10 @@ Hull::Hull()
 	//Not in use
 }
 
-Hull::Hull(SDL_Renderer *ren, SDL_Rect src, SDL_Rect dst, string ico, int arm, int spAtk, int spDef, bool isLoc, bool isEmp, bool isPla)
+Hull::Hull(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int arm, int spAtk, int spDef, bool isLoc, bool isEmp, bool isPla)
 {
+	ren = rend;
+
 	icon = IMG_LoadTexture(ren, ico.c_str());
 	srcRect = new SDL_Rect(src);
 	dstRect = new SDL_Rect(dst);
@@ -22,10 +24,9 @@ Hull::Hull(SDL_Renderer *ren, SDL_Rect src, SDL_Rect dst, string ico, int arm, i
 
 Hull::~Hull()
 {
-
 }
 
-void Hull::drawBuild(SDL_Renderer *ren)
+void Hull::drawBuild()
 {
 	if (!isEmpty || (isEmpty && isPlaceable))
 	{
@@ -33,7 +34,7 @@ void Hull::drawBuild(SDL_Renderer *ren)
 	}
 }
 
-void Hull::draw(SDL_Renderer *ren)
+void Hull::draw()
 {
 	if (!isEmpty)
 	{

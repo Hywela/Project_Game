@@ -37,8 +37,7 @@ Window::Window()
 	quit = false;
 	isFullscreen = false;
 	playerShip = NULL;
-	
-	
+	server = new Network();
 }
 
 Window::~Window()
@@ -109,13 +108,13 @@ void Window::login()
 		//Draw buttons
 		for (int i = 0; i < buttons.size(); i++)
 		{
-			buttons[i]->draw(ren);
+			buttons[i]->draw();
 		}
 
 		//Draw queryLogin
 		for (int i = 0; i < queryLogin.size(); i++)
 		{
-			queryLogin[i]->draw(ren);
+			queryLogin[i]->draw();
 		}
 
 		//Render screen
@@ -228,7 +227,7 @@ void Window::mainMenu()
 
 	if (playerShip != NULL)
 	{
-		buttons[1]->setStyle(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
+		buttons[1]->setStyle(DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
 	}
 
 	//Check if any adjustments were made
@@ -250,7 +249,7 @@ void Window::mainMenu()
 		//Draw buttons
 		for (int i = 0; i < buttons.size(); i++)
 		{
-			buttons[i]->draw(ren);
+			buttons[i]->draw();
 		}
 
 		//Render screen
@@ -272,7 +271,7 @@ void Window::mainMenu()
 					//Navigate to build space ship
 					cout << "Go to editor...\n";
 					build();
-					buttons[1]->setStyle(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
+					buttons[1]->setStyle(DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
 				}
 				else if (hit == "Battle")
 				{
@@ -301,7 +300,6 @@ void Window::mainMenu()
 				}
 				else if (hit == "Logout")
 				{
-					delete server;
 					//Go to settings
 					cout << "Go to login screen...\n";
 					done = true;
@@ -364,7 +362,7 @@ void Window::settings()
 		//Draw buttons
 		for (int i = 0; i < buttons.size(); i++)
 		{
-			buttons[i]->draw(ren);
+			buttons[i]->draw();
 		}
 
 		//Render screen
@@ -424,21 +422,18 @@ void Window::settings()
 
 bool Window::validateLogin(string user, string code)
 {
-    bool check=false;
-	server = new Network();
 	//Print data
 	cout << "Username: " << user << "\nPassword: " << code << endl;
-	
+
 	//Format message
-	string send = "l-"+ user+"/"+code;
-  
+	string send = "-u "+ user;
+
 	//Send command message
-	server->handler_check_server();
-    if(server->is_server_online()){
-		server->handler_send(send);
-        check = server->handler_check_login();
-    }else delete server;
+	server->handler_send((char * )"-u");
+
+	//Send data message
+	server->handler_send((char * )user.c_str());
 	
 	//Check if username exists
-	return check;
+	return true; //server->handler_check_login();
 }

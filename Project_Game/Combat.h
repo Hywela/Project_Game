@@ -25,4 +25,5 @@ public:
 	Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_Renderer *rend, SDL_Window *wind);
 	void makeMoves();
 	void listenForMoves();
+	void draw();
 };

@@ -71,22 +71,11 @@ void Combat::makeMoves()
 	//For all attacks registered
 	for (int i = 0; i < enemyAction.size(); i++)
 	{
-		//Reset screen
-		SDL_RenderClear(ren);
-
-		//Draw background
-		SDL_RenderCopy(ren, background, NULL, NULL);
-
-		//Draw ships
-		you->draw(ren);
-		enemy->draw(ren);
-
-		//Render screen
-		SDL_RenderPresent(ren);
+		//Draw combat
+		draw();
 
 		//Play some animation?
 		cout << "- " << enemyAction[i] << endl;
-		
 	}
 	enemyAction.clear();
 
@@ -96,24 +85,8 @@ void Combat::makeMoves()
 	//This players turn
 	while (yourTurn)
 	{
-		//Reset screen
-		SDL_RenderClear(ren);
-
-		//Draw background
-		SDL_RenderCopy(ren, background, NULL, NULL);
-
-		//Draw ships
-		you->draw(ren);
-		enemy->draw(ren);
-
-		//Draw buttons
-		for (int i = 0; i < buttons.size(); i++)
-		{
-			buttons[i]->draw(ren);
-		}
-
-		//Render screen
-		SDL_RenderPresent(ren);
+		//Draw combat
+		draw();
 
 		//Handle incomming events
 		while (SDL_PollEvent(&event))
@@ -149,24 +122,13 @@ void Combat::listenForMoves(){
 	cout << "Waiting for enemy:\n";
 
 	//For all attacks registered
-	for (int i = 0; i < yourAction.size(); )
+	for (int i = 0; i < yourAction.size(); i++)
 	{
-		//Reset screen
-		SDL_RenderClear(ren);
-
-		//Draw background
-		SDL_RenderCopy(ren, background, NULL, NULL);
-
-		//Draw ships
-		you->draw(ren);
-		enemy->draw(ren);
-
-		//Render screen
-		SDL_RenderPresent(ren);
+		//Draw combat
+		draw();
 
 		//Play some animation?
 		cout << "- " << yourAction[i] << endl;
-		i++;
 	}
 	yourAction.clear();
 
@@ -178,4 +140,28 @@ void Combat::listenForMoves(){
 	enemyAction.push_back("Defence Shield 2,2");
 	cout << "Your enemy responded with:\n";
 	yourTurn = true;
+}
+
+void Combat::draw()
+{
+	//Reset screen
+	SDL_RenderClear(ren);
+
+	//Draw background
+	SDL_RenderCopy(ren, background, NULL, NULL);
+
+	//Draw ships
+	enemy->draw();
+	you->draw();
+
+	//Draw buttons
+	if (yourTurn) {
+		for (int i = 0; i < buttons.size(); i++)
+		{
+			buttons[i]->draw();
+		}
+	}
+
+	//Render screen
+	SDL_RenderPresent(ren);
 }

@@ -8,8 +8,10 @@ Module::Module()
 {
 }
 
-Module::Module(SDL_Renderer *ren, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow)
+Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow)
 {
+	ren = rend;
+
 	icon = IMG_LoadTexture(ren, ico.c_str());
 	srcRect = new SDL_Rect(src);
 	dstRect = new SDL_Rect(dst);
@@ -88,7 +90,7 @@ void Module::onHit(int dmg)
 	healthText->setText(tmpTxt.c_str());
 }
 
-void Module::draw(SDL_Renderer *ren, bool computer)
+void Module::draw(bool computer)
 {
 	if (currentHealth > 0)
 	{
@@ -102,7 +104,7 @@ void Module::draw(SDL_Renderer *ren, bool computer)
 		}
 
 		//Draw misc interface
-		healthText->draw(ren);
+		healthText->draw();
 
 		if (!computer)
 		{

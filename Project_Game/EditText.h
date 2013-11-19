@@ -6,6 +6,7 @@
 class EditText
 {
 private:
+	SDL_Renderer *ren;
 	SDL_Texture *frame;
 	SDL_Texture *frameHighlight;
 	SDL_Rect *srcRect;
@@ -20,7 +21,7 @@ private:
 
 public:
 	EditText();
-	EditText(SDL_Renderer *ren, string img, string font, int x, int y, int w, int h, string obj = "", string tip = "", bool hide = false);
+	EditText(SDL_Renderer *rend, string img, string font, int x, int y, int w, int h, string obj = "", string tip = "", bool hide = false);
 	~EditText();
 
 	void addChar(char c);
@@ -28,7 +29,7 @@ public:
 	void setPosition(int x, int y);
 	bool isMouseOver(SDL_Event event);
 	void onMouseClick(SDL_Event event);
-	void draw(SDL_Renderer *ren);
+	void draw();
 	bool isWriting();
 	void setActive(bool state);
 	string getContent();

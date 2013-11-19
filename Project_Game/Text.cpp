@@ -11,9 +11,9 @@ Text::~Text()
 {
 }
 
-Text::Text(SDL_Renderer *ren, string txt, string fnt, string bg)
+Text::Text(SDL_Renderer *rend, string txt, string fnt, string bg)
 {
-	renCopy = ren;
+	ren = rend;
 
 	//Set text string
 	text = txt;
@@ -197,7 +197,7 @@ Text::Text(SDL_Renderer *ren, string txt, string fnt, string bg)
 	cout << endl << '"' << endl;
 }
 
-void Text::draw(SDL_Renderer *ren)
+void Text::draw()
 {
 	//Create background position
 	SDL_Rect *tmpSrc = new SDL_Rect();
@@ -440,7 +440,7 @@ string Text::getText()
 	return text;
 }
 
-void Text::setFont(SDL_Renderer *ren, string newFont)
+void Text::setFont(string newFont)
 {
 	font = IMG_LoadTexture(ren, newFont.c_str());
 }

@@ -11,6 +11,7 @@ using namespace std;
 class Hull
 {
 private:
+	SDL_Renderer *ren;
 	SDL_Texture *icon;	//Image of this hull tile
 	SDL_Rect *srcRect;	//Take this rectangle...
 	SDL_Rect *dstRect;	//...and place it here!
@@ -24,11 +25,11 @@ private:
 
 public:
     Hull();
-	Hull(SDL_Renderer *ren, SDL_Rect src, SDL_Rect dst, string ico, int arm, int spAtk, int spDef, bool isLoc, bool isEmp, bool isPla);
+	Hull(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int arm, int spAtk, int spDef, bool isLoc, bool isEmp, bool isPla);
     ~Hull();
 
-	void drawBuild(SDL_Renderer *ren);	//Drawing during edit mode
-	void draw(SDL_Renderer *ren);		//Drawing normally
+	void drawBuild();	//Drawing during edit mode
+	void draw();		//Drawing normally
 	SDL_Rect getSource();				//Gets the source rectangle
 	SDL_Rect getDestination();			//Gets the destination rectangle
 	hull_action onMouseClick(SDL_Event event);	//Clicked on the texture

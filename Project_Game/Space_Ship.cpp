@@ -7,8 +7,10 @@ Space_Ship::Space_Ship()
 	//Not in use
 }
 
-Space_Ship::Space_Ship(SDL_Renderer *ren, SDL_Texture *bg)
+Space_Ship::Space_Ship(SDL_Renderer *rend, SDL_Texture *bg)
 {
+	ren = rend;
+
 	//Make instructions
 	Text *tutorialHull = new Text(ren, "Build hull:\n =LEFT MOUSE= Place or remove hull.\n =RIGHT MOUSE= Change material.\n =ENTER= to continue...");
 	Text *tutorialModule = new Text(ren, "Build module:\n =LEFT MOUSE= Place or remove module.\n =RIGHT MOUSE= Change module.\n =ENTER= to save...");
@@ -80,17 +82,17 @@ Space_Ship::Space_Ship(SDL_Renderer *ren, SDL_Texture *bg)
 		{
 			for (int x = 0; x < SHIP_WIDTH; x++)
 			{
-				hull_layer[y][x]->drawBuild(ren);
+				hull_layer[y][x]->drawBuild();
 			}
 		}
 
 		//Draw tutorial
-		tutorialHull->draw(ren);
+		tutorialHull->draw();
 
 		//Render screen
 		SDL_RenderPresent(ren);
 
-		build_hull = buildHull(ren);
+		build_hull = buildHull();
 	}
 
 	//Reset rectangles
@@ -137,19 +139,19 @@ Space_Ship::Space_Ship(SDL_Renderer *ren, SDL_Texture *bg)
 			{
 				if (module_layer[y][x] != NULL)
 				{
-					hull_layer[y][x]->draw(ren);
-					module_layer[y][x]->draw(ren, computer);
+					hull_layer[y][x]->draw();
+					module_layer[y][x]->draw(computer);
 				}
 			}
 		}
 
 		//Draw tutorial
-		tutorialModule->draw(ren);
+		tutorialModule->draw();
 
 		//Render screen
 		SDL_RenderPresent(ren);
 
-		build_module = buildModules(ren);
+		build_module = buildModules();
 	}
 
 	//Determine energy
@@ -164,7 +166,7 @@ Space_Ship::~Space_Ship()
 {
 }
 
-void Space_Ship::draw(SDL_Renderer *ren)
+void Space_Ship::draw()
 {
 	//Draw the ship parts
 	for (int y = 0; y < SHIP_HEIGHT; y++)
@@ -174,19 +176,19 @@ void Space_Ship::draw(SDL_Renderer *ren)
 			//The hulls
 			if (hull_layer[y][x] != NULL)
 			{
-				hull_layer[y][x]->draw(ren);
+				hull_layer[y][x]->draw();
 			}
 
 			//The modules
 			if (module_layer[y][x] != NULL)
 			{
-				module_layer[y][x]->draw(ren, computer);
+				module_layer[y][x]->draw(computer);
 			}
 		}
 	}
 }
 
-bool Space_Ship::buildHull(SDL_Renderer *ren)
+bool Space_Ship::buildHull()
 {
 	bool build_hull = true;
 	SDL_Event event;
@@ -240,12 +242,12 @@ bool Space_Ship::buildHull(SDL_Renderer *ren)
 							{
 								case HUL_PLACE:
 								{
-									swapHull(ren, x, y, selected_hull);
+									swapHull(x, y, selected_hull);
 									break;
 								}
 								case HUL_REMOVE:
 								{
-									swapHull(ren, x, y, -1);
+									swapHull(x, y, -1);
 									break;
 								}
 								default:
@@ -276,7 +278,7 @@ bool Space_Ship::buildHull(SDL_Renderer *ren)
 	return build_hull;
 }
 
-void Space_Ship::swapHull(SDL_Renderer *ren, int x, int y, int type)
+void Space_Ship::swapHull(int x, int y, int type)
 {
 	//Copy position
 	SDL_Rect tmpSrc = hull_layer[y][x]->getSource();
@@ -361,7 +363,7 @@ void Space_Ship::swapHull(SDL_Renderer *ren, int x, int y, int type)
 	}
 }
 
-bool Space_Ship::buildModules(SDL_Renderer *ren)
+bool Space_Ship::buildModules()
 {
 	bool build_module = true;
 	SDL_Event event;
@@ -417,12 +419,12 @@ bool Space_Ship::buildModules(SDL_Renderer *ren)
 								{
 									case HUL_PLACE:
 									{
-										swapModule(ren, x, y, selected_module);
+										swapModule(x, y, selected_module);
 										break;
 									}
 									case HUL_REMOVE:
 									{
-										swapModule(ren, x, y, -1);
+										swapModule(x, y, -1);
 										break;
 									}
 									default:
@@ -454,7 +456,7 @@ bool Space_Ship::buildModules(SDL_Renderer *ren)
 	return build_module;
 }
 
-void Space_Ship::swapModule(SDL_Renderer *ren, int x, int y, int type)
+void Space_Ship::swapModule(int x, int y, int type)
 {
 	//Copy position
 	SDL_Rect tmpSrc = hull_layer[y][x]->getSource();

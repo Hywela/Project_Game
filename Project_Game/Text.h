@@ -48,18 +48,18 @@ private:
 	vector <SDL_Rect*> dstRects;	//...and place them here!
 	vector <SDL_Rect*> dstScaled;	//...scaled to this
 	float currentScale;
-	SDL_Renderer *renCopy;
+	SDL_Renderer *ren;
 
 public:
 	Text();
 	~Text();
-	Text(SDL_Renderer *ren, string txt = "", string fnt = "", string bg = "");
+	Text(SDL_Renderer *rend, string txt = "", string fnt = "", string bg = "");
 
-	void draw(SDL_Renderer *ren);
+	void draw();
 	void setText(string txt);
 	void setPosition(int x, int y);
 	int getWidth();
 	int getHeight();
 	string getText();
-	void setFont(SDL_Renderer *ren, string newFont);
+	void setFont(string newFont);
 };

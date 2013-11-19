@@ -6,8 +6,10 @@ EditText::EditText()
 {
 }
 
-EditText::EditText(SDL_Renderer *ren, string img, string font, int x, int y, int w, int h, string obj, string tip, bool hide)
+EditText::EditText(SDL_Renderer *rend, string img, string font, int x, int y, int w, int h, string obj, string tip, bool hide)
 {
+	ren = rend;
+
 	//Set button style
 	string imgHighlight = DIR_EDITTEXTS + "Highlight.png";
 	frame = IMG_LoadTexture(ren, img.c_str());
@@ -129,7 +131,7 @@ void EditText::onMouseClick(SDL_Event event)
 	}
 }
 
-void EditText::draw(SDL_Renderer *ren)
+void EditText::draw()
 {
 	//Draw button
 	SDL_RenderCopy(ren, frame, srcRect, dstRect);
@@ -143,14 +145,14 @@ void EditText::draw(SDL_Renderer *ren)
 	//Draw text
 	if (content == "" && !isActive)
 	{
-		tooltip->draw(ren);
+		tooltip->draw();
 	}
 	else
 	{
-		text->draw(ren);
+		text->draw();
 	}
 
-	objective->draw(ren);
+	objective->draw();
 }
 
 bool EditText::isWriting()

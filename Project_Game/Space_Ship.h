@@ -8,6 +8,7 @@
 class Space_Ship
 {
 private:
+	SDL_Renderer *ren;
 	SDL_Rect *position;	//Where the ship is position (top-left corner)
 	Hull *hull_layer[SHIP_HEIGHT][SHIP_WIDTH];
 	Module *module_layer[SHIP_HEIGHT][SHIP_WIDTH];
@@ -19,14 +20,14 @@ private:
 
 public:
 	Space_Ship();
-	Space_Ship(SDL_Renderer *ren, SDL_Texture *bg);
+	Space_Ship(SDL_Renderer *rend, SDL_Texture *bg);
 	~Space_Ship();
 
-	void draw(SDL_Renderer *ren);
-	bool buildHull(SDL_Renderer *ren);
-	void swapHull(SDL_Renderer *ren, int x, int y, int type);
-	bool buildModules(SDL_Renderer *ren);
-	void swapModule(SDL_Renderer *ren, int x, int y, int type);
+	void draw();
+	bool buildHull();
+	void swapHull(int x, int y, int type);
+	bool buildModules();
+	void swapModule(int x, int y, int type);
 	void setPosition(int x, int y);
 	void onMouseEvent(SDL_Event event);
 	void resetEnergy();

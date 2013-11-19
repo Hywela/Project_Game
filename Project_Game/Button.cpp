@@ -6,8 +6,10 @@ Button::Button()
 {
 }
 
-Button::Button(SDL_Renderer *ren, string img, string font, int x, int y, string tip, int w, int h)
+Button::Button(SDL_Renderer *rend, string img, string font, int x, int y, string tip, int w, int h)
 {
+	ren = rend;
+
 	//Load background music
 	string soundStr = DIR_EFFECTS + "Button Click.wav";
 	soundClick = Mix_LoadWAV(soundStr.c_str());
@@ -99,7 +101,7 @@ string Button::onMouseClick(SDL_Event event)
 	return hit;
 }
 
-void Button::draw(SDL_Renderer *ren)
+void Button::draw()
 {
 	//Draw button
 	SDL_RenderCopy(ren, style, srcRect, dstRect);
@@ -111,7 +113,7 @@ void Button::draw(SDL_Renderer *ren)
 	}
 
 	//Draw text
-	tooltip->draw(ren);
+	tooltip->draw();
 }
 
 void Button::scale(float ratio)
@@ -133,7 +135,7 @@ void Button::scale(float ratio)
 	currentScale = ratio;
 }
 
-void Button::setStyle(SDL_Renderer *ren, string newStyle, string newFont)
+void Button::setStyle(string newStyle, string newFont)
 {
 	//Change button style
 	style = IMG_LoadTexture(ren, newStyle.c_str());
@@ -141,7 +143,7 @@ void Button::setStyle(SDL_Renderer *ren, string newStyle, string newFont)
 	//Change text font, if passed
 	if (newFont != "")
 	{
-		tooltip->setFont(ren, newFont);
+		tooltip->setFont(newFont);
 	}
 }
 

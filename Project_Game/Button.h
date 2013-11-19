@@ -7,6 +7,7 @@
 class Button
 {
 private:
+	SDL_Renderer *ren;
 	SDL_Texture *style;
 	SDL_Texture *styleHighlight;
 	SDL_Rect *srcRect;
@@ -21,14 +22,14 @@ private:
 
 public:
 	Button();
-	Button(SDL_Renderer *ren, string img, string font, int x, int y, string tip = "", int w = -1, int h = -1);
+	Button(SDL_Renderer *rend, string img, string font, int x, int y, string tip = "", int w = -1, int h = -1);
 	~Button();
 
 	void setPosition(int x, int y);
 	void scale(float ratio);
 	bool isMouseOver(SDL_Event event);
 	string onMouseClick(SDL_Event event);
-	void draw(SDL_Renderer *ren);
-	void setStyle(SDL_Renderer *ren, string newStyle, string newFont = "");
+	void draw();
+	void setStyle(string newStyle, string newFont = "");
 	void setText(string txt);
 };
