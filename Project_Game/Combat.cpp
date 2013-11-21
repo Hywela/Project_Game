@@ -35,8 +35,8 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 	background = IMG_LoadTexture(ren, bgStr.c_str());
 
 	//Set game properties
-	you = new Space_Ship(*yourShip);
-	enemy = new Space_Ship(*enemyShip);
+	you = yourShip;
+	enemy = enemyShip;
 	yourTurn = youStart;
 
 	//Position ships
@@ -47,6 +47,12 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 	you->setPosition(ship1X, shipCentreY);
 	enemy->setPosition(ship2X, shipCentreY);
 
+	//Make interface
+	statusEnergyLeft = new Text(ren, "Energy: ?/?");
+	int statusCentreX = (winW / 2) - (statusEnergyLeft->getWidth() / 2);
+	int statusY = 100;
+	statusEnergyLeft->setPosition(statusCentreX, statusY);
+
 	//Set targets
 	you->setTarget(enemy);
 	enemy->setTarget(you);
@@ -55,15 +61,23 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 	enemy->setComputer(true);
 
 	//Ship health, calculates as a overall from modules. (Shields etc.)
-	int yourHealth = 100;
-	int enemyHealth = 100;
+	bool youAlive = true;
+	bool enemyAlive = true;
 
 	//While both still alive
-	while(yourHealth > 0 && enemyHealth > 0)
+	while(youAlive && enemyAlive)
 	{
 		//Preform turn
 		((yourTurn) ? makeMoves() : listenForMoves());
+
+		//Check if combat is over
+		youAlive = !you->isDead();
+		enemyAlive = !enemy->isDead();
 	}
+
+	//Game done, heal restore ships
+	you->restore();
+	enemy->restore();
 }
 
 void Combat::makeMoves()
@@ -161,6 +175,13 @@ void Combat::draw()
 			buttons[i]->draw();
 		}
 	}
+
+	//Draw interface
+	int curEn, totEn;
+	you->getEnergyLevel(curEn, totEn);
+	string tmpStr = "Energy: " + numToStr(curEn) + "/" + numToStr(totEn);
+	statusEnergyLeft->setText(tmpStr);
+	statusEnergyLeft->draw();
 
 	//Render screen
 	SDL_RenderPresent(ren);

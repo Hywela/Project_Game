@@ -18,7 +18,7 @@ private:
 	vector <Button*> buttons;
 	vector <string> yourAction;
 	vector <string> enemyAction;
-	int energyLeft;
+	Text *statusEnergyLeft;
 
 public:
 	Combat();

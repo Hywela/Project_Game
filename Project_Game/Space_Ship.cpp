@@ -155,11 +155,13 @@ Space_Ship::Space_Ship(SDL_Renderer *rend, SDL_Texture *bg)
 	}
 
 	//Determine energy
+	energyMax = 10;
 	resetEnergy();
 
 	//Initialize target
 	target = NULL;
 	computer = false;
+	isDestroyed = false;
 }
 
 Space_Ship::~Space_Ship()
@@ -603,7 +605,7 @@ void Space_Ship::resetEnergy()
 	}
 
 	//Set new energy
-	energy = 10;
+	energy = energyMax;
 }
 
 void Space_Ship::attack(int posX, int posY, int dmg)
@@ -613,6 +615,9 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 	{
 		module_layer[posY][posX]->onHit(dmg);
 	}
+
+	//Check if the ship is dead
+	checkModuleHealth();
 }
 
 void Space_Ship::activate()
@@ -674,4 +679,50 @@ void Space_Ship::getHoveredModule(SDL_Event event, int &x1, int &y1, int &posX, 
 void Space_Ship::setComputer(bool state)
 {
 	computer = state;
+}
+
+void Space_Ship::getEnergyLevel(int &cur, int &tot)
+{
+	cur = energy;
+	tot = energyMax;
+}
+
+void Space_Ship::checkModuleHealth()
+{
+	//Check if all modules
+	isDestroyed = true;
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			//Check if the module is alive
+			if (module_layer[y][x] != NULL)
+			{
+				if (!module_layer[y][x]->isDead())
+				{
+					isDestroyed = false;
+				}
+			}
+		}
+	}
+}
+
+bool Space_Ship::isDead()
+{
+	return isDestroyed;
+}
+
+void Space_Ship::restore()
+{
+	//Restore all modules
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			if (module_layer[y][x] != NULL)
+			{
+				module_layer[y][x]->restore();
+			}
+		}
+	}
 }

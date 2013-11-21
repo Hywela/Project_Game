@@ -57,10 +57,6 @@ int Window::getWindowState()
 
 void Window::login()
 {
-
-	vector <Button*> buttons;
-	vector <EditText*> queryLogin;
-
 	SDL_GetWindowSize(win, &winW, &winH);
 
 	//Create texture from image, check for errors
@@ -87,8 +83,8 @@ void Window::login()
 	scaleY = btnY;
 
 	//Set up buttons
-	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX - (btnWidth / 2) - 10, btnY * 3, "Create account", btnWidth, btnHeight));
-	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX + (btnWidth / 2) + 10, btnY * 3, "Login", btnWidth, btnHeight));
+	buttonsLogin.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX - (btnWidth / 2) - 10, btnY * 3, "Create account", btnWidth, btnHeight));
+	buttonsLogin.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX + (btnWidth / 2) + 10, btnY * 3, "Login", btnWidth, btnHeight));
 
 	queryLogin.push_back(new EditText(ren, DIR_EDITTEXTS + "White.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, btnWidth, btnHeight, "", "Enter username..."));
 	queryLogin.push_back(new EditText(ren, DIR_EDITTEXTS + "White.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + btnHeight + 20, btnWidth, btnHeight, "", "Enter password...", true));
@@ -99,38 +95,21 @@ void Window::login()
 	//Start game loop
 	while (!quit)
 	{
-		//Reset screen
-		SDL_RenderClear(ren);
-
-		//Draw background
-		SDL_RenderCopy(ren, background, NULL, NULL);
-
-		//Draw buttons
-		for (int i = 0; i < buttons.size(); i++)
-		{
-			buttons[i]->draw();
-		}
-
-		//Draw queryLogin
-		for (int i = 0; i < queryLogin.size(); i++)
-		{
-			queryLogin[i]->draw();
-		}
-
-		//Render screen
-		SDL_RenderPresent(ren);
+		//Draw screen
+		currentScreen = SCREEN_LOGIN;
+		draw();
 
 		//Handle incomming events
 		while (SDL_PollEvent(&event))
 		{
 			//Mouse events for the buttons
-			for (int i = 0; i < buttons.size(); i++)
+			for (int i = 0; i < buttonsLogin.size(); i++)
 			{
 				//Check if the mouse are hovering over any buttons
-				buttons[i]->isMouseOver(event);
+				buttonsLogin[i]->isMouseOver(event);
 
 				//Check if it clicked it
-				string hit = buttons[i]->onMouseClick(event);
+				string hit = buttonsLogin[i]->onMouseClick(event);
 				if (hit == "Create account")
 				{
 					//Navigate to account creation
@@ -207,12 +186,22 @@ void Window::login()
 			}
 		}
 	}
+
+	//Clear interface
+	for (int i = 0; i < buttonsLogin.size(); i++) {
+		delete buttonsLogin[i];
+	}
+	buttonsLogin.clear();
+
+	for (int i = 0; i < queryLogin.size(); i++) {
+		delete queryLogin[i];
+	}
+	queryLogin.clear();
 }
 
 void Window::mainMenu()
 {
 	bool done = false;
-	vector <Button*> buttons;
 	SDL_GetWindowSize(win, &winW, &winH);
 
 	//Create texture from image, check for errors
@@ -220,58 +209,47 @@ void Window::mainMenu()
 	background = IMG_LoadTexture(ren, bgStr.c_str());
 
 	//Set up buttons
-	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, "Build Ship", btnWidth, btnHeight));
-	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Green.png", btnX, btnY + ((btnHeight + offsetY) * 1), "Battle", btnWidth, btnHeight));
-	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 2), "Settings", btnWidth, btnHeight));
-	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 3), "Logout", btnWidth, btnHeight));
+	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, "Build Ship", btnWidth, btnHeight));
+	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Green.png", btnX, btnY + ((btnHeight + offsetY) * 1), "Battle", btnWidth, btnHeight));
+	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 2), "Settings", btnWidth, btnHeight));
+	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 3), "Logout", btnWidth, btnHeight));
 
 	if (playerShip != NULL)
 	{
-		buttons[1]->setStyle(DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
+		buttonsMainMenu[1]->setStyle(DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
 	}
 
 	//Check if any adjustments were made
-	for (int i = 0; i < buttons.size(); i++)
+	for (int i = 0; i < buttonsMainMenu.size(); i++)
 	{
-		buttons[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
+		buttonsMainMenu[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
 		cout << "setPosition(" << scaleX << ", " << scaleY << ")\n";
 	}
 
 	//Start game loop
 	while (!done)
 	{
-		//Reset screen
-		SDL_RenderClear(ren);
-
-		//Draw background
-		SDL_RenderCopy(ren, background, NULL, NULL);
-
-		//Draw buttons
-		for (int i = 0; i < buttons.size(); i++)
-		{
-			buttons[i]->draw();
-		}
-
-		//Render screen
-		SDL_RenderPresent(ren);
+		//Draw screen
+		currentScreen = SCREEN_MAIN_MENU;
+		draw();
 
 		//Handle incomming events
 		while (SDL_PollEvent(&event))
 		{
 			//Mouse events for the buttons
-			for (int i = 0; i < buttons.size(); i++)
+			for (int i = 0; i < buttonsMainMenu.size(); i++)
 			{
 				//Check if the mouse are hovering over any buttons
-				buttons[i]->isMouseOver(event);
+				buttonsMainMenu[i]->isMouseOver(event);
 
 				//Check if it clicked it
-				string hit = buttons[i]->onMouseClick(event);
+				string hit = buttonsMainMenu[i]->onMouseClick(event);
 				if (hit == "Build Ship")
 				{
 					//Navigate to build space ship
 					cout << "Go to editor...\n";
 					build();
-					buttons[1]->setStyle(DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
+					buttonsMainMenu[1]->setStyle(DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
 				}
 				else if (hit == "Battle")
 				{
@@ -292,9 +270,9 @@ void Window::mainMenu()
 					settings();
 
 					//Check if any adjustments were made
-					for (int i = 0; i < buttons.size(); i++)
+					for (int i = 0; i < buttonsMainMenu.size(); i++)
 					{
-						buttons[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
+						buttonsMainMenu[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
 						cout << "setPosition(" << scaleX << ", " << scaleY << ")\n";
 					}
 				}
@@ -307,6 +285,12 @@ void Window::mainMenu()
 			}
 		}
 	}
+
+	//Clear interface
+	for (int i = 0; i < buttonsMainMenu.size(); i++) {
+		delete buttonsMainMenu[i];
+	}
+	buttonsMainMenu.clear();
 }
 
 void Window::build()
@@ -337,48 +321,36 @@ void Window::battle()
 void Window::settings()
 {
 	bool done = false;
-	vector <Button*> buttons;
 	int btnBackY = RESOLUTION_HEIGHT - btnHeight - offsetY;
 
 	//Create the buttons
-	buttons.push_back(new Button(ren, DIR_BUTTONS + "Cyan.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, "  Toggle\nFullscreen", btnWidth, btnHeight));
-	buttons.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnBackY, "Back", btnWidth, btnHeight));
+	buttonsSettings.push_back(new Button(ren, DIR_BUTTONS + "Cyan.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, "  Toggle\nFullscreen", btnWidth, btnHeight));
+	buttonsSettings.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnBackY, "Back", btnWidth, btnHeight));
 
 	//Check resolution
-	for (int i = 0; i < buttons.size(); i++)
+	for (int i = 0; i < buttonsSettings.size(); i++)
 	{
-		buttons[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
+		buttonsSettings[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
 	}
 
 	//Start game loop
 	while (!done)
 	{
-		//Reset screen
-		SDL_RenderClear(ren);
-
-		//Draw background
-		SDL_RenderCopy(ren, background, NULL, NULL);
-
-		//Draw buttons
-		for (int i = 0; i < buttons.size(); i++)
-		{
-			buttons[i]->draw();
-		}
-
-		//Render screen
-		SDL_RenderPresent(ren);
+		//Draw screen
+		currentScreen = SCREEN_SETTINGS;
+		draw();
 
 		//Handle incomming events
 		while (SDL_PollEvent(&event))
 		{
 			//Mouse events for the buttons
-			for (int i = 0; i < buttons.size(); i++)
+			for (int i = 0; i < buttonsSettings.size(); i++)
 			{
 				//Check if the mouse are hovering over any buttons
-				buttons[i]->isMouseOver(event);
+				buttonsSettings[i]->isMouseOver(event);
 
 				//Check if it clicked it
-				string hit = buttons[i]->onMouseClick(event);
+				string hit = buttonsSettings[i]->onMouseClick(event);
 				if (hit == "  Toggle\nFullscreen")
 				{
 					//Change fullscreen setting
@@ -404,9 +376,9 @@ void Window::settings()
 					scaleY = (winH / 3) - (btnHeight / 2);
 
 					//Update positions
-					for (int i = 0; i < buttons.size(); i++)
+					for (int i = 0; i < buttonsSettings.size(); i++)
 					{
-						buttons[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
+						buttonsSettings[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
 					}
 				}
 				else if (hit == "Back")
@@ -418,6 +390,12 @@ void Window::settings()
 			}
 		}
 	}
+
+	//Clear interface
+	for (int i = 0; i < buttonsSettings.size(); i++) {
+		delete buttonsSettings[i];
+	}
+	buttonsSettings.clear();
 }
 
 bool Window::validateLogin(string user, string code)
@@ -429,11 +407,54 @@ bool Window::validateLogin(string user, string code)
 	string send = "-u "+ user;
 
 	//Send command message
-	server->handler_send((char * )"-u");
+	//server->handler_send((char * )"-u");
 
 	//Send data message
-	server->handler_send((char * )user.c_str());
+	//server->handler_send((char * )user.c_str());
 	
 	//Check if username exists
 	return true; //server->handler_check_login();
+}
+
+void Window::draw()
+{
+	//Reset screen
+	SDL_RenderClear(ren);
+
+	//Draw background
+	SDL_RenderCopy(ren, background, NULL, NULL);
+
+	if (currentScreen == SCREEN_LOGIN)
+	{
+		//Draw buttons
+		for (int i = 0; i < buttonsLogin.size(); i++)
+		{
+			buttonsLogin[i]->draw();
+		}
+
+		//Draw queryLogin
+		for (int i = 0; i < queryLogin.size(); i++)
+		{
+			queryLogin[i]->draw();
+		}
+	}
+	else if (currentScreen == SCREEN_MAIN_MENU)
+	{
+		//Draw buttons
+		for (int i = 0; i < buttonsMainMenu.size(); i++)
+		{
+			buttonsMainMenu[i]->draw();
+		}
+	}
+	else if (currentScreen == SCREEN_SETTINGS)
+	{
+		//Draw buttons
+		for (int i = 0; i < buttonsSettings.size(); i++)
+		{
+			buttonsSettings[i]->draw();
+		}
+	}
+
+	//Render screen
+	SDL_RenderPresent(ren);
 }

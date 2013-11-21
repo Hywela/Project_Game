@@ -50,6 +50,7 @@ Button::Button(SDL_Renderer *rend, string img, string font, int x, int y, string
 
 Button::~Button()
 {
+	cout << "A button was destroyed!\n";
 }
 
 void Button::setPosition(int x, int y)

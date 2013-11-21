@@ -301,3 +301,22 @@ void Module::getPosition(int &posX, int &posY)
 	posX = dstRect->x;
 	posY = dstRect->y;
 }
+
+bool Module::isDead()
+{
+	bool isAlive = ((currentHealth > 0) ? true : false);
+	return !isAlive;
+}
+
+void Module::restore()
+{
+	//Reset attributes
+	currentHealth = maxHealth;
+	currentPower = 0;
+	disabled = 0;
+	string tmpTxt = numToStr(currentHealth) + "/" + numToStr(maxHealth);
+	healthText->setText(tmpTxt);
+	hovered = false;
+	held = false;
+	clearTarget();
+}

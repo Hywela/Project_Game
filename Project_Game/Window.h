@@ -46,6 +46,13 @@ private:
 	//Network
 	Network *server;
 
+	//Interface data
+	screenType currentScreen;
+	vector <Button*> buttonsLogin;
+	vector <EditText*> queryLogin;
+	vector <Button*> buttonsMainMenu;
+	vector <Button*> buttonsSettings;
+
 public:
     Window();
     ~Window();
@@ -57,5 +64,6 @@ public:
 	void battle();
 	void settings();
 	bool validateLogin(string user, string code);
+	void draw();
 };
 

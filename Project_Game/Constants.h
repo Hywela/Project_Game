@@ -32,5 +32,6 @@ enum hull_type {NORMAL, ELECTRICAL, REINFORCED};
 
 enum module_action {MOD_NOTHING, MOD_PLACE, MOD_REMOVE};
 enum module_type {COCKPIT, TURRET};
+enum screenType {SCREEN_LOGIN, SCREEN_MAIN_MENU, SCREEN_SETTINGS};
 
 string numToStr(int n);

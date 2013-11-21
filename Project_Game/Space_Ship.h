@@ -15,7 +15,9 @@ private:
 	int selected_hull;
 	int selected_module;
 	int energy;
+	int energyMax;
 	bool computer;
+	bool isDestroyed;
 	Space_Ship *target;
 
 public:
@@ -36,4 +38,8 @@ public:
 	void setTarget(Space_Ship *tar);
 	void getHoveredModule(SDL_Event event, int &x1, int &y1, int &posX, int &posY);
 	void setComputer(bool state);
+	void getEnergyLevel(int &cur, int &tot);
+	void checkModuleHealth();
+	bool isDead();
+	void restore();
 };

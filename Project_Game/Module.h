@@ -65,4 +65,6 @@ public:
 	void setTarget(int x, int y, int posX, int posY);
 	void getTarget(int &x, int &y, int &dmg);
 	void getPosition(int &posX, int &posY);
+	bool isDead();
+	void restore();
 };
