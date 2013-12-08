@@ -5,7 +5,7 @@
 Network::Network()
 {   
     isServerOnline = true;
-    serverName = "128.39.169.169";
+    serverName = "25.219.167.39";
 	shutdownClient= false;
 	 // Initialise SDL_net
     if (SDLNet_Init() < 0)
@@ -134,7 +134,26 @@ void Network::handler_recive()
                 int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
  
                 cout << "Received: " << buffer << endl;// "(" << serverResponseByteCount << " bytes)" << endl;
- 
+			
+				if(strcmp(buffer, "function/")){
+					string function_name;
+					int value_one; // Parameter 1 
+					int value_two;	// Parameter 2
+					bool target;
+
+					func_map_t::const_iterator function_map = func_map.find(function_name);
+					if( function_map == func_map.end() ) {}
+					(*function_map->second)(value_one,value_two, target);
+				}
+				if (strcmp(buffer, "test/")){
+					string in(buffer);
+					vector<void (*)()> temp_vec;
+					int idx = in.find("/");
+					string tem = in.substr(idx+1);
+					int temp = atoi(tem.c_str()); 
+					_memccpy(&temp_vec, (const void *)temp, sizeof(temp), sizeof(temp));
+					temp_vec[0]();
+				}
                 if (strcmp(buffer, "shutdown") == 0)
                 {
                     cout << "Server is going down. Disconnecting..." << endl;
@@ -150,6 +169,7 @@ void Network::handler_recive()
 
 bool Network::handler_check_login()
 {
+
 	bool valid = true;
 	if (handler_loggout()){
 
@@ -174,6 +194,8 @@ void Network::handler_send(string input)
                     exit(-1);
                 }
 }
+
+// TODO :: Rename to check logout , write a quit function that tells the serer to disband connection to client
 bool Network:: handler_loggout()
 {
 

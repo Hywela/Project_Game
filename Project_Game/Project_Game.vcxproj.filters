@@ -45,6 +45,9 @@
     <ClInclude Include="EditText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dynamic_functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Hull.cpp">

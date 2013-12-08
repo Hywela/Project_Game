@@ -4,6 +4,7 @@
 
 Window::Window()
 {
+
 	//Starting SDL, initializing main
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
@@ -38,6 +39,10 @@ Window::Window()
 	isFullscreen = false;
 	playerShip = NULL;
 	server = new Network();
+	server->handler_check_server();
+	if(server->is_server_online()){
+		//output something about server offline TODO::
+	}
 }
 
 Window::~Window()
@@ -118,6 +123,9 @@ void Window::login()
 				}
 				else if (hit == "Login")
 				{
+						if(server->is_server_online()){
+		//output something about server offline TODO::
+	
 					string u = queryLogin[0]->getContent();
 					string p = queryLogin[1]->getContent();
 					if (validateLogin(u, p))
@@ -132,6 +140,7 @@ void Window::login()
 						queryLogin[1]->clearContent();				
 					}
 				}
+				}// End server online check  TODO :: Should be moved so button greyed out and check the server after awhile
 			}
 
 			for (int i = 0; i < queryLogin.size(); i++)
@@ -201,6 +210,8 @@ void Window::login()
 
 void Window::mainMenu()
 {
+	server->handler_recive();
+
 	bool done = false;
 	SDL_GetWindowSize(win, &winW, &winH);
 
@@ -404,16 +415,13 @@ bool Window::validateLogin(string user, string code)
 	cout << "Username: " << user << "\nPassword: " << code << endl;
 
 	//Format message
-	string send = "-u "+ user;
-
-	//Send command message
-	//server->handler_send((char * )"-u");
+	   string send = "l-"+ user+"/"+code;
 
 	//Send data message
-	//server->handler_send((char * )user.c_str());
+	server->handler_send((char * )send.c_str());
 	
 	//Check if username exists
-	return true; //server->handler_check_login();
+	return server->handler_check_login();
 }
 
 void Window::draw()

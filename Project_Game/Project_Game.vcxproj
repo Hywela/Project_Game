@@ -15,6 +15,7 @@
     <ClInclude Include="Combat.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="EditText.h" />
+    <ClInclude Include="dynamic_functions.h" />
     <ClInclude Include="Hull.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="Network.h" />
@@ -74,13 +75,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\SDL2_net-2.0.0\include;C:\SDL2_image-2.0.0\include;C:\SDL2-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\SDL2_net-2.0.0\include;C:\SDL2_mixer-2.0.0\include;C:\SDL2_image-2.0.0\include;C:\SDL2-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SDL2_net-2.0.0\lib\x86;C:\SDL2_image-2.0.0\lib\x86;C:\SDL2-2.0.0\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_net.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\SDL2_net-2.0.0\lib\x86;C:\SDL2_mixer-2.0.0\lib\x86;C:\SDL2_image-2.0.0\lib\x86;C:\SDL2-2.0.0\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_net.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
