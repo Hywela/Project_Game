@@ -5,7 +5,7 @@
 #include <SDL.h>
 #include <SDL_net.h>
 #include <vector>
-#include "dynamic_functions.h"
+
 using namespace std;
 const unsigned short PORT        = 1234; // The port we are connecting to
 const unsigned short BUFFER_SIZE = 512;

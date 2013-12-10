@@ -141,9 +141,9 @@ void Network::handler_recive()
 					int value_two;	// Parameter 2
 					bool target;
 
-					func_map_t::const_iterator function_map = func_map.find(function_name);
-					if( function_map == func_map.end() ) {}
-					(*function_map->second)(value_one,value_two, target);
+				//	func_map_t::const_iterator function_map = func_map.find(function_name);
+					//if( function_map == func_map.end() ) {}
+				//	(*function_map->second)(value_one,value_two, target);
 				}
 				if (strcmp(buffer, "test/")){
 					string in(buffer);
