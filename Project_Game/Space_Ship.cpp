@@ -726,3 +726,11 @@ void Space_Ship::restore()
 		}
 	}
 }
+
+Module* Space_Ship::getModule(int row, int collumn){
+	return module_layer[row][collumn];
+}
+
+Hull* Space_Ship::getHull(int row, int collumn){
+	return hull_layer[row][collumn];
+}
