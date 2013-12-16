@@ -1,6 +1,7 @@
 #include "Window.h"
 
 
+#define offline
 
 Window::Window()
 {
@@ -38,11 +39,7 @@ Window::Window()
 	quit = false;
 	isFullscreen = false;
 	playerShip = NULL;
-	server = new Network();
-	server->handler_check_server();
-	if(server->is_server_online()){
-		//output something about server offline TODO::
-	}
+	
 }
 
 Window::~Window()
@@ -123,26 +120,41 @@ void Window::login()
 				}
 				else if (hit == "Login")
 				{
-						if(server->is_server_online()){
-		//output something about server offline TODO::
+	
+#ifdef offline 
+						mainMenu();
+
+#endif
+#ifdef online 
+				server = new Network();
+				server->handler_check_server();
+				
+				if(server->is_server_online()){
+				
 	
 					string u = queryLogin[0]->getContent();
 					string p = queryLogin[1]->getContent();
-					if (validateLogin(u, p))
+ 	
+				if (validateLogin(u, p))
 					{
+
+					
 						cout << "Go to menu...\n";
 						mainMenu();
+					
 					}
 					else
-					{
+					{		delete server;
 						cout << "Wrong login!\n";
 						queryLogin[0]->clearContent();
 						queryLogin[1]->clearContent();				
 					}
+			}else cout << "Server Not Online ! \n"; 
+				
 				}
-				}// End server online check  TODO :: Should be moved so button greyed out and check the server after awhile
+#endif
+					}
 			}
-
 			for (int i = 0; i < queryLogin.size(); i++)
 			{
 				queryLogin[i]->onMouseClick(event);
@@ -210,8 +222,9 @@ void Window::login()
 
 void Window::mainMenu()
 {
+#ifdef online
 	server->handler_recive();
-
+#endif
 	bool done = false;
 	SDL_GetWindowSize(win, &winW, &winH);
 
@@ -411,6 +424,9 @@ void Window::settings()
 
 bool Window::validateLogin(string user, string code)
 {
+	
+
+	
 	//Print data
 	cout << "Username: " << user << "\nPassword: " << code << endl;
 

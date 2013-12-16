@@ -37,5 +37,7 @@ public:
 	void handler_recive();
 	bool handler_check_login();
     bool is_server_online();
+
+	void debug();
 };
 

@@ -170,12 +170,12 @@ void Network::handler_recive()
 bool Network::handler_check_login()
 {
 
-	bool valid = true;
+
 	if (handler_loggout()){
+		return true;
+	}
 
-	}else valid = false;
-
-	return valid;
+	return false;
 }
 
 
@@ -216,14 +216,14 @@ bool Network:: handler_loggout()
  
                 cout << "Received: " << buffer << endl;
 			
-                if (strcmp(buffer, "OK") == 0)
+                if (strcmp(buffer, "OK")==0)
 				{
 					check = true;
-				}
+				}else check = false;
             }
             else
             {check = false;
-                //cout << "No response from server..." << endl;
+              
             }
 		
         }
@@ -234,4 +234,11 @@ bool Network:: is_server_online()
 
 
     return isServerOnline;
+}
+void Network:: debug(){
+	
+	string d;
+	getline(cin, d);
+	handler_send(d);
+
 }

@@ -11,19 +11,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Combat.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="EditText.h" />
-    <ClInclude Include="dynamic_functions.h" />
     <ClInclude Include="Hull.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="Network.h" />
+    <ClInclude Include="space_race.h" />
     <ClInclude Include="Space_Ship.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Combat.cpp" />
     <ClCompile Include="Constants.cpp" />
@@ -32,6 +34,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="Network.cpp" />
+    <ClCompile Include="space_race.cpp" />
     <ClCompile Include="Space_Ship.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -44,6 +47,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4A0762EC-1F6B-4347-9714-922B49864E50}</ProjectGuid>
     <RootNamespace>Project_Game</RootNamespace>
+    <ProjectName>Project_Gamer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
