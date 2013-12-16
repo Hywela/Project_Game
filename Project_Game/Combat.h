@@ -2,6 +2,7 @@
 #include "Space_Ship.h"
 #include <windows.h>
 #include "Button.h"
+#include "Ai.h"
 
 
 
@@ -10,6 +11,7 @@ class Combat
 private:
 	Space_Ship *you;
 	Space_Ship *enemy;
+	Ai *ai;
 	bool yourTurn;
 	SDL_Event event;
 	SDL_Renderer *ren;

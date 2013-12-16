@@ -241,6 +241,14 @@ void Module::resetEnergy()
 	}
 }
 
+int Module::getCurrentEnergy(){
+	return currentPower;
+}
+
+int Module::getReqPower(){
+	return requiredPower;
+}
+
 bool Module::activate()
 {
 	//Check if able to use

@@ -58,6 +58,8 @@ public:
 	bool addEnergy();
 	bool removeEnergy();
 	void resetEnergy();
+	int getCurrentEnergy();
+	int getReqPower();
 	bool activate();
 	void setHeld(bool state);
 	bool getHeld();

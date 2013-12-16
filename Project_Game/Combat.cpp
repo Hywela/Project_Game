@@ -37,6 +37,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 	//Set game properties
 	you = yourShip;
 	enemy = enemyShip;
+	ai = new Ai(enemyShip, you, 1, 1);
 	yourTurn = youStart;
 
 	//Position ships
@@ -134,6 +135,9 @@ void Combat::makeMoves()
 void Combat::listenForMoves(){
 	//The enemy's turn
 	cout << "Waiting for enemy:\n";
+
+	cout << "Attack: " << ai->getAttack() << " Power up: " << ai->placeEnergy() << endl;
+	//system("pause");
 
 	//For all attacks registered
 	for (int i = 0; i < yourAction.size(); i++)
