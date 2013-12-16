@@ -18,7 +18,7 @@ int Ai::placeEnergy(){
 		for (int collumn = 0; collumn < SHIP_WIDTH; collumn++){
 			Module *modu = aiShip->getModule(row, collumn);
 			if (modu != NULL){
-				if (modu->getCurrentHealth() > 0){
+				if (modu->getCurrentHealth() > 0 && modu->getCurrentEnergy() < modu->getReqPower()){
 					modules[moduleIndex] += SHIP_HEIGHT*SHIP_WIDTH;
 				}
 			}
