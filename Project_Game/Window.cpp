@@ -303,6 +303,8 @@ void Window::mainMenu()
 				else if (hit == "Logout")
 				{
 					//Go to settings
+#ifdef online 		delete server;
+#endif
 					cout << "Go to login screen...\n";
 					done = true;
 				}
