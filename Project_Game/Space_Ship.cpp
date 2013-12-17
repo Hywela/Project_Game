@@ -631,16 +631,17 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 	if (module_layer[posY][posX] != NULL)
 	{
 		//Check if module is shielded
-		if  (	(module_layer[posY - 1][posX - 1] != NULL && !module_layer[posY - 1][posX - 1]->isShielding())
-			||	(module_layer[posY - 1][posX + 1] != NULL && !module_layer[posY - 1][posX + 1]->isShielding())
-			||	(module_layer[posY + 1][posX - 1] != NULL && !module_layer[posY + 1][posX - 1]->isShielding())
-			||	(module_layer[posY + 1][posX + 1] != NULL && !module_layer[posY + 1][posX + 1]->isShielding()))
-		{
-			module_layer[posY][posX]->onHit(dmg);
-		}
+		if  (	(module_layer[posY][posX - 1] != NULL && module_layer[posY][posX - 1]->isShielding())
+			||	(module_layer[posY - 1][posX] != NULL && module_layer[posY - 1][posX]->isShielding())
+			||	(module_layer[posY][posX + 1] != NULL && module_layer[posY][posX + 1]->isShielding())
+			||	(module_layer[posY + 1][posX] != NULL && module_layer[posY + 1][posX]->isShielding())
+			||	(module_layer[posY][posX] != NULL && module_layer[posY][posX]->isShielding()))
+			{
+				cout << "The attack was shielded!\n";
+			}
 		else
 		{
-			cout << "The attack was shielded!\n";
+			module_layer[posY][posX]->onHit(dmg);
 		}
 	}
 

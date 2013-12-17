@@ -161,6 +161,10 @@ void Combat::listenForMoves(){
 
 	//Recieve answer
 	setupAttacks();
+	enemyAction.push_back("Rocket 2 2 2 2");
+	enemyAction.push_back("Rocket 2 1 2 3");
+	enemyAction.push_back("Rocket 2 3 2 1");
+	enemyAction.push_back("Rocket 2 1 2 1");
 	cout << "Your enemy responded with:\n";
 	yourTurn = true;
 }
@@ -256,7 +260,7 @@ void Combat::playAnimation(string attackCode)
 		//Execute damage
 		int posX, posY, dmg;
 		attacker->getTarget(posX, posY, dmg);
-		((yourTurn) ? you->attack(posX, posY, dmg) : enemy->attack(posX, posY, dmg));
+		((yourTurn) ? you->attack(x2, y2, dmg) : enemy->attack(x2, y2, dmg));
 		attacker->clearTarget();
 	}
 }

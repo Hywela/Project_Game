@@ -330,8 +330,8 @@ void Window::build()
 	delete enemyShip;
 
 	//Create new ships
-	playerShip = new Space_Ship(ren, background);
-	enemyShip = new Space_Ship(ren, background);
+	playerShip = new Space_Ship(ren, background, "Build your ship...");
+	enemyShip = new Space_Ship(ren, background, "Build the enemy ship...");
 
 	//Change background back
 	string bgStr1 = DIR_BACKGROUNDS + "Main_Menu.png";

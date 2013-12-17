@@ -201,7 +201,7 @@ bool Network:: handler_loggout()
 {
 
 	bool check = false;
-	 int socketActive = SDLNet_CheckSockets(socketSet, 6000);
+	 int socketActive = SDLNet_CheckSockets(socketSet, 20000);
  
         //cout << "Sockets with data on them at the moment: " << activeSockets << endl;
  

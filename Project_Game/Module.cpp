@@ -450,7 +450,13 @@ void Module::drawInterface()
 
 bool Module::isShielding()
 {
-	return ((active && activeTurns) ? true : false);
+	bool shield = false;
+	if (active && activeTurns && currentHealth)
+	{
+		shield = true;
+		resetEnergy();
+	}
+	return shield;
 }
 
 bool Module::runRocketAnimation(Module *end)
