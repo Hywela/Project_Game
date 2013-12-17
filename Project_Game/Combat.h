@@ -3,6 +3,8 @@
 #include <windows.h>
 #include "Button.h"
 #include "Ai.h"
+#include <vector>
+using namespace std;
 
 
 
@@ -20,6 +22,7 @@ private:
 	vector <Button*> buttons;
 	vector <string> yourAction;
 	vector <string> enemyAction;
+	bool doneAnimating;
 	Text *statusEnergyLeft;
 
 public:
@@ -28,4 +31,6 @@ public:
 	void makeMoves();
 	void listenForMoves();
 	void draw();
+	void playAnimation(string attackCode);
+	void setupAttacks();
 };

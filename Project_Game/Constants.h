@@ -12,6 +12,11 @@ const int RESOLUTION_HEIGHT = 450;
 const int MAX_RESOLUTION_WIDTH = 1920;
 const int MAX_RESOLUTION_HEIGHT = 1080;
 const int TILE_SIZE = 64;
+const int SHIELD_SIZE = 192; //Pixels
+const int ROCKET_SIZE_W = 32; //Pixels
+const int ROCKET_SIZE_H = 18; //Pixels
+const int ROCKET_MAX_SPEED = 5;
+
 const string DIR_TEXTURES = "Textures/";
 const string DIR_BACKGROUNDS = DIR_TEXTURES + "Backgrounds/";
 const string DIR_MODULES = DIR_TEXTURES + "Modules/";
@@ -28,10 +33,10 @@ const int SHIP_WIDTH = 5;
 const int SHIP_HEIGHT = 5;
 
 enum hull_action {HUL_NOTHING, HUL_PLACE, HUL_REMOVE};
-enum hull_type {NORMAL, ELECTRICAL, REINFORCED};
+enum hull_type {NORMAL, ELECTRICAL, REINFORCED, HULL_COUNT};
 
 enum module_action {MOD_NOTHING, MOD_PLACE, MOD_REMOVE};
-enum module_type {COCKPIT, TURRET};
+enum module_type {TURRET, SHIELD, MODULE_COUNT};
 enum screenType {SCREEN_LOGIN, SCREEN_MAIN_MENU, SCREEN_SETTINGS};
 
 string numToStr(int n);

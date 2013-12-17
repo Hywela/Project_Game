@@ -22,6 +22,11 @@ private:
 	int currentPower;	//Current power stored
 	int disabled;		//Turns disabled
 	int accuracy;		//Chance to hit
+
+	int activeTurns;	//Turns this stays active
+	int activeLeft;		//How many of these are left
+	bool active;
+
 	bool hovered;
 	bool held;
 
@@ -33,7 +38,13 @@ private:
 	SDL_Texture *iconPower;
 	SDL_Texture *iconPowerEmpty;
 	SDL_Texture *iconHighlight;
-	SDL_Texture *iconBullet;
+	SDL_Texture *iconActivate; //Icon of bullet or shield
+	SDL_Rect *srcEffect;
+	SDL_Rect *srcRocket;
+	SDL_Rect *dstRocket;
+	int rocketSpeed;
+	bool mirrorRocket;
+	bool runningAnimation;
 
 	int targetX;
 	int targetY;
@@ -42,7 +53,7 @@ private:
 
 public:
 	Module();
-	Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow = 0, int dmg = 0, int disPow = 0);
+	Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow = 0, int dmg = 0, int disPow = 0, int act = 0);
 	~Module();
 
 	void printData();					//Shows the data listed in console
@@ -69,4 +80,10 @@ public:
 	void getPosition(int &posX, int &posY);
 	bool isDead();
 	void restore();
+	void setTargetLineToMouse(int mouseX = -1, int mouseY = -1);
+	bool hasTarget();
+	void drawInterface();
+	bool isShielding();
+	bool runRocketAnimation(Module *end);
+	string registerAttack(int x, int y);
 };

@@ -8,13 +8,33 @@ Module::Module()
 {
 }
 
-Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow)
+Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow, int act)
 {
 	ren = rend;
+
+	runningAnimation = false;
 
 	icon = IMG_LoadTexture(ren, ico.c_str());
 	srcRect = new SDL_Rect(src);
 	dstRect = new SDL_Rect(dst);
+
+	srcRocket = new SDL_Rect();
+	srcRocket->w = ROCKET_SIZE_W;
+	srcRocket->h = ROCKET_SIZE_H;
+	srcRocket->x = 0;
+	srcRocket->y = 0;
+
+	dstRocket = new SDL_Rect();
+	dstRocket->w = ROCKET_SIZE_W;
+	dstRocket->h = ROCKET_SIZE_H;
+	dstRocket->x = dstRect->x + (dstRect->w / 2) - (dstRocket->w / 2);
+	dstRocket->y = dstRect->y + (dstRect->h / 2) - (dstRocket->h / 2);
+
+	srcEffect = new SDL_Rect();
+	srcEffect->w = SHIELD_SIZE;
+	srcEffect->h = SHIELD_SIZE;
+	srcEffect->x = 0;
+	srcEffect->y = 0;
 
 	nameId = namId;
 	maxHealth = maxHp;
@@ -35,14 +55,26 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 	icoStr = DIR_MODULES + "Highlight.png";
 	iconHighlight = IMG_LoadTexture(ren, icoStr.c_str());
 
-	icoStr = DIR_MISC + "Rocket.png";
-	iconBullet = IMG_LoadTexture(ren, icoStr.c_str());
+	if (dmg) {
+		//Turret uses rockets
+		icoStr = DIR_MISC + "Rocket.png";
+	}
+	else if (act) {
+		//Shields uses shiled bubbles
+		icoStr = DIR_MISC + "Shield_Barrier.png";
+	}
+	iconActivate = IMG_LoadTexture(ren, icoStr.c_str());
 
 	requiredPower = reqPow;
 	damage = dmg;
 	disablePower = disPow;
 	hovered = false;
 	held = false;
+
+	activeTurns = act;
+	activeLeft = activeTurns;
+	active = false;
+
 	clearTarget();
 }
 
@@ -96,58 +128,6 @@ void Module::draw(bool computer)
 	{
 		//Draw module tile
 		SDL_RenderCopy(ren, icon, srcRect, dstRect);
-
-		//Draw highlight if nessesary
-		if (hovered || held)
-		{
-			SDL_RenderCopy(ren, iconHighlight, srcRect, dstRect);
-		}
-
-		//Draw misc interface
-		healthText->draw();
-
-		if (!computer)
-		{
-			//Draw target line
-			if (targetX != -1)
-			{
-				int x1 = dstRect->x + (dstRect->w / 2);
-				int y1 = dstRect->y + (dstRect->h / 2);
-				int x2 = targetPosX + (dstRect->w / 2);
-				int y2 = targetPosY + (dstRect->h / 2);
-
-				SDL_RenderDrawLine(ren, x1, y1, x2, y2);
-				SDL_SetRenderDrawColor(ren, 255, 255, 255, 1);
-			}
-
-			SDL_Rect *srcOrb = new SDL_Rect();
-			srcOrb->w = 10;
-			srcOrb->h = 10;
-			srcOrb->x = 0;
-			srcOrb->y = 0;
-
-			SDL_Rect *dstOrb = new SDL_Rect();
-			dstOrb->w = 10;
-			dstOrb->h = 10;
-			dstOrb->x = dstRect->x + 4;
-			dstOrb->y = dstRect->y + dstRect->h - dstOrb->h - 4;
-
-			//Draw energy load
-			for (int i = 0; i < requiredPower; i++)
-			{
-				dstOrb->x = dstRect->x + 4 + ((dstOrb->w + 1) * i);
-				if (i < currentPower)
-				{
-					//Draw filled
-					SDL_RenderCopy(ren, iconPower, srcOrb, dstOrb);
-				}
-				else
-				{
-					//Draw empty
-					SDL_RenderCopy(ren, iconPowerEmpty, srcOrb, dstOrb);
-				}
-			}
-		}
 	}
 }
 
@@ -217,18 +197,28 @@ void Module::setPosition(int x, int y)
 bool Module::addEnergy()
 {
 	//Add power if possible
-	int add;
-	add = ((currentPower < requiredPower) ? 1 : 0);
-	currentPower += add;
+	int add = 0;
+
+	if (!active)
+	{
+		add = ((currentPower < requiredPower) ? 1 : 0);
+		currentPower += add;
+	}
+
 	return add;
 }
 
 bool Module::removeEnergy()
 {
 	//Remove power if possible
-	int remove;
-	remove = ((currentPower > 0) ? 1 : 0);
-	currentPower -= remove;
+	int remove = 0;
+
+	if (!active)
+	{
+		remove = ((currentPower > 0) ? 1 : 0);
+		currentPower -= remove;
+	}
+
 	return remove;
 }
 
@@ -238,6 +228,25 @@ void Module::resetEnergy()
 	if (currentPower == requiredPower)
 	{
 		currentPower = 0;
+	}
+	
+	//If effect is active
+	if (active)
+	{
+		//Decrease effect lifetime
+		if (activeLeft)
+		{
+			activeLeft--;
+			cout << "[SHIELD]: Up for " << activeLeft << " more turns!\n";
+		}
+
+		//Check if effect wore off
+		if (!activeLeft)
+		{
+			cout << "[SHIELD]: Wore off!\n";
+			activeLeft = activeTurns;
+			active = false;
+		}
 	}
 }
 
@@ -258,14 +267,20 @@ bool Module::activate()
 	{
 		resetEnergy();
 		charged = true;
+
+		if (activeTurns)
+		{
+			active = true;
+		}
 	}
+
 	return charged;
 }
 
 void Module::setHeld(bool state)
 {
 	held = state;
-	cout << "I'm now: " << ((state) ? "HELD" : "NOT HELD") << "!\n";
+	//cout << "I'm now: " << ((state) ? "HELD" : "NOT HELD") << "!\n";
 }
 
 bool Module::getHeld()
@@ -275,9 +290,9 @@ bool Module::getHeld()
 
 void Module::clearTarget()
 {
-	if (targetX != -1)
+	if (targetX != -1 || targetPosX != -1)
 	{
-		cout << "Cleared target!\n";
+		//cout << "Cleared target!\n";
 		targetX = -1;
 		targetY = -1;
 		targetPosX = -1;
@@ -287,7 +302,7 @@ void Module::clearTarget()
 
 void Module::setTarget(int x, int y, int posX, int posY)
 {
-	if (targetX != x || targetY != y)
+	if ((targetX != x || targetY != y) && !activeTurns)
 	{
 		cout << "Target: " << x << ", " << y << endl;
 		targetX = x;
@@ -327,4 +342,179 @@ void Module::restore()
 	hovered = false;
 	held = false;
 	clearTarget();
+}
+
+void Module::setTargetLineToMouse(int mouseX, int mouseY)
+{
+	//If no target
+	if (targetX == -1 && !activeTurns)
+	{
+		//And a change occured
+		if (targetX != mouseX || targetY != mouseY)
+		{
+			//Follow mouse
+			targetPosX = mouseX - (dstRect->w / 2);
+			targetPosY = mouseY - (dstRect->h / 2);
+			//cout << "Target is following the mouse!\n";
+		}
+	}
+}
+
+bool Module::hasTarget()
+{
+	return ((targetX != -1) ? true : false);
+}
+
+void Module::drawInterface()
+{
+	if (currentHealth > 0)
+	{
+		//Draw active effect
+		if (active)
+		{
+			//(This will only run for shields)
+			SDL_Rect *dstEffect = new SDL_Rect();
+			dstEffect->w = SHIELD_SIZE;
+			dstEffect->h = SHIELD_SIZE;
+			dstEffect->x = dstRect->x + (dstRect->w / 2) - (srcEffect->w / 2);
+			dstEffect->y = dstRect->y + (dstRect->h / 2) - (srcEffect->h / 2);
+
+			SDL_RenderCopy(ren, iconActivate, srcEffect, dstEffect);
+		}
+
+		//Draw highlight if nessesary
+		if (hovered || held)
+		{
+			SDL_RenderCopy(ren, iconHighlight, srcRect, dstRect);
+		}
+
+		//Draw misc interface
+		healthText->draw();
+
+		SDL_Rect *srcOrb = new SDL_Rect();
+		srcOrb->w = 10;
+		srcOrb->h = 10;
+		srcOrb->x = 0;
+		srcOrb->y = 0;
+
+		SDL_Rect *dstOrb = new SDL_Rect();
+		dstOrb->w = 10;
+		dstOrb->h = 10;
+		dstOrb->x = dstRect->x + 4;
+		dstOrb->y = dstRect->y + dstRect->h - dstOrb->h - 4;
+
+		//Draw energy load
+		for (int i = 0; i < requiredPower; i++)
+		{
+			dstOrb->x = dstRect->x + 4 + ((dstOrb->w + 1) * i);
+			if (i < currentPower)
+			{
+				//Draw filled
+				SDL_RenderCopy(ren, iconPower, srcOrb, dstOrb);
+			}
+			else
+			{
+				//Draw empty
+				SDL_RenderCopy(ren, iconPowerEmpty, srcOrb, dstOrb);
+			}
+		}
+
+		//Draw target line
+		if (targetPosX != -1)
+		{
+			//Snap to target
+			int x1 = dstRect->x + (dstRect->w / 2);
+			int y1 = dstRect->y + (dstRect->h / 2);
+			int x2 = targetPosX + (dstRect->w / 2);
+			int y2 = targetPosY + (dstRect->h / 2);
+
+			SDL_SetRenderDrawColor(ren, 255, 255, 255, 1);
+			SDL_RenderDrawLine(ren, x1, y1, x2, y2);
+		}
+
+		//Show rocket if animation is running
+		if (runningAnimation)
+		{
+			//Draw rocket
+			if (mirrorRocket)
+			{
+				SDL_RenderCopyEx(ren, iconActivate, srcRocket, dstRocket, NULL, NULL, SDL_FLIP_HORIZONTAL);
+			}
+			else
+			{
+				SDL_RenderCopy(ren, iconActivate, srcRocket, dstRocket);
+			}
+		}
+	}
+}
+
+bool Module::isShielding()
+{
+	return ((active && activeTurns) ? true : false);
+}
+
+bool Module::runRocketAnimation(Module *end)
+{
+	//Calculate distance and direction
+	int x2, y2;
+	end->getPosition(x2, y2);
+
+	int distX = (x2 + (dstRect->w / 2)) - (dstRocket->x + (dstRocket->w / 2));
+	int distY = (y2 + (dstRect->h / 2)) - (dstRocket->y + (dstRocket->h / 2));
+
+	//Start animation if not running
+	if (!runningAnimation)
+	{
+		dstRocket->x = dstRect->x + (dstRect->w / 2) - (dstRocket->w / 2);
+		dstRocket->y = dstRect->y + (dstRect->h / 2) - (dstRocket->h / 2);
+		rocketSpeed = 1;
+
+		//Mirror if going negative x
+		mirrorRocket = ((x2 < dstRect->x) ? true : false);
+
+		runningAnimation = true;
+		cout << "[ANIMATION]: Started!\n";
+	}
+	else
+	{
+		//Check if approximatly at the goal
+		if ((distX > -rocketSpeed && distX < rocketSpeed) &&
+			(distY > -rocketSpeed && distY < rocketSpeed))
+		{
+			runningAnimation = false;
+			cout << "[ANIMATION]: Ended!\n";
+		}
+		else
+		{
+			//cout << "[ANIMATION]: Calculating!\n";
+
+			//Check x movement
+			if (distX <= -rocketSpeed || distX >= rocketSpeed)
+			{
+				dstRocket->x += ((distX >= 0) ? rocketSpeed : -rocketSpeed);
+			}
+
+			//Check y movement
+			if (distY >= -rocketSpeed || distY <= rocketSpeed)
+			{
+				dstRocket->y += ((distY >= 0) ? rocketSpeed : -rocketSpeed);
+			}
+
+			//Speed it up if possible
+			if (rocketSpeed < ROCKET_MAX_SPEED)
+			{
+				rocketSpeed++;
+			}
+		}
+	}
+
+	//Has the animation finished?
+	return !runningAnimation;
+}
+
+string Module::registerAttack(int x, int y)
+{
+	string attack = "";
+	attack = "Rocket " + to_string(x) + " " + to_string(y) + " " + to_string(targetX) + " " + to_string(targetY);
+	return attack;
 }

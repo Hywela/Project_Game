@@ -7,13 +7,54 @@ Space_Ship::Space_Ship()
 	//Not in use
 }
 
-Space_Ship::Space_Ship(SDL_Renderer *rend, SDL_Texture *bg)
+Space_Ship::Space_Ship(SDL_Renderer *rend, SDL_Texture *bg, string title)
 {
 	ren = rend;
+	buildBackground = bg;
 
 	//Make instructions
-	Text *tutorialHull = new Text(ren, "Build hull:\n =LEFT MOUSE= Place or remove hull.\n =RIGHT MOUSE= Change material.\n =ENTER= to continue...");
-	Text *tutorialModule = new Text(ren, "Build module:\n =LEFT MOUSE= Place or remove module.\n =RIGHT MOUSE= Change module.\n =ENTER= to save...");
+	int basePosX = 0;
+	int basePosY = 0;
+	int baseOffset = 10;
+	titleText = new Text(ren, title);
+	titleText->setPosition(basePosX, basePosY);
+
+	int tutorialPosY = basePosY + titleText->getHeight() + baseOffset;
+	tutorialHull = new Text(ren, "Build hull:\n =LEFT MOUSE= Place or remove hull.\n =RIGHT MOUSE= Change material.\n =ENTER= to continue...");
+	tutorialModule = new Text(ren, "Build module:\n =LEFT MOUSE= Place or remove module.\n =RIGHT MOUSE= Change module.\n =ENTER= to save...");
+	tutorialHull->setPosition(basePosX, tutorialPosY);
+	tutorialModule->setPosition(basePosX, tutorialPosY);
+
+	int selectedPosY = tutorialPosY + tutorialHull->getHeight() + baseOffset;
+	tutorialHullSelected = new Text(ren, "Selected hull:");
+	tutorialModuleSelected = new Text(ren, "Selected module:");
+	tutorialHullSelected->setPosition(basePosX, selectedPosY);
+	tutorialModuleSelected->setPosition(basePosX, selectedPosY);
+
+	//Load tutorial images
+	tutorialTextureSrc = new SDL_Rect();
+	tutorialTextureSrc->w = TILE_SIZE;
+	tutorialTextureSrc->h = TILE_SIZE;
+	tutorialTextureSrc->x = 0;
+	tutorialTextureSrc->y = 0;
+
+	tutorialTextureDst = new SDL_Rect();
+	tutorialTextureDst->w = TILE_SIZE;
+	tutorialTextureDst->h = TILE_SIZE;
+	tutorialTextureDst->x = 0;
+	tutorialTextureDst->y = selectedPosY + tutorialModuleSelected->getHeight();
+
+	string tmpStr = DIR_HULLS + "Normal.png";
+	hullTextures.push_back(IMG_LoadTexture(ren, tmpStr.c_str()));
+	tmpStr = DIR_HULLS + "Electrical.png";
+	hullTextures.push_back(IMG_LoadTexture(ren, tmpStr.c_str()));
+	tmpStr = DIR_HULLS + "Reinforced.png";
+	hullTextures.push_back(IMG_LoadTexture(ren, tmpStr.c_str()));
+
+	tmpStr = DIR_MODULES + "Turret.png";
+	moduleTextures.push_back(IMG_LoadTexture(ren, tmpStr.c_str()));
+	tmpStr = DIR_MODULES + "Shield_Off.png";
+	moduleTextures.push_back(IMG_LoadTexture(ren, tmpStr.c_str()));
 
 	//Set size and position
 	const int TILE_OFFSET = 2;
@@ -22,10 +63,10 @@ Space_Ship::Space_Ship(SDL_Renderer *rend, SDL_Texture *bg)
 	position = new SDL_Rect();
 	position->w = (SHIP_WIDTH * TILE_SIZE) + (SHIP_WIDTH * TILE_OFFSET);
 	position->h = (SHIP_HEIGHT * TILE_SIZE) + (SHIP_HEIGHT * TILE_OFFSET);
-	position->x = SDL_floor(renW / 2) - (position->w / 2);
+	position->x = renW - position->w - TILE_SIZE;
 	position->y = SDL_floor(renH / 2) - (position->h / 2);
-	selected_hull = 0;
-	selected_module = 0;
+	selected_hull = NORMAL;
+	selected_module = TURRET;
 
 	//Calculate central tile
 	int approxCenterX = (int)SDL_floor(SHIP_WIDTH / 2);
@@ -67,31 +108,11 @@ Space_Ship::Space_Ship(SDL_Renderer *rend, SDL_Texture *bg)
 	hull_layer[approxCenterY + 1][approxCenterX]->setPlaceable(true);
 
 	//Load space ship
-	bool build_hull = true;
+	build_hull = true;
 
 	while (build_hull)
 	{
-		//Clear renderer
-		SDL_RenderClear(ren);
-
-		//Draw background
-		SDL_RenderCopy(ren, bg, NULL, NULL);
-
-		//Draw all hull tiles
-		for (int y = 0; y < SHIP_HEIGHT; y++)
-		{
-			for (int x = 0; x < SHIP_WIDTH; x++)
-			{
-				hull_layer[y][x]->drawBuild();
-			}
-		}
-
-		//Draw tutorial
-		tutorialHull->draw();
-
-		//Render screen
-		SDL_RenderPresent(ren);
-
+		drawBuild();
 		build_hull = buildHull();
 	}
 
@@ -122,41 +143,17 @@ Space_Ship::Space_Ship(SDL_Renderer *rend, SDL_Texture *bg)
 		}
 	}
 
-	bool build_module = true;
+	build_module = true;
 
 	while (build_module)
 	{
-		//Clear renderer
-		SDL_RenderClear(ren);
-
-		//Draw background
-		SDL_RenderCopy(ren, bg, NULL, NULL);
-
-		//Draw all hull tiles
-		for (int y = 0; y < SHIP_HEIGHT; y++)
-		{
-			for (int x = 0; x < SHIP_WIDTH; x++)
-			{
-				if (module_layer[y][x] != NULL)
-				{
-					hull_layer[y][x]->draw();
-					module_layer[y][x]->draw(computer);
-				}
-			}
-		}
-
-		//Draw tutorial
-		tutorialModule->draw();
-
-		//Render screen
-		SDL_RenderPresent(ren);
-
+		drawBuild();
 		build_module = buildModules();
 	}
 
 	//Determine energy
 	energyMax = 10;
-	resetEnergy();
+	energy = energyMax;
 
 	//Initialize target
 	target = NULL;
@@ -185,6 +182,19 @@ void Space_Ship::draw()
 			if (module_layer[y][x] != NULL)
 			{
 				module_layer[y][x]->draw(computer);
+			}
+		}
+	}
+
+	//Draw the interface
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			//The modules
+			if (module_layer[y][x] != NULL)
+			{
+				module_layer[y][x]->drawInterface();
 			}
 		}
 	}
@@ -264,7 +274,7 @@ bool Space_Ship::buildHull()
 				case SDL_BUTTON_RIGHT:
 				{
 					cout << "Right button\n";
-					selected_hull = (++selected_hull) % 3;
+					selected_hull = hull_type((selected_hull + 1) % HULL_COUNT);
 					cout << "HullType = " << (selected_hull + 1) << " (1 = NORMAL | 2 = ELECTRICAL | 3 = REINFORCED)\n";
 					break;
 				}
@@ -442,8 +452,8 @@ bool Space_Ship::buildModules()
 				case SDL_BUTTON_RIGHT:
 				{
 					cout << "Right button\n";
-					selected_module = (++selected_module) % 2;
-					cout << "ModuleType = " << (selected_module + 1) << " (1 = COCKPIT | 2 = TURRET)\n";
+					selected_module = module_type((selected_module + 1) % MODULE_COUNT);
+					cout << "ModuleType = " << (selected_module + 1) << " (1: TURRET | 2: SHIELD)\n";
 					break;
 				}
 				default:
@@ -470,9 +480,9 @@ void Space_Ship::swapModule(int x, int y, int type)
 	//Place new hull
 	switch (module_type(type))
 	{
-		case COCKPIT:
+		case SHIELD:
 		{
-			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Cockpit.png", 1, 10, 0);
+			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Shield_Off.png", 2, 10, 0, 5, 0, 0, 3);
 			break;
 		}
 		case TURRET:
@@ -482,7 +492,7 @@ void Space_Ship::swapModule(int x, int y, int type)
 		}
 		default:
 		{
-			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Empty.png", 1, 0, 0);
+			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Empty.png", 0, 0, 0);
 			break;
 		}
 	}
@@ -546,6 +556,11 @@ void Space_Ship::onMouseEvent(SDL_Event event)
 				{
 					if (event.button.button == SDL_BUTTON_LEFT)
 					{
+						if (!module_layer[y][x]->hasTarget())
+						{
+							//If there is no target, clear the line
+							module_layer[y][x]->clearTarget();
+						}
 						module_layer[y][x]->setHeld(false);
 
 						if (energy && over)
@@ -563,8 +578,7 @@ void Space_Ship::onMouseEvent(SDL_Event event)
 							energy++;
 						}
 					}
-
-					cout << "Energy: " << energy << " / 10\n";
+					//cout << "Energy: " << energy << " / 10\n";
 				}
 				else if (event.button.type == SDL_MOUSEMOTION && !over)
 				{
@@ -582,6 +596,9 @@ void Space_Ship::onMouseEvent(SDL_Event event)
 						{
 							module_layer[y][x]->clearTarget();
 						}
+
+						//Draw target line
+						module_layer[y][x]->setTargetLineToMouse(event.button.x, event.button.y);
 					}
 				}
 			}
@@ -613,15 +630,28 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 	//The modules
 	if (module_layer[posY][posX] != NULL)
 	{
-		module_layer[posY][posX]->onHit(dmg);
+		//Check if module is shielded
+		if  (	(module_layer[posY - 1][posX - 1] != NULL && !module_layer[posY - 1][posX - 1]->isShielding())
+			||	(module_layer[posY - 1][posX + 1] != NULL && !module_layer[posY - 1][posX + 1]->isShielding())
+			||	(module_layer[posY + 1][posX - 1] != NULL && !module_layer[posY + 1][posX - 1]->isShielding())
+			||	(module_layer[posY + 1][posX + 1] != NULL && !module_layer[posY + 1][posX + 1]->isShielding()))
+		{
+			module_layer[posY][posX]->onHit(dmg);
+		}
+		else
+		{
+			cout << "The attack was shielded!\n";
+		}
 	}
 
 	//Check if the ship is dead
 	checkModuleHealth();
 }
 
-void Space_Ship::activate()
+vector <string> Space_Ship::activate()
 {
+	vector <string> attacks;
+
 	//Clear old energy
 	for (int y = 0; y < SHIP_HEIGHT; y++)
 	{
@@ -632,17 +662,20 @@ void Space_Ship::activate()
 			{
 				if (module_layer[y][x]->activate())
 				{
-					int posX, posY, dmg;
-					module_layer[y][x]->getTarget(posX, posY, dmg);
-					if (posX != -1)
+					if (module_layer[y][x]->hasTarget())
 					{
-						target->attack(posX, posY, dmg);
-						module_layer[y][x]->clearTarget();
+						string attack = module_layer[y][x]->registerAttack(x, y);
+						if (attack != "")
+						{
+							attacks.push_back(attack);
+						}
 					}
 				}
 			}
 		}
 	}
+
+	return attacks;
 }
 
 void Space_Ship::setTarget(Space_Ship *tar)
@@ -733,4 +766,60 @@ Module* Space_Ship::getModule(int row, int collumn){
 
 Hull* Space_Ship::getHull(int row, int collumn){
 	return hull_layer[row][collumn];
+}
+
+void Space_Ship::drawBuild()
+{
+	//Clear renderer
+	SDL_RenderClear(ren);
+
+	//Draw background
+	SDL_RenderCopy(ren, buildBackground, NULL, NULL);
+
+	//Draw title
+	titleText->draw();
+
+	if (build_hull)
+	{
+		//Draw all hull tiles
+		for (int y = 0; y < SHIP_HEIGHT; y++)
+		{
+			for (int x = 0; x < SHIP_WIDTH; x++)
+			{
+				hull_layer[y][x]->drawBuild();
+			}
+		}
+
+		//Draw tutorial
+		tutorialHull->draw();
+		tutorialHullSelected->draw();
+
+		//Draw selected tile
+		SDL_RenderCopy(ren, hullTextures[selected_hull], tutorialTextureSrc, tutorialTextureDst);
+	}
+	else if (build_module)
+	{
+		//Draw all hull tiles
+		for (int y = 0; y < SHIP_HEIGHT; y++)
+		{
+			for (int x = 0; x < SHIP_WIDTH; x++)
+			{
+				if (module_layer[y][x] != NULL)
+				{
+					hull_layer[y][x]->draw();
+					module_layer[y][x]->draw(computer);
+				}
+			}
+		}
+
+		//Draw tutorial
+		tutorialModule->draw();
+		tutorialModuleSelected->draw();
+
+		//Draw selected tile
+		SDL_RenderCopy(ren, moduleTextures[selected_module], tutorialTextureSrc, tutorialTextureDst);
+	}
+
+	//Render screen
+	SDL_RenderPresent(ren);
 }

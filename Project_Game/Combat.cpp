@@ -50,8 +50,8 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 
 	//Make interface
 	statusEnergyLeft = new Text(ren, "Energy: ?/?");
-	int statusCentreX = (winW / 2) - (statusEnergyLeft->getWidth() / 2);
-	int statusY = 100;
+	int statusCentreX = (winW / 2) - (statusEnergyLeft->getWidth() / 2) - 8;
+	int statusY = 14;
 	statusEnergyLeft->setPosition(statusCentreX, statusY);
 
 	//Set targets
@@ -68,6 +68,9 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 	//While both still alive
 	while(youAlive && enemyAlive)
 	{
+		//Wait for animations to finish
+		doneAnimating = false;
+
 		//Preform turn
 		((yourTurn) ? makeMoves() : listenForMoves());
 
@@ -86,13 +89,11 @@ void Combat::makeMoves()
 	//For all attacks registered
 	for (int i = 0; i < enemyAction.size(); i++)
 	{
-		//Draw combat
-		draw();
-
-		//Play some animation?
-		cout << "- " << enemyAction[i] << endl;
+		//Draw animation
+		playAnimation(enemyAction[i]);
 	}
 	enemyAction.clear();
+	doneAnimating = true;
 
 	//Refill energy
 	you->resetEnergy();
@@ -117,9 +118,8 @@ void Combat::makeMoves()
 				if (hit == "End turn")
 				{
 					cout << "Ending turn!\n";
+					setupAttacks();
 					yourTurn = false;
-					yourAction.push_back("Attack Missile 2,2");
-					yourAction.push_back("Defence Shield 0,0");
 				}
 			}
 
@@ -133,6 +133,15 @@ void Combat::makeMoves()
 }
 
 void Combat::listenForMoves(){
+	//For all attacks registered
+	for (int i = 0; i < yourAction.size(); i++)
+	{
+		//Draw animation
+		playAnimation(yourAction[i]);
+	}
+	yourAction.clear();
+	doneAnimating = true;
+
 	//The enemy's turn
 	cout << "Waiting for enemy:\n";
 
@@ -150,12 +159,8 @@ void Combat::listenForMoves(){
 	}
 	yourAction.clear();
 
-	//Simulate waittime
-	Sleep(2000);
-
 	//Recieve answer
-	enemyAction.push_back("Attack Rocket 0,0");
-	enemyAction.push_back("Defence Shield 2,2");
+	setupAttacks();
 	cout << "Your enemy responded with:\n";
 	yourTurn = true;
 }
@@ -169,11 +174,20 @@ void Combat::draw()
 	SDL_RenderCopy(ren, background, NULL, NULL);
 
 	//Draw ships
-	enemy->draw();
-	you->draw();
+	if (doneAnimating) {
+		//Watch your interface
+		enemy->draw();
+		you->draw();
+	}
+	else
+	{
+		//Watch opponents actions ontop
+		((yourTurn) ? you->draw() : enemy->draw());
+		((yourTurn) ? enemy->draw() : you->draw());
+	}
 
 	//Draw buttons
-	if (yourTurn) {
+	if (yourTurn && doneAnimating) {
 		for (int i = 0; i < buttons.size(); i++)
 		{
 			buttons[i]->draw();
@@ -189,4 +203,75 @@ void Combat::draw()
 
 	//Render screen
 	SDL_RenderPresent(ren);
+}
+
+void Combat::playAnimation(string attackCode)
+{
+	//Animation data
+	Module *attacker = NULL;
+	Module *defender = NULL;
+	vector <string> args;
+	string currentArg = "";
+
+	//Decode attack
+	for (char &c : attackCode)
+	{
+		if (c != ' ')
+		{
+			//Build string
+			currentArg += c;
+		}
+		else
+		{
+			//Store string and reset
+			args.push_back(currentArg);
+			currentArg = "";
+		}
+	}
+
+	//Store last argument
+	args.push_back(currentArg);
+
+	if (args[0] == "Rocket")
+	{
+		cout << "Found a rocket!\n";
+		int x1 = atoi(args[1].c_str());
+		int y1 = atoi(args[2].c_str());
+		int x2 = atoi(args[3].c_str());
+		int y2 = atoi(args[4].c_str());
+		attacker = ((yourTurn) ? enemy->getModule(y1, x1) : you->getModule(y1, x1));
+		defender = ((yourTurn) ? you->getModule(y2, x2) : enemy->getModule(y2, x2));
+
+		//Run animation sequence
+		bool donePlaying = false;
+		while (!donePlaying)
+		{
+			//Draw world
+			draw();
+
+			//Draw animation
+			donePlaying = attacker->runRocketAnimation(defender);
+		}
+
+		//Execute damage
+		int posX, posY, dmg;
+		attacker->getTarget(posX, posY, dmg);
+		((yourTurn) ? you->attack(posX, posY, dmg) : enemy->attack(posX, posY, dmg));
+		attacker->clearTarget();
+	}
+}
+
+void Combat::setupAttacks()
+{
+	Space_Ship *attacker = ((yourTurn) ? you : enemy);
+
+	vector <string> attacks = attacker->activate();
+	if (yourTurn)
+	{
+		yourAction = attacks;
+	}
+	else
+	{
+		enemyAction = attacks;
+	}
 }

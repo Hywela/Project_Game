@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define online
+#define offline
 
 Window::Window()
 {
@@ -122,38 +122,38 @@ void Window::login()
 				{
 	
 #ifdef offline 
-						mainMenu();
-
+	mainMenu();
 #endif
-#ifdef online 
-				server = new Network();
-				server->handler_check_server();
-				
-				if(server->is_server_online()){
-				
-	
-					string u = queryLogin[0]->getContent();
-					string p = queryLogin[1]->getContent();
- 	
-				if (validateLogin(u, p))
-					{
 
-					
-						cout << "Go to menu...\n";
-						mainMenu();
-					
-					}
-					else
-					{		delete server;
-						cout << "Wrong login!\n";
-						queryLogin[0]->clearContent();
-						queryLogin[1]->clearContent();				
-					}
-			}else cout << "Server Not Online ! \n"; 
+#ifdef online 
+	server = new Network();
+	server->handler_check_server();
+
+	if(server->is_server_online())
+	{
+		string u = queryLogin[0]->getContent();
+		string p = queryLogin[1]->getContent();
+ 	
+		if (validateLogin(u, p))
+		{
+			cout << "Go to menu...\n";
+			mainMenu();
+		}
+		else
+		{
+			delete server;
+			cout << "Wrong login!\n";
+			queryLogin[0]->clearContent();
+			queryLogin[1]->clearContent();				
+		}
+	}
+	else
+	{
+		cout << "Server Not Online ! \n";
+	}
 #endif				
 				}
-
-					}
+			}
 			
 			for (int i = 0; i < queryLogin.size(); i++)
 			{
@@ -247,7 +247,7 @@ void Window::mainMenu()
 	for (int i = 0; i < buttonsMainMenu.size(); i++)
 	{
 		buttonsMainMenu[i]->setPosition(scaleX, scaleY + ((btnHeight + offsetY) * i));
-		cout << "setPosition(" << scaleX << ", " << scaleY << ")\n";
+		//cout << "setPosition(" << scaleX << ", " << scaleY << ")\n";
 	}
 
 	//Start game loop

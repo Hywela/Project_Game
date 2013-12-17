@@ -15,9 +15,6 @@ Text::Text(SDL_Renderer *rend, string txt, string fnt, string bg)
 {
 	ren = rend;
 
-	//Set text string
-	text = txt;
-
 	//Set character size
 	charSize = new SDL_Rect();
 	charSize->w = 16;
@@ -68,133 +65,8 @@ Text::Text(SDL_Renderer *rend, string txt, string fnt, string bg)
 	tmpDst->x = 0;
 	tmpDst->y = 0;
 
-	int curLine = 0;
-	int curRow = 0;
-	width = 0;
-
-	cout << "Created text...\n" << '"' << endl;
-
-	//For all characters in the text
-	for (char &letter : text)
-	{
-		//Check if the line expanded
-		if (curLine + 1 > width)
-		{
-			width = curLine + 1;
-		}
-
-		//Check letter
-		if (letter == '\n' || (letter == ' ' && curLine >= LINE_LEN))
-		{
-			//Create new line
-			tmpDst->y = ++curRow * tmpDst->h;
-			curLine = 0;
-
-			//Print new line
-			cout << endl;
-		}
-		else
-		{
-			//Get letter index
-			int i = 0;
-
-			if (letter == ' ')
-				i = FONT_SPACE;
-
-			else if (letter >= 48 && letter <= 57) //0-9
-				i = FONT_0 + (letter - 48);
-
-			else if (letter >= 65 && letter <= 90) //A-Z
-				i = FONT_A + (letter - 65);
-			
-			else if (letter >= 97 && letter <= 122) //a-z
-				i = FONT_a + (letter - 97);
-			
-			else if (letter == '+')
-				i = FONT_PLUSS;
-
-			else if (letter == '-')
-				i = FONT_MINUS;
-
-			else if (letter == '(')
-				i = FONT_OPENBRACKET;
-
-			else if (letter == ')')
-				i = FONT_CLOSEBRACKET;
-
-			else if (letter == '=')
-				i = FONT_EQUALS;
-
-			else if (letter == '!')
-				i = FONT_EXCLAMATION;
-
-			else if (letter == '?')
-				i = FONT_QUESTION;
-
-			else if (letter == '%')
-				i = FONT_PERCENT;
-
-			else if (letter == '/')
-				i = FONT_SLASH;
-
-			else if (letter == '*')
-				i = FONT_STAR;
-
-			else if (letter == '.')
-				i = FONT_PERIOD;
-
-			else if (letter == ',')
-				i = FONT_COMMA;
-
-			else if (letter == ':')
-				i = FONT_COLON;
-
-			else if (letter == 39)
-				i = FONT_APOSTROPHE;
-			
-
-			int posX = i % FONT_COLUMNS;
-			int posY = i / FONT_COLUMNS;
-
-			//Set source position
-			tmpSrc->x = posX * charSize->w + 1;
-			tmpSrc->y = posY * charSize->h + 1;
-
-			//Make source copy
-			SDL_Rect *cpySrc = new SDL_Rect();
-			cpySrc->w = tmpSrc->w;
-			cpySrc->h = tmpSrc->h;
-			cpySrc->x = tmpSrc->x;
-			cpySrc->y = tmpSrc->y;
-
-			//Cheaty way to make sure commas get marked to be flipped later
-			if (letter == ',')
-				cpySrc->w -= 1;
-
-			//Save source position
-			srcRects.push_back(cpySrc);
-
-			//Set destionation position
-			tmpDst->x = curLine++ * (tmpDst->w - OFFSET);
-
-			//Make destionation copy
-			SDL_Rect *cpyDst = new SDL_Rect();
-			cpyDst->w = tmpDst->w;
-			cpyDst->h = tmpDst->h;
-			cpyDst->x = tmpDst->x;
-			cpyDst->y = tmpDst->y;
-
-			//Save destionation position
-			dstRects.push_back(cpyDst);
-
-			//Print letter
-			cout << letter;
-		}
-	}
-
-	rows = curRow + 1;
-	currentScale = 1;
-	cout << endl << '"' << endl;
+	//Set text
+	setText(txt);
 }
 
 void Text::draw()
@@ -282,8 +154,6 @@ void Text::setText(string txt)
 	int curRow = 0;
 	width = 0;
 
-	cout << "Updated text...\n" << '"' << endl;
-
 	//For all characters in the text
 	for (char &letter : text)
 	{
@@ -299,9 +169,6 @@ void Text::setText(string txt)
 			//Create new line
 			tmpDst->y = ++curRow * tmpDst->h;
 			curLine = 0;
-
-			//Print new line
-			cout << endl;
 		}
 		else
 		{
@@ -396,15 +263,14 @@ void Text::setText(string txt)
 
 			//Save destionation position
 			dstRects.push_back(cpyDst);
-
-			//Print letter
-			cout << letter;
 		}
 	}
 
 	rows = curRow + 1;
 	currentScale = 1;
-	cout << endl << '"' << endl;
+
+	//Print data
+	//cout << "Updated text...\n" << '"' << endl << text <<  endl << '"' << endl;
 }
 
 void Text::setPosition(int x, int y)

@@ -62,6 +62,7 @@ Network::~Network()
  
     SDLNet_Quit();
 }
+
 void Network::handler_check_server()
 {
 	// Try to open a connection to the server and quit out if we can't connect
@@ -115,6 +116,7 @@ void Network::handler_check_server()
  
     } // End of if we managed to open a connection to the server condition
 }
+
 void Network::handler_recive()
 {
 
@@ -178,7 +180,6 @@ bool Network::handler_check_login()
 	return false;
 }
 
-
 void Network::handler_send(string input)
 {   
 	     // Copy our user's string into our char array called "buffer"
@@ -229,12 +230,14 @@ bool Network:: handler_loggout()
         }
  return check;
 }
+
 bool Network:: is_server_online()
 {
 
 
     return isServerOnline;
 }
+
 void Network:: debug(){
 	
 	string d;
