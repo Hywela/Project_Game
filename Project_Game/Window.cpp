@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define offline
+#define online
 
 Window::Window()
 {
@@ -150,11 +150,11 @@ void Window::login()
 						queryLogin[1]->clearContent();				
 					}
 			}else cout << "Server Not Online ! \n"; 
-				
+#endif				
 				}
-#endif
+
 					}
-			}
+			
 			for (int i = 0; i < queryLogin.size(); i++)
 			{
 				queryLogin[i]->onMouseClick(event);
