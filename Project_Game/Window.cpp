@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define offline
+#define online
 
 Window::Window()
 {
@@ -129,7 +129,7 @@ void Window::login()
 	server = new Network();
 	server->handler_check_server();
 
-	if(server->is_server_online())
+	if(server->handler_is_server_online())
 	{
 		string u = queryLogin[0]->getContent();
 		string p = queryLogin[1]->getContent();
@@ -237,6 +237,7 @@ void Window::mainMenu()
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Green.png", btnX, btnY + ((btnHeight + offsetY) * 1), "Battle", btnWidth, btnHeight));
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 2), "Settings", btnWidth, btnHeight));
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 3), "Logout", btnWidth, btnHeight));
+    buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 4), "Que", btnWidth, btnHeight));
 
 	if (playerShip != NULL)
 	{
@@ -253,6 +254,7 @@ void Window::mainMenu()
 	//Start game loop
 	while (!done)
 	{
+
 		//Draw screen
 		currentScreen = SCREEN_MAIN_MENU;
 		draw();
@@ -287,6 +289,15 @@ void Window::mainMenu()
 						cout << "You have not built a ship yet!\n";
 					}
 				}
+                else if (hit == "Que"){
+                    server->handler_send("m");
+
+                    //sett a loop tingy 
+                    while(server->handler_matchFound()){
+
+                    }
+                   
+                }
 				else if (hit == "Settings")
 				{
 					//Go to settings

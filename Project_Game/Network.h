@@ -7,7 +7,7 @@
 #include <vector>
 
 using namespace std;
-const unsigned short PORT        = 8200; // The port we are connecting to
+const unsigned short PORT        = 6881; // The port we are connecting to
 const unsigned short BUFFER_SIZE = 512;
 
 
@@ -31,12 +31,13 @@ public:
 	Network();
 	~Network();
 		
-	bool handler_loggout();
+	bool loggout();
 	void handler_check_server();
 	void handler_send(string input);
 	void handler_recive();
 	bool handler_check_login();
-    bool is_server_online();
+    bool handler__is_server_online();
+    bool handler_matchFound();
 
 	void debug();
 };
