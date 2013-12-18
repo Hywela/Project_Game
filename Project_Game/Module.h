@@ -56,6 +56,7 @@ public:
 	Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow = 0, int dmg = 0, int disPow = 0, int act = 0);
 	~Module();
 
+	string networkConstruction();		//returns a string with data
 	void printData();					//Shows the data listed in console
 	int getMaxHealth();					//Returns max health
 	int getCurrentHealth();				//Returns current health

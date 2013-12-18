@@ -28,6 +28,7 @@ public:
 	Hull(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int arm, int spAtk, int spDef, bool isLoc, bool isEmp, bool isPla);
     ~Hull();
 
+	string networkConstruction(); //returns a string with the hull data;
 	void drawBuild();	//Drawing during edit mode
 	void draw();		//Drawing normally
 	SDL_Rect getSource();				//Gets the source rectangle
