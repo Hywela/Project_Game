@@ -237,7 +237,7 @@ void Window::mainMenu()
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Green.png", btnX, btnY + ((btnHeight + offsetY) * 1), "Battle", btnWidth, btnHeight));
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 2), "Settings", btnWidth, btnHeight));
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 3), "Logout", btnWidth, btnHeight));
-
+	
 	if (playerShip != NULL)
 	{
 		buttonsMainMenu[1]->setStyle(DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
@@ -282,6 +282,17 @@ void Window::mainMenu()
 					{
 						cout << "Go to battle...\n";
 						battle();
+					}
+					else {
+						cout << "You have not built a ship yet!\n";
+					}
+				}
+				else if (hit == "Que")
+				{
+					//If you have a valid ship, go to battle
+					if (playerShip != NULL)
+					{
+						
 					}
 					else {
 						cout << "You have not built a ship yet!\n";
