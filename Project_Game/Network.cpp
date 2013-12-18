@@ -137,24 +137,7 @@ void Network::recive()
  
                 cout << "Received: " << buffer << endl;// "(" << serverResponseByteCount << " bytes)" << endl;
 			
-				if(strcmp(buffer, "function/")){
-					string function_name;
-					int value_one; // Parameter 1 
-					int value_two;	// Parameter 2
-					bool target;
 
-				//	func_map_t::const_iterator function_map = func_map.find(function_name);
-					//if( function_map == func_map.end() ) {}
-				//	(*function_map->second)(value_one,value_two, target);
-				}
-				if (strcmp(buffer, "test/")){
-					string in(buffer);
-					vector<void (*)()> temp_vec;
-					int idx = in.find("/");
-					string tem = in.substr(idx+1);
-					int temp = atoi(tem.c_str()); 
-					_memccpy(&temp_vec, (const void *)temp, sizeof(temp), sizeof(temp));
-					temp_vec[0]();
 				}
                 if (strcmp(buffer, "shutdown") == 0)
                 {
@@ -229,6 +212,23 @@ bool Network:: loggout()
 		
         }
  return check;
+}
+bool Network:: handler_matchFound(){
+
+    int socketActive = SDLNet_CheckSockets(socketSet, 0);
+        if (socketActive != 0) {
+              // Check if we got a response from the server
+            int messageFromServer = SDLNet_SocketReady(clientSocket);
+
+            if (messageFromServer != 0) {
+
+              int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
+				if (strcmp(buffer, "matchFound"))
+					return true;
+            }
+          
+        }
+    return false;
 }
 
 bool Network:: isServerOnlineMethod()
