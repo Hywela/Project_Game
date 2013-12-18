@@ -161,6 +161,122 @@ Space_Ship::Space_Ship(SDL_Renderer *rend, SDL_Texture *bg, string title)
 	isDestroyed = false;
 }
 
+Space_Ship::Space_Ship(SDL_Renderer *rend, string structure)
+{
+	ren = rend;
+
+	//Set size and position
+	const int TILE_OFFSET = 2;
+	int renW, renH;
+	SDL_GetRendererOutputSize(ren, &renW, &renH);
+	position = new SDL_Rect();
+	position->w = (SHIP_WIDTH * TILE_SIZE) + (SHIP_WIDTH * TILE_OFFSET);
+	position->h = (SHIP_HEIGHT * TILE_SIZE) + (SHIP_HEIGHT * TILE_OFFSET);
+	position->x = renW - position->w - TILE_SIZE;
+	position->y = SDL_floor(renH / 2) - (position->h / 2);
+
+	//Calculate central tile
+	int approxCenterX = (int)SDL_floor(SHIP_WIDTH / 2);
+	int approxCenterY = (int)SDL_floor(SHIP_HEIGHT / 2);
+
+	//Create rectangles
+	SDL_Rect srcRect;
+	srcRect.w = TILE_SIZE;
+	srcRect.h = TILE_SIZE;
+	srcRect.x = 0;
+	srcRect.y = 0;
+	SDL_Rect dstRect = srcRect;
+
+	//Gather planned parts
+	vector <string> parts;
+	string currentArg = "";
+
+	//Decode attack
+	for (char &c : structure)
+	{
+		if (c != ' ')
+		{
+			//Build string
+			currentArg += c;
+		}
+		else
+		{
+			//Store string and reset
+			parts.push_back(currentArg);
+			currentArg = "";
+		}
+	}
+
+	//Store last argument
+	parts.push_back(currentArg);
+
+	//Load ship hulls
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		dstRect.y = position->y + (srcRect.h * y) + (y * TILE_OFFSET);
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			dstRect.x = position->x + (srcRect.w * x) + (x * TILE_OFFSET);
+			int hullId = 1 + (y * SHIP_WIDTH * 2) + (x * 2);
+			int moduleId = hullId + 1;
+
+			//Place new hull
+			switch (hull_type(atoi(parts[hullId].c_str())))
+			{
+				case NORMAL:
+				{
+					hull_layer[y][x] = new Hull(ren, srcRect, dstRect, DIR_HULLS + "Normal.png", 1, 0, 0, false, false, false);
+					break;
+				}
+				case ELECTRICAL:
+				{
+					hull_layer[y][x] = new Hull(ren, srcRect, dstRect, DIR_HULLS + "Electrical.png", 1, 1, 0, false, false, false);
+					break;
+				}
+				case REINFORCED:
+				{
+					hull_layer[y][x] = new Hull(ren, srcRect, dstRect, DIR_HULLS + "Reinforced.png", 1, 0, 1, false, false, false);
+					break;
+				}
+				default:
+				{
+					hull_layer[y][x] = new Hull(ren, srcRect, dstRect, DIR_HULLS + "Empty.png", 0, 0, 0, true, true, true);
+					break;
+				}
+			}
+
+			//Place new module
+			switch (module_type(atoi(parts[moduleId].c_str())))
+			{
+				case SHIELD:
+				{
+					module_layer[y][x] = new Module(ren, srcRect, dstRect, DIR_MODULES + "Shield_Off.png", 2, 10, 0, 5, 0, 0, 3);
+					break;
+				}
+				case TURRET:
+				{
+					module_layer[y][x] = new Module(ren, srcRect, dstRect, DIR_MODULES + "Turret.png", 1, 10, 0, 4, 5);
+					break;
+				}
+				default:
+				{
+					module_layer[y][x] = new Module(ren, srcRect, dstRect, DIR_MODULES + "Empty.png", 0, 0, 0);
+					break;
+				}
+			}
+		}
+	}
+
+	//Determine energy
+	energyMax = 10;
+	energy = energyMax;
+
+	//Initialize target
+	target = NULL;
+	computer = false;
+	isDestroyed = false;
+}
+
 Space_Ship::~Space_Ship()
 {
 }
@@ -187,6 +303,7 @@ void Space_Ship::networkConstruction(){
 
 	//SEND THE SHIP 
 }
+
 void Space_Ship::draw()
 {
 	//Draw the ship parts
@@ -499,7 +616,7 @@ void Space_Ship::swapModule(int x, int y, int type)
 	//Remove old
 	delete module_layer[y][x];
 
-	//Place new hull
+	//Place new module
 	switch (module_type(type))
 	{
 		case SHIELD:
@@ -849,4 +966,39 @@ void Space_Ship::drawBuild()
 
 	//Render screen
 	SDL_RenderPresent(ren);
+}
+
+string Space_Ship::getShipStructure()
+{
+	string structure = "Ship";
+
+	//Go through all hulls
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			if (hull_layer[y][x] != NULL && hull_layer[y][x]->getType() != -1)
+			{
+				//Add hull
+				structure += " " + to_string(hull_layer[y][x]->getType());
+
+				if (module_layer[y][x] != NULL && module_layer[y][x]->getType() != -1)
+				{
+					//Add module
+					structure += " " + to_string(module_layer[y][x]->getType());
+				}
+				else
+				{
+					structure += " -1";
+				}
+			}
+			else
+			{
+				//Has no hull or module
+				structure += " -1 -1";
+			}
+		}
+	}
+
+	return structure;
 }

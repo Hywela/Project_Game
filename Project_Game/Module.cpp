@@ -536,3 +536,8 @@ string Module::registerAttack(int x, int y)
 	attack = "Rocket " + to_string(x) + " " + to_string(y) + " " + to_string(targetX) + " " + to_string(targetY);
 	return attack;
 }
+
+int Module::getType()
+{
+	return (nameId - 1);
+}

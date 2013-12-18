@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define online
+#define offline
 
 Window::Window()
 {
@@ -64,16 +64,16 @@ void Window::login()
 	//Create texture from image, check for errors
 	string bgStr = DIR_BACKGROUNDS + "Main_Menu.png";
 	background = IMG_LoadTexture(ren, bgStr.c_str());
-/*
+
 	Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG);
 	Mix_OpenAudio(41000, MIX_DEFAULT_FORMAT, 2, 4096);
-	
+
 	//Load background music
 	string musicStr = DIR_MUSIC + "Harmonic Space.wav";
 	music = Mix_LoadWAV(musicStr.c_str());
 	Mix_VolumeChunk(music, 10);
-	Mix_PlayChannelTimed(0, music, -1, NULL); //channel, sound, numLoops, playFor
-*/
+	//Mix_PlayChannelTimed(0, music, -1, NULL); //channel, sound, numLoops, playFor
+
 	//Set up button properties
 	btnWidth = 200;
 	btnHeight = 40;
@@ -237,7 +237,19 @@ void Window::mainMenu()
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Green.png", btnX, btnY + ((btnHeight + offsetY) * 1), "Battle", btnWidth, btnHeight));
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 2), "Settings", btnWidth, btnHeight));
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 3), "Logout", btnWidth, btnHeight));
-    buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 4), "Que", btnWidth, btnHeight));
+    buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 4), "Queue", btnWidth, btnHeight));
+
+	//Create default ship for testing
+	string strPlayerShip = "Ship"
+	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")
+	+string(" -1 -1")	+string(" -1 -1")	+string(" 0 0")		+string(" -1 -1")	+string(" -1 -1")
+	+string(" -1 -1")	+string(" 0 0")		+string(" 0 1")		+string(" 0 0")	+string(" -1 -1")
+	+string(" -1 -1")	+string(" -1 -1")	+string(" 0 0")		+string(" -1 -1")	+string(" -1 -1")
+	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1");
+
+	playerShip = new Space_Ship(ren, strPlayerShip);
+	enemyShip = new Space_Ship(ren, strPlayerShip);
+	//Done creating default ship
 
 	if (playerShip != NULL)
 	{
@@ -289,9 +301,9 @@ void Window::mainMenu()
 						cout << "You have not built a ship yet!\n";
 					}
 				}
-                else if (hit == "Que"){
+                else if (hit == "Queue"){
                     server->send("m");
-					//que();
+					que();
                     //sett a loop tingy 
                
                    
@@ -327,12 +339,12 @@ void Window::mainMenu()
 	}
 	buttonsMainMenu.clear();
 }
+
 void Window::que(){
 while(!server->matchFound()){
                     }
-
-
 }
+
 void Window::build()
 {
 	//Swap background
@@ -440,7 +452,9 @@ void Window::settings()
 
 bool Window::validateLogin(string user, string code)
 {
+	
 
+	
 	//Print data
 	cout << "Username: " << user << "\nPassword: " << code << endl;
 

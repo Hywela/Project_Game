@@ -42,4 +42,5 @@ public:
 	void setAnchors(int num);			//Sets how many sides are connected
 	bool isNotUsed();						//Checks if the tile is not used
 	void setPosition(int x, int y);
+	int getType();
 };

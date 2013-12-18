@@ -87,4 +87,5 @@ public:
 	bool isShielding();
 	bool runRocketAnimation(Module *end);
 	string registerAttack(int x, int y);
+	int getType();
 };
