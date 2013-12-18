@@ -76,7 +76,7 @@ int Ai::getAttack(){
 	return topPri;
 }
 
-void Ai::genActionList(){
+void Ai::aiActions(){
 
 	static string rocket = "Rocket ";
 	static string power = "Power ";

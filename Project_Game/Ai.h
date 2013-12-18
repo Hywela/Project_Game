@@ -20,7 +20,7 @@ public:
 	Ai(Space_Ship *ai_Ship, Space_Ship *player_Ship, int def_pri, int attack_Pri);
 	int placeEnergy();
 	int getAttack();
-	void genActionList();
+	void aiActions();
 	~Ai();
 };
 
