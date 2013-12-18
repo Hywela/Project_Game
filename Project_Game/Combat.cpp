@@ -90,10 +90,15 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 void Combat::makeMoves()
 {
 	//For all attacks registered
+	cout << "Enemy moves:\n";
 	for (int i = 0; i < enemyAction.size(); i++)
 	{
 		//Draw animation
-		playAnimation(enemyAction[i]);
+		cout << enemyAction[i] << endl;
+		if (!enemyAction[i].find("Power"))
+		{
+			playAnimation(enemyAction[i]);
+		}
 	}
 	enemyAction.clear();
 	doneAnimating = true;
@@ -130,16 +135,15 @@ void Combat::makeMoves()
 			you->onMouseEvent(event);
 		}
 	}
-
-	//Activate modules
-	you->activate();
 }
 
 void Combat::listenForMoves(){
 	//For all attacks registered
+	cout << "Your moves:\n";
 	for (int i = 0; i < yourAction.size(); i++)
 	{
 		//Draw animation
+		cout << yourAction[i] << endl;
 		playAnimation(yourAction[i]);
 	}
 	yourAction.clear();
@@ -163,9 +167,8 @@ void Combat::listenForMoves(){
 	//Recieve answer
 	setupAttacks();
 	cout << "Your enemy responded with:\n";
-	ai->genActionList(&enemyAction);
+	ai->aiActions();
 
-	
 	yourTurn = true;
 }
 
@@ -236,17 +239,22 @@ void Combat::playAnimation(string attackCode)
 	//Store last argument
 	args.push_back(currentArg);
 
+	int x1 = atoi(args[1].c_str());
+	int y1 = atoi(args[2].c_str());
+	attacker = ((yourTurn) ? enemy->getModule(y1, x1) : you->getModule(y1, x1));
+
+	//Use energy
+	attacker->setActive();
+	attacker->resetEnergy();
+
 	if (args[0] == "Rocket")
 	{
-		cout << "Found a rocket!\n";
-		int x1 = atoi(args[1].c_str());
-		int y1 = atoi(args[2].c_str());
 		int x2 = atoi(args[3].c_str());
 		int y2 = atoi(args[4].c_str());
-		attacker = ((yourTurn) ? enemy->getModule(y1, x1) : you->getModule(y1, x1));
 		defender = ((yourTurn) ? you->getModule(y2, x2) : enemy->getModule(y2, x2));
 
 		//Run animation sequence
+		attacker->resetEnergy();
 		bool donePlaying = false;
 		while (!donePlaying)
 		{
@@ -261,7 +269,6 @@ void Combat::playAnimation(string attackCode)
 		int posX, posY, dmg;
 		attacker->getTarget(posX, posY, dmg);
 		((yourTurn) ? you->attack(x2, y2, dmg) : enemy->attack(x2, y2, dmg));
-		attacker->clearTarget();
 	}
 }
 

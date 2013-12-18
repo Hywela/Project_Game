@@ -76,19 +76,24 @@ int Ai::getAttack(){
 	return topPri;
 }
 
-void Ai::genActionList(vector<string> *actionList){
+void Ai::aiActions(){
 
 	static string rocket = "Rocket ";
 	static string power = "Power ";
+
+
+	for (int row = 0; row < SHIP_HEIGHT; row++){
+		for (int collumn = 0; collumn < SHIP_WIDTH; collumn++){
+			moduleHp[collumn][row] = playerShip->getModule(row , collumn)->getCurrentHealth();
+			modulePow[collumn][row] = aiShip->getModule(row, collumn)->getCurrentEnergy();
+		}
+	}
 
 	//Placing energy
 	for (int i = 0; i < aiShip->getMaxEnergy(); i++){
 		int modNr = placeEnergy();
 		if (modNr >= 0){
 			cout << modNr << "Placing energy: " << modNr % SHIP_WIDTH << " " << modNr / SHIP_HEIGHT << endl;
-			stringstream string;
-			string << power << (modNr % SHIP_WIDTH) << " " << (modNr / SHIP_HEIGHT);
-			actionList->push_back(string.str());
 			aiShip->getModule((modNr / SHIP_HEIGHT), (modNr % SHIP_WIDTH))->addEnergy();
 		}
 		else{
@@ -97,18 +102,16 @@ void Ai::genActionList(vector<string> *actionList){
 	}
 
 	//Attacking with all powered gunns
-	int poweredGuns = 0;
 	for (int row = 0; row < SHIP_HEIGHT; row++){
 		for (int collumn = 0; collumn < SHIP_WIDTH; collumn++){
 			Module *modu = aiShip->getModule(row, collumn);
 			if (modu != NULL && modu->getCurrentEnergy() == modu->getReqPower() && modu->getCurrentHealth() > 0){
 				int modNr = getAttack();
-				stringstream string;
-				string << rocket << collumn << " " << row << " " << (modNr % SHIP_WIDTH) << " " << (modNr / SHIP_HEIGHT);
-				actionList->push_back(string.str());
+				testShip.attack((modNr % SHIP_WIDTH), (modNr / SHIP_HEIGHT), modu->getDamage());
 			}
 		}
 	}
+
 }
 
 

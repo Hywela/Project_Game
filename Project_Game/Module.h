@@ -31,6 +31,7 @@ private:
 	bool held;
 
 	int requiredPower;	//Power required to use
+	int changedPower;	//Stores the change in power to this module
 	int damage;			//Damage this gun does
 	int disablePower;	//Turns this gun may disable on hit
 
@@ -72,7 +73,9 @@ public:
 	void resetEnergy();
 	int getCurrentEnergy();
 	int getReqPower();
-	bool activate();
+	int getDamage();
+	int getActiveLeft();
+	bool canActivate();
 	void setHeld(bool state);
 	bool getHeld();
 	void clearTarget();
@@ -88,4 +91,6 @@ public:
 	bool runRocketAnimation(Module *end);
 	string registerAttack(int x, int y);
 	int getType();
+	void setActive();
+	int getChangedEnergy();
 };

@@ -215,6 +215,7 @@ bool Module::addEnergy()
 	{
 		add = ((currentPower < requiredPower) ? 1 : 0);
 		currentPower += add;
+		changedPower += add;
 	}
 
 	return add;
@@ -227,8 +228,15 @@ bool Module::removeEnergy()
 
 	if (!active)
 	{
-		remove = ((currentPower > 0) ? 1 : 0);
-		currentPower -= remove;
+		if (changedPower > 0)
+		{
+			remove = ((currentPower > 0) ? 1 : 0);
+			currentPower -= remove;
+		}
+		else
+		{
+			cout << "You tried to remove energy from last round (or it is empty)!\n";
+		}
 	}
 
 	return remove;
@@ -236,10 +244,17 @@ bool Module::removeEnergy()
 
 void Module::resetEnergy()
 {
+	//Make sure energy from last round can't be moved
+	changedPower = 0;
+
 	//Remove if used
 	if (currentPower == requiredPower)
 	{
-		currentPower = 0;
+		if (hasTarget() || getType() == SHIELD)
+		{
+			currentPower = 0;
+			clearTarget();
+		}
 	}
 	
 	//If effect is active
@@ -270,22 +285,18 @@ int Module::getReqPower(){
 	return requiredPower;
 }
 
-bool Module::activate()
+int Module::getDamage(){
+	return damage;
+}
+
+int Module::getActiveLeft(){
+	return activeLeft;
+}
+
+bool Module::canActivate()
 {
 	//Check if able to use
-	bool charged = false;
-	int charge = ((currentPower == requiredPower) ? currentPower : 0);
-	if (charge)
-	{
-		resetEnergy();
-		charged = true;
-
-		if (activeTurns)
-		{
-			active = true;
-		}
-	}
-
+	bool charged = ((currentPower == requiredPower) ? true : false);
 	return charged;
 }
 
@@ -374,7 +385,7 @@ void Module::setTargetLineToMouse(int mouseX, int mouseY)
 
 bool Module::hasTarget()
 {
-	return ((targetX != -1) ? true : false);
+	return ((targetX != -1 || getType() == SHIELD) ? true : false);
 }
 
 void Module::drawInterface()
@@ -533,11 +544,33 @@ bool Module::runRocketAnimation(Module *end)
 string Module::registerAttack(int x, int y)
 {
 	string attack = "";
-	attack = "Rocket " + to_string(x) + " " + to_string(y) + " " + to_string(targetX) + " " + to_string(targetY);
+
+	if (getType() == TURRET)
+	{
+		attack = "Rocket " + to_string(x) + " " + to_string(y) + " " + to_string(targetX) + " " + to_string(targetY);
+	}
+	else if (getType() == SHIELD)
+	{
+		attack = "Shield " + to_string(x) + " " + to_string(y);
+	}
+
 	return attack;
 }
 
 int Module::getType()
 {
 	return (nameId - 1);
+}
+
+void Module::setActive()
+{
+	if (activeTurns && currentPower == requiredPower)
+	{
+		active = true;
+	}
+}
+
+int Module::getChangedEnergy()
+{
+	return changedPower;
 }
