@@ -57,5 +57,6 @@ public:
 	void restore();
 	Module* getModule(int row, int collumn);
 	Hull* getHull(int row, int collumn);
+	int getMaxEnergy();
 	void drawBuild();
 };

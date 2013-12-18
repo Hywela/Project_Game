@@ -769,6 +769,10 @@ Hull* Space_Ship::getHull(int row, int collumn){
 	return hull_layer[row][collumn];
 }
 
+int Space_Ship::getMaxEnergy(){
+	return energyMax;
+}
+
 void Space_Ship::drawBuild()
 {
 	//Clear renderer
