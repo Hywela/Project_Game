@@ -60,6 +60,7 @@ int Window::getWindowState()
 
 void Window::login()
 {
+
 	SDL_GetWindowSize(win, &winW, &winH);
 
 	//Create texture from image, check for errors
@@ -266,7 +267,9 @@ void Window::mainMenu()
 	//Start game loop
 	while (!done)
 	{
-
+#ifdef online
+		que();
+#endif
 		//Draw screen
 		currentScreen = SCREEN_MAIN_MENU;
 		draw();
@@ -312,7 +315,7 @@ void Window::mainMenu()
                     server->send("m");
 					que();
                     //sett a loop tingy 
-               
+				
                    
 				}
 				else if (hit == "Settings")
@@ -349,15 +352,17 @@ void Window::mainMenu()
 }
 
 void Window::que(){
-while(!server->ifServerFoundIt("matchFound", 4000)){
+	
+if(!server->ifServerFoundIt("matchFound", 1000)){
+
+
+
                     }
 }
 
 void Window::build()
 {	
-	
-	
-	
+
 	//Swap background
 	string bgStr = DIR_BACKGROUNDS + "Space.png";
 	background = IMG_LoadTexture(ren, bgStr.c_str());

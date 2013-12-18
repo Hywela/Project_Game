@@ -227,7 +227,7 @@ bool Network:: loggout()
         }
  return check;
 }
-bool Network:: ifServerFoundIt(string testcase, int waitTime){
+bool Network:: ifServerFoundIt(string testCase, int waitTime){
 
     int socketActive = SDLNet_CheckSockets(socketSet, waitTime);
         if (socketActive != 0) {
@@ -237,8 +237,8 @@ bool Network:: ifServerFoundIt(string testcase, int waitTime){
             if (messageFromServer != 0) {
 
               int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
-				if (strcmp(buffer, testcase.c_str())== 0){
-					cout << "\n "<< testcase << "found";
+				if (strcmp(buffer, testCase.c_str())== 0){
+					cout << "\n "<< testCase << "found";
 					return true;
 				}
             }
