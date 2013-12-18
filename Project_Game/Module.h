@@ -73,6 +73,7 @@ public:
 	void resetEnergy();
 	int getCurrentEnergy();
 	int getReqPower();
+	int getDamage();
 	bool canActivate();
 	void setHeld(bool state);
 	bool getHeld();

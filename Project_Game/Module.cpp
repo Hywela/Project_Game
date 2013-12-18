@@ -285,6 +285,10 @@ int Module::getReqPower(){
 	return requiredPower;
 }
 
+int Module::getDamage(){
+	return damage;
+}
+
 bool Module::canActivate()
 {
 	//Check if able to use

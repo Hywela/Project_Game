@@ -11,6 +11,9 @@ private:
 	Space_Ship *playerShip;
 	int defPri;
 	int attackPri;
+	Space_Ship testShip;
+	int moduleHp[SHIP_HEIGHT][SHIP_WIDTH];
+	int modulePow[SHIP_HEIGHT][SHIP_WIDTH];
 
 
 public:
