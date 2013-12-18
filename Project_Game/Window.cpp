@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define offline
+#define online
 
 Window::Window()
 {
@@ -44,6 +44,7 @@ Window::Window()
 
 Window::~Window()
 {
+	server->send("q");
 	delete server;
 	//Close program
 	SDL_DestroyTexture(background);
@@ -141,6 +142,7 @@ void Window::login()
 		}
 		else
 		{
+			server->send("q");
 			delete server;
 			cout << "Wrong login!\n";
 			queryLogin[0]->clearContent();
@@ -223,7 +225,11 @@ void Window::login()
 void Window::mainMenu()
 {
 #ifdef online
-	server->recive();
+	string ship = server->getShip();
+	if(ship.length() > 5){
+		playerShip = new Space_Ship(ren, ship);
+		cout <<"\n "<< ship;
+	}
 #endif
 	bool done = false;
 	SDL_GetWindowSize(win, &winW, &winH);
@@ -247,7 +253,7 @@ void Window::mainMenu()
 	+string(" -1 -1")	+string(" -1 -1")	+string(" 0 0")		+string(" -1 -1")	+string(" -1 -1")
 	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1");
 
-	playerShip = new Space_Ship(ren, strPlayerShip);
+	//playerShip = new Space_Ship(ren, strPlayerShip);
 	enemyShip = new Space_Ship(ren, strPlayerShip);
 	//Done creating default ship
 
@@ -324,6 +330,7 @@ void Window::mainMenu()
 				else if (hit == "Logout")
 				{
 					//Go to settings
+					server->send("q");
 #ifdef online 		delete server;
 #endif
 					cout << "Go to login screen...\n";
@@ -341,12 +348,15 @@ void Window::mainMenu()
 }
 
 void Window::que(){
-while(!server->matchFound()){
+while(!server->ifServerFoundIt("matchFound", 4000)){
                     }
 }
 
 void Window::build()
-{
+{	
+	
+	
+	
 	//Swap background
 	string bgStr = DIR_BACKGROUNDS + "Space.png";
 	background = IMG_LoadTexture(ren, bgStr.c_str());
@@ -354,11 +364,22 @@ void Window::build()
 	//Reset ships
 	delete playerShip;
 	delete enemyShip;
-
+#ifdef online
+	
 	//Create new ships
 	playerShip = new Space_Ship(ren, background, "Build your ship...");
 	enemyShip = new Space_Ship(ren, background, "Build the enemy ship...");
+	server->saveShip(playerShip->getShipStructure());
 
+
+#endif
+
+#ifdef offline
+	//Create new ships
+	playerShip = new Space_Ship(ren, background, "Build your ship...");
+	enemyShip = new Space_Ship(ren, background, "Build the enemy ship...");
+#endif
+	
 	//Change background back
 	string bgStr1 = DIR_BACKGROUNDS + "Main_Menu.png";
 	background = IMG_LoadTexture(ren, bgStr1.c_str());

@@ -145,7 +145,27 @@ void Network::recive()
             }
 		
 }
+string Network::reciveString(int waitTime){
+	int socketActive = SDLNet_CheckSockets(socketSet, waitTime);
+        if (socketActive != 0)
+        {
+            // Check if we got a response from the server
+            int messageFromServer = SDLNet_SocketReady(clientSocket);
+ 
+            if (messageFromServer != 0)
+            { 
+                //cout << "Got a response from the server... " << endl;
+                int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
+				string ship(buffer);
+				return ship;
+			
 
+				}
+          
+            }
+      
+		
+}
 bool Network::checkLogin()
 {
 
@@ -207,9 +227,9 @@ bool Network:: loggout()
         }
  return check;
 }
-bool Network:: matchFound(){
+bool Network:: ifServerFoundIt(string testcase, int waitTime){
 
-    int socketActive = SDLNet_CheckSockets(socketSet, 0);
+    int socketActive = SDLNet_CheckSockets(socketSet, waitTime);
         if (socketActive != 0) {
               // Check if we got a response from the server
             int messageFromServer = SDLNet_SocketReady(clientSocket);
@@ -217,15 +237,20 @@ bool Network:: matchFound(){
             if (messageFromServer != 0) {
 
               int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
-				if (strcmp(buffer, "matchFound")== 0){
-					cout << "!!!!!!!!!!!!!!!!!!!!!!!MATCHFOUND!!!!";
-					return true;}
+				if (strcmp(buffer, testcase.c_str())== 0){
+					cout << "\n "<< testcase << "found";
+					return true;
+				}
             }
           
         }
     return false;
 }
-
+void Network:: saveShip(string ship){
+	string shipToGO = "b ";
+	shipToGO.append(ship);
+	send(shipToGO);
+}
 bool Network:: isServerOnlineMethod()
 {
 
@@ -238,5 +263,12 @@ void Network:: debug(){
 	string d;
 	getline(cin, d);
 	send(d);
+
+}
+
+string Network:: getShip(){
+		send("c");
+	
+		return reciveString(1000);
 
 }
