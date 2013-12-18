@@ -165,6 +165,28 @@ Space_Ship::~Space_Ship()
 {
 }
 
+void Space_Ship::networkConstruction(){
+	string construction;
+	for (int y = 0; y < SHIP_HEIGHT; y++)
+	{
+		for (int x = 0; x < SHIP_WIDTH; x++)
+		{
+			//The hulls
+			if (hull_layer[y][x] != NULL)
+			{
+				construction.append(hull_layer[y][x]->networkConstruction());
+			}
+
+			//The modules
+			if (module_layer[y][x] != NULL)
+			{
+				construction.append(module_layer[y][x]->networkConstruction());
+			}
+		}
+	}
+
+	//SEND THE SHIP 
+}
 void Space_Ship::draw()
 {
 	//Draw the ship parts
@@ -767,6 +789,10 @@ Module* Space_Ship::getModule(int row, int collumn){
 
 Hull* Space_Ship::getHull(int row, int collumn){
 	return hull_layer[row][collumn];
+}
+
+int Space_Ship::getMaxEnergy(){
+	return energyMax;
 }
 
 void Space_Ship::drawBuild()

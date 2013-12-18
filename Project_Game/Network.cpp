@@ -63,7 +63,7 @@ Network::~Network()
     SDLNet_Quit();
 }
 
-void Network::handler_check_server()
+void Network::checkServer()
 {
 	// Try to open a connection to the server and quit out if we can't connect
     clientSocket = SDLNet_TCP_Open(&serverIP);
@@ -117,7 +117,7 @@ void Network::handler_check_server()
     } // End of if we managed to open a connection to the server condition
 }
 
-void Network::handler_recive()
+void Network::recive()
 {
 
 
@@ -137,7 +137,7 @@ void Network::handler_recive()
  
                 cout << "Received: " << buffer << endl;// "(" << serverResponseByteCount << " bytes)" << endl;
 			
-				
+
 				}
                 if (strcmp(buffer, "shutdown") == 0)
                 {
@@ -152,7 +152,7 @@ void Network::handler_recive()
 		}
 }
 
-bool Network::handler_check_login()
+bool Network::checkLogin()
 {
 
 
@@ -163,7 +163,7 @@ bool Network::handler_check_login()
 	return false;
 }
 
-void Network::handler_send(string input)
+void Network::send(string input)
 {   
 	     // Copy our user's string into our char array called "buffer"
  strcpy_s( buffer,input.c_str() );
@@ -231,7 +231,7 @@ bool Network:: handler_matchFound(){
     return false;
 }
 
-bool Network:: handler__is_server_online()
+bool Network:: isServerOnlineMethod()
 {
 
 
@@ -242,6 +242,6 @@ void Network:: debug(){
 	
 	string d;
 	getline(cin, d);
-	handler_send(d);
+	send(d);
 
 }

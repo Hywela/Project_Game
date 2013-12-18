@@ -38,6 +38,7 @@ public:
 	Space_Ship(SDL_Renderer *rend, SDL_Texture *bg, string title = "");
 	~Space_Ship();
 
+	void networkConstruction();
 	void draw();
 	bool buildHull();
 	void swapHull(int x, int y, int type);
@@ -57,5 +58,6 @@ public:
 	void restore();
 	Module* getModule(int row, int collumn);
 	Hull* getHull(int row, int collumn);
+	int getMaxEnergy();
 	void drawBuild();
 };

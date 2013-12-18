@@ -127,9 +127,9 @@ void Window::login()
 
 #ifdef online 
 	server = new Network();
-	server->handler_check_server();
+	server->checkServer();
 
-	if(server->handler_is_server_online())
+	if(server->isServerOnlineMethod())
 	{
 		string u = queryLogin[0]->getContent();
 		string p = queryLogin[1]->getContent();
@@ -223,7 +223,7 @@ void Window::login()
 void Window::mainMenu()
 {
 #ifdef online
-	server->handler_recive();
+	server->recive();
 #endif
 	bool done = false;
 	SDL_GetWindowSize(win, &winW, &winH);
@@ -297,7 +297,7 @@ void Window::mainMenu()
 
                     }
                    
-                }
+				}
 				else if (hit == "Settings")
 				{
 					//Go to settings
@@ -329,7 +329,9 @@ void Window::mainMenu()
 	}
 	buttonsMainMenu.clear();
 }
+void Window::que(){
 
+}
 void Window::build()
 {
 	//Swap background
@@ -447,10 +449,10 @@ bool Window::validateLogin(string user, string code)
 	   string send = "l-"+ user+"/"+code;
 
 	//Send data message
-	server->handler_send((char * )send.c_str());
+	server->send((char * )send.c_str());
 	
 	//Check if username exists
-	return server->handler_check_login();
+	return server->checkLogin();
 }
 
 void Window::draw()

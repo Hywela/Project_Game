@@ -56,7 +56,7 @@ private:
 public:
     Window();
     ~Window();
-	
+	void que();
 	int getWindowState();
 	void login();
 	void mainMenu();
