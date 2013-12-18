@@ -800,7 +800,7 @@ vector <string> Space_Ship::activate()
 			//The modules
 			if (module_layer[y][x] != NULL)
 			{
-				if (module_layer[y][x]->activate())
+				if (module_layer[y][x]->canActivate())
 				{
 					if (module_layer[y][x]->hasTarget())
 					{

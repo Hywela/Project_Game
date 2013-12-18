@@ -270,22 +270,10 @@ int Module::getReqPower(){
 	return requiredPower;
 }
 
-bool Module::activate()
+bool Module::canActivate()
 {
 	//Check if able to use
-	bool charged = false;
-	int charge = ((currentPower == requiredPower) ? currentPower : 0);
-	if (charge)
-	{
-		resetEnergy();
-		charged = true;
-
-		if (activeTurns)
-		{
-			active = true;
-		}
-	}
-
+	bool charged = ((currentPower == requiredPower) ? true : false);
 	return charged;
 }
 
@@ -374,7 +362,7 @@ void Module::setTargetLineToMouse(int mouseX, int mouseY)
 
 bool Module::hasTarget()
 {
-	return ((targetX != -1) ? true : false);
+	return ((targetX != -1 || getType() == SHIELD) ? true : false);
 }
 
 void Module::drawInterface()
@@ -533,11 +521,28 @@ bool Module::runRocketAnimation(Module *end)
 string Module::registerAttack(int x, int y)
 {
 	string attack = "";
-	attack = "Rocket " + to_string(x) + " " + to_string(y) + " " + to_string(targetX) + " " + to_string(targetY);
+
+	if (getType() == TURRET)
+	{
+		attack = "Rocket " + to_string(x) + " " + to_string(y) + " " + to_string(targetX) + " " + to_string(targetY);
+	}
+	else if (getType() == SHIELD)
+	{
+		attack = "Shield " + to_string(x) + " " + to_string(y);
+	}
+
 	return attack;
 }
 
 int Module::getType()
 {
 	return (nameId - 1);
+}
+
+void Module::setActive()
+{
+	if (activeTurns && currentPower == requiredPower)
+	{
+		active = true;
+	}
 }

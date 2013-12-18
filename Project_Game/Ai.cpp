@@ -34,7 +34,7 @@ int Ai::placeEnergy(){
 	}
 
 	for (int i = 0; i < (SHIP_HEIGHT*SHIP_WIDTH); i++){
-		cout << i << " Is prioritized at " << modules[i] << endl;
+		//cout << i << " Is prioritized at " << modules[i] << endl;
 		
 	}
 

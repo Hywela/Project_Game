@@ -72,7 +72,7 @@ public:
 	void resetEnergy();
 	int getCurrentEnergy();
 	int getReqPower();
-	bool activate();
+	bool canActivate();
 	void setHeld(bool state);
 	bool getHeld();
 	void clearTarget();
@@ -88,4 +88,5 @@ public:
 	bool runRocketAnimation(Module *end);
 	string registerAttack(int x, int y);
 	int getType();
+	void setActive();
 };
