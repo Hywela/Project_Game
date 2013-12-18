@@ -31,12 +31,12 @@ public:
 	Network();
 	~Network();
 		
-	bool handler_loggout();
-	void handler_check_server();
-	void handler_send(string input);
-	void handler_recive();
-	bool handler_check_login();
-    bool is_server_online();
+	bool loggout();
+	void checkServer();
+	void send(string input);
+	void recive();
+	bool checkLogin();
+    bool isServerOnlineMethod();
 
 	void debug();
 };
