@@ -120,11 +120,7 @@ void Network::checkServer()
 void Network::recive()
 {
 
-
 	int socketActive = SDLNet_CheckSockets(socketSet, 0);
- 
-        //cout << "Sockets with data on them at the moment: " << activeSockets << endl;
- 
         if (socketActive != 0)
         {
             // Check if we got a response from the server
@@ -135,7 +131,7 @@ void Network::recive()
                 //cout << "Got a response from the server... " << endl;
                 int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
  
-                cout << "Received: " << buffer << endl;// "(" << serverResponseByteCount << " bytes)" << endl;
+                cout << "Received: " << buffer << endl;
 			
 
 				}
@@ -149,7 +145,7 @@ void Network::recive()
             {
                 //cout << "No response from server..." << endl;
             }
-		}
+		
 }
 
 bool Network::checkLogin()
@@ -213,7 +209,7 @@ bool Network:: loggout()
         }
  return check;
 }
-bool Network:: handler_matchFound(){
+bool Network:: matchFound(){
 
     int socketActive = SDLNet_CheckSockets(socketSet, 0);
         if (socketActive != 0) {
@@ -224,6 +220,7 @@ bool Network:: handler_matchFound(){
 
               int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
 				if (strcmp(buffer, "matchFound"))
+					cout << "!!!!!!!!!!!!!!!!!!!!!!!MATCHFOUND!!!!";
 					return true;
             }
           

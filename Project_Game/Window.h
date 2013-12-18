@@ -65,5 +65,6 @@ public:
 	void settings();
 	bool validateLogin(string user, string code);
 	void draw();
+
 };
 

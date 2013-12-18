@@ -30,7 +30,7 @@ private:
 public:
 	Network();
 	~Network();
-		
+	bool matchFound();	
 	bool loggout();
 	void checkServer();
 	void send(string input);

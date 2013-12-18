@@ -290,12 +290,10 @@ void Window::mainMenu()
 					}
 				}
                 else if (hit == "Que"){
-                    server->handler_send("m");
-
+                    server->send("m");
+					que();
                     //sett a loop tingy 
-                    while(server->handler_matchFound()){
-
-                    }
+               
                    
 				}
 				else if (hit == "Settings")
@@ -330,6 +328,9 @@ void Window::mainMenu()
 	buttonsMainMenu.clear();
 }
 void Window::que(){
+while(!server->matchFound()){
+                    }
+
 
 }
 void Window::build()
