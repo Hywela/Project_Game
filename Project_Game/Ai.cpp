@@ -76,7 +76,7 @@ int Ai::getAttack(){
 	return topPri;
 }
 
-void Ai::genActionList(vector<string> *actionList){
+void Ai::genActionList(){
 
 	static string rocket = "Rocket ";
 	static string power = "Power ";
@@ -94,9 +94,6 @@ void Ai::genActionList(vector<string> *actionList){
 		int modNr = placeEnergy();
 		if (modNr >= 0){
 			cout << modNr << "Placing energy: " << modNr % SHIP_WIDTH << " " << modNr / SHIP_HEIGHT << endl;
-			stringstream string;
-			string << power << (modNr % SHIP_WIDTH) << " " << (modNr / SHIP_HEIGHT);
-			actionList->push_back(string.str());
 			aiShip->getModule((modNr / SHIP_HEIGHT), (modNr % SHIP_WIDTH))->addEnergy();
 		}
 		else{
@@ -111,9 +108,6 @@ void Ai::genActionList(vector<string> *actionList){
 			if (modu != NULL && modu->getCurrentEnergy() == modu->getReqPower() && modu->getCurrentHealth() > 0){
 				int modNr = getAttack();
 				testShip.attack((modNr % SHIP_WIDTH), (modNr / SHIP_HEIGHT), modu->getDamage());
-				stringstream string;
-				string << rocket << collumn << " " << row << " " << (modNr % SHIP_WIDTH) << " " << (modNr / SHIP_HEIGHT);
-				actionList->push_back(string.str());
 			}
 		}
 	}

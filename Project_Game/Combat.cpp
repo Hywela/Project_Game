@@ -167,7 +167,7 @@ void Combat::listenForMoves(){
 	//Recieve answer
 	setupAttacks();
 	cout << "Your enemy responded with:\n";
-	ai->genActionList(&enemyAction);
+	ai->aiActions();
 
 	yourTurn = true;
 }
