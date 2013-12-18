@@ -289,6 +289,10 @@ int Module::getDamage(){
 	return damage;
 }
 
+int Module::getActiveLeft(){
+	return activeLeft;
+}
+
 bool Module::canActivate()
 {
 	//Check if able to use
