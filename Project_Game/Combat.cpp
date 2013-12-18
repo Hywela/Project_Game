@@ -144,8 +144,6 @@ void Combat::listenForMoves(){
 
 	//The enemy's turn
 	cout << "Waiting for enemy:\n";
-
-	cout << "Attack: " << ai->getAttack() << " Power up: " << ai->placeEnergy() << endl;
 	//system("pause");
 
 	//For all attacks registered
@@ -161,11 +159,10 @@ void Combat::listenForMoves(){
 
 	//Recieve answer
 	setupAttacks();
-	enemyAction.push_back("Rocket 2 2 2 2");
-	enemyAction.push_back("Rocket 2 1 2 3");
-	enemyAction.push_back("Rocket 2 3 2 1");
-	enemyAction.push_back("Rocket 2 1 2 1");
 	cout << "Your enemy responded with:\n";
+	ai->genActionList(&enemyAction);
+
+	
 	yourTurn = true;
 }
 
