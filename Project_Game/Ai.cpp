@@ -77,17 +77,22 @@ int Ai::getAttack(){
 }
 
 void Ai::aiActions(){
-
-	static string rocket = "Rocket ";
-	static string power = "Power ";
-
-
+	
+	//load in ship information
 	for (int row = 0; row < SHIP_HEIGHT; row++){
 		for (int collumn = 0; collumn < SHIP_WIDTH; collumn++){
-			moduleHp[collumn][row] = playerShip->getModule(row , collumn)->getCurrentHealth();
-			modulePow[collumn][row] = aiShip->getModule(row, collumn)->getCurrentEnergy();
+			if (playerShip->getModule(row, collumn) != NULL){
+				moduleHp[collumn][row] = playerShip->getModule(row, collumn)->getCurrentHealth();
+			}
+			if (aiShip->getModule(row, collumn) != NULL){
+				modulePow[collumn][row] = aiShip->getModule(row, collumn)->getCurrentEnergy();
+			}
 		}
 	}
+
+	/*
+	
+	
 
 	//Placing energy
 	for (int i = 0; i < aiShip->getMaxEnergy(); i++){
@@ -111,6 +116,8 @@ void Ai::aiActions(){
 			}
 		}
 	}
+
+	*/
 
 }
 
