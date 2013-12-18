@@ -250,12 +250,12 @@ Space_Ship::Space_Ship(SDL_Renderer *rend, string structure)
 			{
 				case SHIELD:
 				{
-					module_layer[y][x] = new Module(ren, srcRect, dstRect, DIR_MODULES + "Shield_Off.png", 2, 10, 0, 5, 0, 0, 3);
+					module_layer[y][x] = new Module(ren, srcRect, dstRect, DIR_MODULES + "Shield_Off.png", 2, 10, 0, hull_layer[y][x]->getType(), 5, 0, 0, 3);
 					break;
 				}
 				case TURRET:
 				{
-					module_layer[y][x] = new Module(ren, srcRect, dstRect, DIR_MODULES + "Turret.png", 1, 10, 0, 4, 5);
+					module_layer[y][x] = new Module(ren, srcRect, dstRect, DIR_MODULES + "Turret.png", 1, 10, 0, hull_layer[y][x]->getType(), 4, 5);
 					break;
 				}
 				default:
@@ -621,12 +621,12 @@ void Space_Ship::swapModule(int x, int y, int type)
 	{
 		case SHIELD:
 		{
-			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Shield_Off.png", 2, 10, 0, 5, 0, 0, 3);
+			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Shield_Off.png", 2, 10, 0, hull_layer[y][x]->getType(), 5, 0, 0, 3);
 			break;
 		}
 		case TURRET:
 		{
-			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Turret.png", 1, 10, 0, 4, 5);
+			module_layer[y][x] = new Module(ren, tmpSrc, tmpDst, DIR_MODULES + "Turret.png", 1, 10, 0, hull_layer[y][x]->getType(), 4, 5);
 			break;
 		}
 		default:
@@ -769,6 +769,9 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 	//The modules
 	if (module_layer[posY][posX] != NULL)
 	{
+		//Calculate actual damage
+		int actualDamage = dmg - module_layer[posY][posX]->getDefence();
+
 		//Check if module is shielded
 		if  (	(module_layer[posY][posX - 1] != NULL && module_layer[posY][posX - 1]->isShielding())
 			||	(module_layer[posY - 1][posX] != NULL && module_layer[posY - 1][posX]->isShielding())
@@ -778,9 +781,17 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 			{
 				cout << "The attack was shielded!\n";
 			}
+		//Check if the module is partly shielded (50% damage taken)
+		else if((module_layer[posY - 1][posX - 1] != NULL && module_layer[posY - 1][posX - 1]->isShielding())
+			||	(module_layer[posY - 1][posX + 1] != NULL && module_layer[posY - 1][posX + 1]->isShielding())
+			||	(module_layer[posY + 1][posX - 1] != NULL && module_layer[posY + 1][posX - 1]->isShielding())
+			||	(module_layer[posY + 1][posX + 1] != NULL && module_layer[posY + 1][posX + 1]->isShielding()))
+			{
+				module_layer[posY][posX]->onHit(int(actualDamage / 2));
+			}
 		else
 		{
-			module_layer[posY][posX]->onHit(dmg);
+			module_layer[posY][posX]->onHit(actualDamage);
 		}
 	}
 

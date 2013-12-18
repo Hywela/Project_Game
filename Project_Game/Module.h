@@ -16,7 +16,7 @@ private:
 	SDL_Texture *icon;	//Image of this module tile
 	SDL_Rect *srcRect;	//Take this rectangle...
 	SDL_Rect *dstRect;	//...and place it here!
-	int nameId;			//Refrence to string arrayslot
+	int nameId;			//Refrence to string arrayslot (server)
 	int maxHealth;		//Maximum health level
 	int currentHealth;	//Current health level
 	int currentPower;	//Current power stored
@@ -33,7 +33,10 @@ private:
 	int requiredPower;	//Power required to use
 	int changedPower;	//Stores the change in power to this module
 	int damage;			//Damage this gun does
+	int defence;		//The damage this absorbs
 	int disablePower;	//Turns this gun may disable on hit
+
+	int activeLostOnHit; //How many turns shield looses for being hit.
 
 	Text *healthText;
 	SDL_Texture *iconPower;
@@ -54,7 +57,7 @@ private:
 
 public:
 	Module();
-	Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow = 0, int dmg = 0, int disPow = 0, int act = 0);
+	Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int hullId = -1, int reqPow = 0, int dmg = 0, int disPow = 0, int act = 0);
 	~Module();
 
 	string networkConstruction();		//returns a string with data
@@ -62,7 +65,7 @@ public:
 	int getMaxHealth();					//Returns max health
 	int getCurrentHealth();				//Returns current health
 	void onHit(int dmg);				//When THIS module is hit
-	void draw(bool computer);		//Draw the module
+	void draw(bool computer);			//Draw the module
 	SDL_Rect getSource();				//Gets the source rectangle
 	SDL_Rect getDestination();			//Gets the destination rectangle
 	module_action onMouseClick(SDL_Event event);	//Clicked on the texture
@@ -73,8 +76,6 @@ public:
 	void resetEnergy();
 	int getCurrentEnergy();
 	int getReqPower();
-	int getDamage();
-	int getActiveLeft();
 	bool canActivate();
 	void setHeld(bool state);
 	bool getHeld();
@@ -93,4 +94,7 @@ public:
 	int getType();
 	void setActive();
 	int getChangedEnergy();
+	int getDamage();
+	int getDefence();
+	int getActiveLeft();
 };

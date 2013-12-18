@@ -8,7 +8,7 @@ Module::Module()
 {
 }
 
-Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow, int act)
+Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int hullId, int reqPow, int dmg, int disPow, int act)
 {
 	ren = rend;
 
@@ -41,7 +41,18 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 	currentHealth = maxHealth;
 	currentPower = 0;
 	disabled = 0;
+	disablePower = disPow;
 	accuracy = acc;
+	active = false;
+	hovered = false;
+	held = false;
+
+	defence = 0;
+	damage = dmg;
+	activeTurns = act;
+	requiredPower = reqPow;
+	activeLostOnHit = 1;
+	
 	string tmpTxt = numToStr(currentHealth) + "/" + numToStr(maxHealth);
 	healthText = new Text(ren, tmpTxt.c_str(), DIR_FONTS + "Custom_Orange.png");
 	healthText->setPosition(dstRect->x + 4, dstRect->y + 4);
@@ -58,22 +69,38 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 	if (dmg) {
 		//Turret uses rockets
 		icoStr = DIR_MISC + "Rocket.png";
+
+		//Set data that are specific to hull
+		if (hullId == ELECTRICAL)
+		{
+			damage += 3;
+			defence -= 3;
+		}
+		else if (hullId == REINFORCED)
+		{
+			defence += 3;
+			requiredPower += 1;
+		}
 	}
 	else if (act) {
 		//Shields uses shiled bubbles
 		icoStr = DIR_MISC + "Shield_Barrier.png";
+
+		//Set data that are specific to hull
+		if (hullId == ELECTRICAL)
+		{
+			activeTurns += 1;
+			activeLostOnHit += 3;
+		}
+		else if (hullId == REINFORCED)
+		{
+			activeTurns -= 1;
+			activeLostOnHit -= 0;
+		}
 	}
 	iconActivate = IMG_LoadTexture(ren, icoStr.c_str());
-
-	requiredPower = reqPow;
-	damage = dmg;
-	disablePower = disPow;
-	hovered = false;
-	held = false;
-
-	activeTurns = act;
+	
 	activeLeft = activeTurns;
-	active = false;
 
 	clearTarget();
 }
@@ -285,14 +312,6 @@ int Module::getReqPower(){
 	return requiredPower;
 }
 
-int Module::getDamage(){
-	return damage;
-}
-
-int Module::getActiveLeft(){
-	return activeLeft;
-}
-
 bool Module::canActivate()
 {
 	//Check if able to use
@@ -474,10 +493,16 @@ void Module::drawInterface()
 bool Module::isShielding()
 {
 	bool shield = false;
+	//Is shield, active and alive?
 	if (active && activeTurns && currentHealth)
 	{
 		shield = true;
-		resetEnergy();
+
+		//Countdown durability
+		for (int i = 0; i < activeLostOnHit; i++)
+		{
+			resetEnergy();
+		}
 	}
 	return shield;
 }
@@ -573,4 +598,19 @@ void Module::setActive()
 int Module::getChangedEnergy()
 {
 	return changedPower;
+}
+
+int Module::getDamage()
+{
+	return damage;
+}
+
+int Module::getDefence()
+{
+	return defence;
+}
+
+int Module::getActiveLeft()
+{
+	return activeLeft;
 }
