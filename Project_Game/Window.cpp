@@ -300,7 +300,7 @@ void Window::mainMenu()
 #endif
 					//If you have a valid ship, go to battle
 					if (playerShip != NULL)
-					{small df
+					{
 						cout << "Go to battle...\n";
 						battle();
 					}
