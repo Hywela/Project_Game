@@ -64,16 +64,16 @@ void Window::login()
 	//Create texture from image, check for errors
 	string bgStr = DIR_BACKGROUNDS + "Main_Menu.png";
 	background = IMG_LoadTexture(ren, bgStr.c_str());
-
+/*
 	Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG);
 	Mix_OpenAudio(41000, MIX_DEFAULT_FORMAT, 2, 4096);
-
+	
 	//Load background music
 	string musicStr = DIR_MUSIC + "Harmonic Space.wav";
 	music = Mix_LoadWAV(musicStr.c_str());
 	Mix_VolumeChunk(music, 10);
 	Mix_PlayChannelTimed(0, music, -1, NULL); //channel, sound, numLoops, playFor
-
+*/
 	//Set up button properties
 	btnWidth = 200;
 	btnHeight = 40;
@@ -291,7 +291,7 @@ void Window::mainMenu()
 				}
                 else if (hit == "Que"){
                     server->send("m");
-					que();
+					//que();
                     //sett a loop tingy 
                
                    
@@ -440,9 +440,7 @@ void Window::settings()
 
 bool Window::validateLogin(string user, string code)
 {
-	
 
-	
 	//Print data
 	cout << "Username: " << user << "\nPassword: " << code << endl;
 
