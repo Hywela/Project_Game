@@ -25,8 +25,6 @@ private:
 	int hostResolved;
 	SDLNet_SocketSet socketSet;
 	
-	
-
 public:
 	Network();
 	~Network();

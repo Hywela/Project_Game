@@ -1,7 +1,5 @@
 #include "Network.h"
 
-
-
 Network::Network()
 {   
     isServerOnline = true;
@@ -219,9 +217,9 @@ bool Network:: matchFound(){
             if (messageFromServer != 0) {
 
               int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
-				if (strcmp(buffer, "matchFound"))
+				if (strcmp(buffer, "matchFound")== 0){
 					cout << "!!!!!!!!!!!!!!!!!!!!!!!MATCHFOUND!!!!";
-					return true;
+					return true;}
             }
           
         }
