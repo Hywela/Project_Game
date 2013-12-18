@@ -224,13 +224,7 @@ void Window::login()
 
 void Window::mainMenu()
 {
-#ifdef online
-	string ship = server->getShip();
-	if(ship.length() > 5){
-		playerShip = new Space_Ship(ren, ship);
-		cout <<"\n "<< ship;
-	}
-#endif
+
 	bool done = false;
 	SDL_GetWindowSize(win, &winW, &winH);
 
@@ -297,9 +291,16 @@ void Window::mainMenu()
 				}
 				else if (hit == "Battle")
 				{
+#ifdef online
+				string ship = server->getShip();
+				if(ship.length() > 5){
+				playerShip = new Space_Ship(ren, ship);
+				cout <<"\n "<< ship;
+	}
+#endif
 					//If you have a valid ship, go to battle
 					if (playerShip != NULL)
-					{
+					{small df
 						cout << "Go to battle...\n";
 						battle();
 					}
