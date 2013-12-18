@@ -5,7 +5,7 @@
 Network::Network()
 {   
     isServerOnline = true;
-    serverName = "25.219.167.39";
+    serverName = "90.149.32.155";
 	shutdownClient= false;
 	 // Initialise SDL_net
     if (SDLNet_Init() < 0)

@@ -7,7 +7,7 @@
 #include <vector>
 
 using namespace std;
-const unsigned short PORT        = 8200; // The port we are connecting to
+const unsigned short PORT        = 6881; // The port we are connecting to
 const unsigned short BUFFER_SIZE = 512;
 
 
