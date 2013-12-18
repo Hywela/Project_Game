@@ -215,6 +215,7 @@ bool Module::addEnergy()
 	{
 		add = ((currentPower < requiredPower) ? 1 : 0);
 		currentPower += add;
+		changedPower += add;
 	}
 
 	return add;
@@ -227,8 +228,15 @@ bool Module::removeEnergy()
 
 	if (!active)
 	{
-		remove = ((currentPower > 0) ? 1 : 0);
-		currentPower -= remove;
+		if (changedPower > 0)
+		{
+			remove = ((currentPower > 0) ? 1 : 0);
+			currentPower -= remove;
+		}
+		else
+		{
+			cout << "You tried to remove energy from last round (or it is empty)!\n";
+		}
 	}
 
 	return remove;
@@ -236,10 +244,17 @@ bool Module::removeEnergy()
 
 void Module::resetEnergy()
 {
+	//Make sure energy from last round can't be moved
+	changedPower = 0;
+
 	//Remove if used
 	if (currentPower == requiredPower)
 	{
-		currentPower = 0;
+		if (hasTarget() || getType() == SHIELD)
+		{
+			currentPower = 0;
+			clearTarget();
+		}
 	}
 	
 	//If effect is active
@@ -545,4 +560,9 @@ void Module::setActive()
 	{
 		active = true;
 	}
+}
+
+int Module::getChangedEnergy()
+{
+	return changedPower;
 }

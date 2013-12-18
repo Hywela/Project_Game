@@ -269,7 +269,6 @@ void Combat::playAnimation(string attackCode)
 		int posX, posY, dmg;
 		attacker->getTarget(posX, posY, dmg);
 		((yourTurn) ? you->attack(x2, y2, dmg) : enemy->attack(x2, y2, dmg));
-		attacker->clearTarget();
 	}
 }
 

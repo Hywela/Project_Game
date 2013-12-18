@@ -800,6 +800,15 @@ vector <string> Space_Ship::activate()
 			//The modules
 			if (module_layer[y][x] != NULL)
 			{
+				//Check for energy updates
+				int energyUpdates = module_layer[y][x]->getChangedEnergy();
+				for (int i = 0; i < energyUpdates; i++)
+				{
+					string energyStr = "Power " + to_string(x) + " " + to_string(y);
+					attacks.push_back(energyStr);
+				}
+
+				//Check for activation updates
 				if (module_layer[y][x]->canActivate())
 				{
 					if (module_layer[y][x]->hasTarget())
