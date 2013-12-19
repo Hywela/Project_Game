@@ -268,7 +268,9 @@ void Network:: debug(){
 
 string Network:: getShip(){
 		send("c");
-	
 		return reciveString(1000);
-
+}
+string Network:: getEnemyShip(){
+	send("e");
+	return reciveString(1000);
 }

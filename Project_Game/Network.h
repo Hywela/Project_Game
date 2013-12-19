@@ -39,5 +39,6 @@ public:
 	void saveShip(string ship);
 	void debug();
 	string getShip();
+	string getEnemyShip();
 };
 
