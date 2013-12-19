@@ -14,6 +14,9 @@ private:
 	Space_Ship testShip;
 	int moduleHp[SHIP_HEIGHT][SHIP_WIDTH];
 	int modulePow[SHIP_HEIGHT][SHIP_WIDTH];
+	int atkModules;
+	int shieldModules;
+	int energyLeft;
 
 
 public:

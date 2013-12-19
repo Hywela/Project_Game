@@ -3,10 +3,11 @@
 
 Ai::Ai(Space_Ship *ai_Ship, Space_Ship *player_Ship, int def_Pri, int attack_Pri)
 {
+	cout << "defPri: " << def_Pri<< endl;
 	aiShip = ai_Ship;
 	playerShip = player_Ship;
-	defPri = def_Pri+SHIP_HEIGHT*SHIP_WIDTH;
-	attackPri = attack_Pri + SHIP_HEIGHT*SHIP_WIDTH;
+	defPri = def_Pri+(SHIP_HEIGHT*SHIP_WIDTH);
+	attackPri = attack_Pri + (SHIP_HEIGHT*SHIP_WIDTH);
 
 }
 
@@ -24,8 +25,24 @@ int Ai::energyTarget(){
 			if (modu != NULL){	//if there is a module at position
 				if (modu->getCurrentHealth() > 0){	//if alive
 					if (modulePow[y][x] < modu->getReqPower() && !modu->getActive()){//if not full of energy
-						//cout << moduleIndex << " Current energy " << modulePow[y][x] << endl;
 						modules[moduleIndex] += SHIP_HEIGHT*SHIP_WIDTH;
+						if (modu->getType() == TURRET){			//check if turret
+							modules[moduleIndex] += attackPri;
+						}
+						else{	//check if shield
+							cout << "GET IN HERE FUCKERS!";
+							modules[moduleIndex] += defPri;
+							modules[moduleIndex] = modules[moduleIndex] - modu->getActiveLostOnHit();
+						}
+						if (energyLeft < modu->getReqPower()){	//if not enough energy to fill a module
+							if (aiShip->isShielded(x, y) > 0){		//add priority for shielded modules
+								modules[moduleIndex] += (aiShip->isShielded(x, y) / 10); // shielded in % /10
+							}
+							modules[moduleIndex] += modu->getCurrentHealth();			//prefer a module with the most health left
+						}
+						if (modu->getCurrentEnergy() > 0){		//if module is partly filled up already
+							modules[moduleIndex] += modu->getCurrentEnergy();
+						}
 					}
 				}
 			}
@@ -35,16 +52,22 @@ int Ai::energyTarget(){
 
 	
 
+
 	int topPri = -1;
+	int topPriModule = -1;
 	for (int i = 0; i < SHIP_HEIGHT*SHIP_WIDTH; i++){
-		//cout << i << " Is prioritized at " << modules[i] << endl;
-		if (modules[i] > 0 && modules[i] >topPri){
-			topPri = i;
+		if (modules[i] > 0){
+			cout << "Module " << i << " Pri " << modules[i] << endl;
+		}
+		if (modules[i] > 0 && modules[i] > topPri){
+			topPri = modules[i];
+			topPriModule = i;
 		}
 	}
 
+	cout << "Top Pri: " << topPri << endl;
 	//cout << "Top pri: " << topPri << endl ;
-	return topPri;
+	return topPriModule;
 }
 
 int Ai::getAttack(){
@@ -75,7 +98,10 @@ int Ai::getAttack(){
 
 void Ai::aiActions(){
 	
+
 	//load in ship information
+	energyLeft = aiShip->getMaxEnergy();
+
 	for (int y = 0; y < SHIP_HEIGHT; y++){
 		for (int x = 0; x < SHIP_WIDTH; x++){
 			if (playerShip->getModule(y, x) != NULL){
@@ -100,6 +126,7 @@ void Ai::aiActions(){
 			//cout << modNr << " Placing energy: " << modNr % SHIP_WIDTH << " " << modNr / SHIP_HEIGHT << endl;
 			aiShip->getModule((modNr / SHIP_HEIGHT), (modNr % SHIP_WIDTH))->addEnergy();		//add energy
 			modulePow[(modNr / SHIP_HEIGHT)][(modNr % SHIP_WIDTH)]++;
+			energyLeft--;
 		}
 		else{
 			cout << "NO modules to power up\n";
