@@ -918,6 +918,8 @@ void Space_Ship::restore()
 			}
 		}
 	}
+
+	isDestroyed = false;
 }
 
 Module* Space_Ship::getModule(int row, int collumn){
