@@ -1,11 +1,11 @@
 #include "Window.h"
 
 
-#define offline
+#define online
 
 Window::Window()
 {
-
+	inQue = false;
 	//Starting SDL, initializing main
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
@@ -294,11 +294,13 @@ void Window::mainMenu()
 				}
 				else if (hit == "Battle")
 				{
-#ifdef online
+				
+#ifdef online	
+				if(inQue)  server->send("m");// boots it out of the que if player goes into battlewith the ai;
 				string ship = server->getShip();
 				if(ship.length() > 5){
 				playerShip = new Space_Ship(ren, ship);
-	}
+				}
 #endif
 					//If you have a valid ship, go to battle
 					if (playerShip != NULL)
@@ -312,6 +314,7 @@ void Window::mainMenu()
 				}
                 else if (hit == "Queue"){
                     server->send("m");
+					inQue = !inQue;
 					que();
                     //sett a loop tingy 
 				
@@ -352,11 +355,16 @@ void Window::mainMenu()
 
 void Window::que(){
 	
-if(!server->ifServerFoundIt("matchFound", 1000)){
-
-	string ship = server->getEnemyShip();
+if(server->ifServerFoundIt("matchFound", 1000)){
+	cout << "\n in Match";
+	string ship = server->getShip();
 	if(ship.length() > 5){
-	enemyShip = new Space_Ship(ren, ship);
+	playerShip = new Space_Ship(ren, ship);
+	}
+
+	string enemyship = server->getEnemyShip();
+	if(enemyship.length() > 5){
+	enemyShip = new Space_Ship(ren, enemyship);
     }
 	Combat *combat = new Combat(playerShip, enemyShip, true, ren, win);
 }

@@ -26,7 +26,7 @@ private:
 	bool isFullscreen;
 	bool quit;
 	SDL_Event event;
-
+	bool inQue;
 	//Button properties:
 	int winW;
 	int winH;
