@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define online
+#define offline
 
 Window::Window()
 {
@@ -248,7 +248,7 @@ void Window::mainMenu()
 	+string(" -1 -1")	+string(" -1 -1")	+string(" 0 0")		+string(" -1 -1")	+string(" -1 -1")
 	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1");
 
-	//playerShip = new Space_Ship(ren, strPlayerShip);
+	playerShip = new Space_Ship(ren, strPlayerShip);
 	enemyShip = new Space_Ship(ren, strPlayerShip);
 	//Done creating default ship
 
