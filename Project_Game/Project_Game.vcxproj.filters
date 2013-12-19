@@ -45,12 +45,6 @@
     <ClInclude Include="EditText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="space_race.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bullet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Ai.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -87,12 +81,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EditText.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="space_race.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Ai.cpp">

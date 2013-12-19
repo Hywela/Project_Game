@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ai.h" />
-    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Combat.h" />
     <ClInclude Include="Constants.h" />
@@ -20,14 +19,12 @@
     <ClInclude Include="Hull.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="Network.h" />
-    <ClInclude Include="space_race.h" />
     <ClInclude Include="Space_Ship.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Ai.cpp" />
-    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Combat.cpp" />
     <ClCompile Include="Constants.cpp" />
@@ -36,7 +33,6 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="Network.cpp" />
-    <ClCompile Include="space_race.cpp" />
     <ClCompile Include="Space_Ship.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Window.cpp" />
