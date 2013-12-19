@@ -61,7 +61,8 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend,
 	//Ship health, calculates as a overall from modules. (Shields etc.)
 	bool youAlive = true;
 	bool enemyAlive = true;
-
+	server->send("f attack");
+	string attack = server->reciveString(1000);
 	//While both still alive
 	while(youAlive && enemyAlive)
 	{
