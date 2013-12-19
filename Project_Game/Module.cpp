@@ -239,6 +239,10 @@ bool Module::addEnergy()
 	return add;
 }
 
+bool Module::getActive(){
+	return active;
+}
+
 bool Module::removeEnergy()
 {
 	//Remove power if possible

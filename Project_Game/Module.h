@@ -77,6 +77,7 @@ public:
 	int getCurrentEnergy();
 	int getReqPower();
 	bool canActivate();
+	bool getActive();
 	void setHeld(bool state);
 	bool getHeld();
 	void clearTarget();

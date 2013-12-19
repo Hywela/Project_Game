@@ -49,6 +49,7 @@ public:
 	void onMouseEvent(SDL_Event event);
 	void resetEnergy();
 	void attack(int posX, int posY, int dmg);
+	int isShielded(int posX, int posY);
 	vector <string> activate();
 	void setTarget(Space_Ship *tar);
 	void getHoveredModule(SDL_Event event, int &x1, int &y1, int &posX, int &posY);

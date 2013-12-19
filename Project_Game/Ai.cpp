@@ -23,7 +23,7 @@ int Ai::energyTarget(){
 			Module *modu = aiShip->getModule(y, x);
 			if (modu != NULL){	//if there is a module at position
 				if (modu->getCurrentHealth() > 0){	//if alive
-					if (modulePow[y][x] < modu->getReqPower()){//if not full of energy
+					if (modulePow[y][x] < modu->getReqPower() && !modu->getActive()){//if not full of energy
 						//cout << moduleIndex << " Current energy " << modulePow[y][x] << endl;
 						modules[moduleIndex] += SHIP_HEIGHT*SHIP_WIDTH;
 					}
