@@ -49,6 +49,7 @@ public:
 	void onMouseEvent(SDL_Event event);
 	void resetEnergy();
 	void attack(int posX, int posY, int dmg);
+	int isShielded(int posX, int posY);
 	vector <string> activate();
 	void setTarget(Space_Ship *tar);
 	void getHoveredModule(SDL_Event event, int &x1, int &y1, int &posX, int &posY);
@@ -57,8 +58,8 @@ public:
 	void checkModuleHealth();
 	bool isDead();
 	void restore();
-	Module* getModule(int row, int collumn);
-	Hull* getHull(int row, int collumn);
+	Module* getModule(int y, int x);
+	Hull* getHull(int y, int x);
 	int getMaxEnergy();
 	void drawBuild();
 	string getShipStructure();

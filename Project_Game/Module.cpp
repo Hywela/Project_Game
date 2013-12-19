@@ -38,7 +38,6 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 
 	nameId = namId;
 	maxHealth = maxHp;
-	currentHealth = maxHealth;
 	currentPower = 0;
 	disabled = 0;
 	disablePower = disPow;
@@ -54,10 +53,6 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 	requiredPower = reqPow;
 	activeLostOnHit = 1;
 	
-	string tmpTxt = numToStr(currentHealth) + "/" + numToStr(maxHealth);
-	healthText = new Text(ren, tmpTxt.c_str(), DIR_FONTS + "Custom_Orange.png");
-	healthText->setPosition(dstRect->x + 4, dstRect->y + 4);
-
 	string icoStr = DIR_MISC + "Energy.png";
 	iconPower = IMG_LoadTexture(ren, icoStr.c_str());
 
@@ -75,11 +70,11 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 		if (hullId == ELECTRICAL)
 		{
 			damage += 3;
-			defence -= 3;
+			maxHealth -= 3;
 		}
 		else if (hullId == REINFORCED)
 		{
-			defence += 3;
+			maxHealth += 3;
 			requiredPower += 1;
 		}
 	}
@@ -99,6 +94,13 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 			activeLostOnHit -= 0;
 		}
 	}
+
+	currentHealth = maxHealth;
+
+	string tmpTxt = numToStr(currentHealth) + "/" + numToStr(maxHealth);
+	healthText = new Text(ren, tmpTxt.c_str(), DIR_FONTS + "Custom_Orange.png");
+	healthText->setPosition(dstRect->x + 4, dstRect->y + 4);
+
 	iconActivate = IMG_LoadTexture(ren, icoStr.c_str());
 	
 	activeLeft = activeTurns;
@@ -235,6 +237,10 @@ bool Module::addEnergy()
 	}
 
 	return add;
+}
+
+bool Module::getActive(){
+	return active;
 }
 
 bool Module::removeEnergy()

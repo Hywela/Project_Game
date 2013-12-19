@@ -749,37 +749,7 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 		//Calculate actual damage
 		int actualDamage = dmg - module_layer[posY][posX]->getDefence();
 
-		int shieldPercent = 0;
-		//Check if module is shielded
-		for (int y = posY - 1; y <= posY + 1; y++)
-		{
-			for (int x = posX - 1; x <= posX + 1; x++)
-			{
-				//If not out of bounderies
-				if ((x >= 0 && x < SHIP_WIDTH) && (y >= 0 && y < SHIP_HEIGHT))
-				{
-					if (module_layer[y][x] != NULL)
-					{
-						//If shield is active
-						if (module_layer[y][x]->isShielding())
-						{
-							//Check if shield is in the corner (partly shielding)
-							if (x != posX && y != posY)
-							{
-								if (shieldPercent < 50)
-								{
-									shieldPercent = 50;
-								}
-							}
-							else
-							{
-								shieldPercent = 100;
-							}
-						}
-					}
-				}
-			}
-		}
+		int shieldPercent = isShielded(posX, posY);
 
 		if  (shieldPercent == 100)
 			{
@@ -798,6 +768,42 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 
 	//Check if the ship is dead
 	checkModuleHealth();
+}
+
+int Space_Ship::isShielded(int posX, int posY)
+{
+	int shieldPercent = 0;
+	//Check if module is shielded
+	for (int y = posY - 1; y <= posY + 1; y++)
+	{
+		for (int x = posX - 1; x <= posX + 1; x++)
+		{
+			//If not out of bounderies
+			if ((x >= 0 && x < SHIP_WIDTH) && (y >= 0 && y < SHIP_HEIGHT))
+			{
+				if (module_layer[y][x] != NULL)
+				{
+					//If shield is active
+					if (module_layer[y][x]->isShielding())
+					{
+						//Check if shield is in the corner (partly shielding)
+						if (x != posX && y != posY)
+						{
+							if (shieldPercent < 100)
+							{
+								shieldPercent += 50;
+							}
+						}
+						else
+						{
+							shieldPercent = 100;
+						}
+					}
+				}
+			}
+		}
+	}
+	return shieldPercent;
 }
 
 vector <string> Space_Ship::activate()
@@ -923,12 +929,12 @@ void Space_Ship::restore()
 	isDestroyed = false;
 }
 
-Module* Space_Ship::getModule(int row, int collumn){
-	return module_layer[row][collumn];
+Module* Space_Ship::getModule(int y, int x){
+	return module_layer[y][x];
 }
 
-Hull* Space_Ship::getHull(int row, int collumn){
-	return hull_layer[row][collumn];
+Hull* Space_Ship::getHull(int y, int x){
+	return hull_layer[y][x];
 }
 
 int Space_Ship::getMaxEnergy(){
