@@ -45,7 +45,8 @@ private:
 
 	//Network
 	Network *server;
-
+	unsigned short PORT;
+	string serverName;
 	//Interface data
 	screenType currentScreen;
 	vector <Button*> buttonsLogin;

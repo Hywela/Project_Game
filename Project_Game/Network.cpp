@@ -1,9 +1,10 @@
 #include "Network.h"
 
-Network::Network()
+Network::Network(unsigned short PORT ,string serverName)
 {   
+	this->PORT = PORT;
     isServerOnline = true;
-    serverName = "90.149.32.155";
+    this->serverName = serverName;
 	shutdownClient= false;
 	 // Initialise SDL_net
     if (SDLNet_Init() < 0)

@@ -5,6 +5,8 @@
 
 Window::Window()
 {
+	PORT = 8881; //Standar PORT Used
+	serverName = "90.149.32.155"; //Standard IP
 	inQue = false;
 	//Starting SDL, initializing main
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -128,7 +130,7 @@ void Window::login()
 #endif
 
 #ifdef online 
-	server = new Network();
+	server = new Network(PORT,serverName);
 	server->checkServer();
 
 	if(server->isServerOnlineMethod())
@@ -487,10 +489,7 @@ void Window::settings()
 }
 
 bool Window::validateLogin(string user, string code)
-{
-	
-
-	
+{	
 	//Print data
 	cout << "Username: " << user << "\nPassword: " << code << endl;
 

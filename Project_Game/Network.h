@@ -7,13 +7,13 @@
 #include <vector>
 
 using namespace std;
-const unsigned short PORT        = 8881; // The port we are connecting to
 const unsigned short BUFFER_SIZE = 1024;
 
 
 class Network
 {
 private:
+	unsigned short PORT;		// The port we are connecting to
 	const char *host;         // Where we store the host name
 	IPaddress serverIP;       // The IP we will connect to
     TCPsocket clientSocket;   // The socket to use
@@ -26,7 +26,7 @@ private:
 	SDLNet_SocketSet socketSet;
 	
 public:
-	Network();
+	Network(unsigned short port,string serverName);
 	~Network();
 	bool whoStarts();
 	bool ifServerFoundIt(string testcase, int waitTime);	
