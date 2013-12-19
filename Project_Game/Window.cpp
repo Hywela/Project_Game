@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define online
+#define offline
 
 Window::Window()
 {
@@ -44,6 +44,7 @@ Window::Window()
 
 Window::~Window()
 {
+	server->send("q");
 	delete server;
 	//Close program
 	SDL_DestroyTexture(background);
@@ -59,6 +60,7 @@ int Window::getWindowState()
 
 void Window::login()
 {
+
 	SDL_GetWindowSize(win, &winW, &winH);
 
 	//Create texture from image, check for errors
@@ -72,7 +74,7 @@ void Window::login()
 	string musicStr = DIR_MUSIC + "Harmonic Space.wav";
 	music = Mix_LoadWAV(musicStr.c_str());
 	Mix_VolumeChunk(music, 10);
-	Mix_PlayChannelTimed(0, music, -1, NULL); //channel, sound, numLoops, playFor
+	//Mix_PlayChannelTimed(0, music, -1, NULL); //channel, sound, numLoops, playFor
 
 	//Set up button properties
 	btnWidth = 200;
@@ -141,6 +143,7 @@ void Window::login()
 		}
 		else
 		{
+			server->send("q");
 			delete server;
 			cout << "Wrong login!\n";
 			queryLogin[0]->clearContent();
@@ -222,9 +225,7 @@ void Window::login()
 
 void Window::mainMenu()
 {
-#ifdef online
-	server->recive();
-#endif
+
 	bool done = false;
 	SDL_GetWindowSize(win, &winW, &winH);
 
@@ -237,7 +238,19 @@ void Window::mainMenu()
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Green.png", btnX, btnY + ((btnHeight + offsetY) * 1), "Battle", btnWidth, btnHeight));
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 2), "Settings", btnWidth, btnHeight));
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 3), "Logout", btnWidth, btnHeight));
-    buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 4), "Que", btnWidth, btnHeight));
+    buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 4), "Queue", btnWidth, btnHeight));
+
+	//Create default ship for testing
+	string strPlayerShip = "Ship"
+	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")
+	+string(" -1 -1")	+string(" -1 -1")	+string(" 0 0")		+string(" -1 -1")	+string(" -1 -1")
+	+string(" -1 -1")	+string(" 0 0")		+string(" 0 1")		+string(" 0 0")	+string(" -1 -1")
+	+string(" -1 -1")	+string(" -1 -1")	+string(" 0 0")		+string(" -1 -1")	+string(" -1 -1")
+	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1");
+
+	playerShip = new Space_Ship(ren, strPlayerShip);
+	enemyShip = new Space_Ship(ren, strPlayerShip);
+	//Done creating default ship
 
 	if (playerShip != NULL)
 	{
@@ -254,7 +267,9 @@ void Window::mainMenu()
 	//Start game loop
 	while (!done)
 	{
-
+#ifdef online
+		que();
+#endif
 		//Draw screen
 		currentScreen = SCREEN_MAIN_MENU;
 		draw();
@@ -279,6 +294,13 @@ void Window::mainMenu()
 				}
 				else if (hit == "Battle")
 				{
+#ifdef online
+				string ship = server->getShip();
+				if(ship.length() > 5){
+				playerShip = new Space_Ship(ren, ship);
+				cout <<"\n "<< ship;
+	}
+#endif
 					//If you have a valid ship, go to battle
 					if (playerShip != NULL)
 					{
@@ -289,11 +311,11 @@ void Window::mainMenu()
 						cout << "You have not built a ship yet!\n";
 					}
 				}
-                else if (hit == "Que"){
+                else if (hit == "Queue"){
                     server->send("m");
 					que();
                     //sett a loop tingy 
-               
+				
                    
 				}
 				else if (hit == "Settings")
@@ -312,6 +334,7 @@ void Window::mainMenu()
 				else if (hit == "Logout")
 				{
 					//Go to settings
+					server->send("q");
 #ifdef online 		delete server;
 #endif
 					cout << "Go to login screen...\n";
@@ -327,14 +350,19 @@ void Window::mainMenu()
 	}
 	buttonsMainMenu.clear();
 }
+
 void Window::que(){
-while(!server->matchFound()){
+	
+if(!server->ifServerFoundIt("matchFound", 1000)){
+
+
+
                     }
-
-
 }
+
 void Window::build()
-{
+{	
+
 	//Swap background
 	string bgStr = DIR_BACKGROUNDS + "Space.png";
 	background = IMG_LoadTexture(ren, bgStr.c_str());
@@ -342,11 +370,22 @@ void Window::build()
 	//Reset ships
 	delete playerShip;
 	delete enemyShip;
-
+#ifdef online
+	
 	//Create new ships
 	playerShip = new Space_Ship(ren, background, "Build your ship...");
 	enemyShip = new Space_Ship(ren, background, "Build the enemy ship...");
+	server->saveShip(playerShip->getShipStructure());
 
+
+#endif
+
+#ifdef offline
+	//Create new ships
+	playerShip = new Space_Ship(ren, background, "Build your ship...");
+	enemyShip = new Space_Ship(ren, background, "Build the enemy ship...");
+#endif
+	
 	//Change background back
 	string bgStr1 = DIR_BACKGROUNDS + "Main_Menu.png";
 	background = IMG_LoadTexture(ren, bgStr1.c_str());

@@ -167,3 +167,27 @@ void Hull::setPosition(int x, int y)
 	dstRect->x += x;
 	dstRect->y += y;
 }
+
+int Hull::getType()
+{
+	int type = -1;
+
+	//Check if an existing module
+	if (armor)
+	{
+		if (specialAttack)
+		{
+			type = hull_type(ELECTRICAL);
+		}
+		else if (specialDefence)
+		{
+			type = hull_type(REINFORCED);
+		}
+		else
+		{
+			type = hull_type(NORMAL);
+		}
+	}
+
+	return type;
+}

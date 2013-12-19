@@ -8,7 +8,7 @@ Module::Module()
 {
 }
 
-Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int reqPow, int dmg, int disPow, int act)
+Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int hullId, int reqPow, int dmg, int disPow, int act)
 {
 	ren = rend;
 
@@ -41,7 +41,19 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 	currentHealth = maxHealth;
 	currentPower = 0;
 	disabled = 0;
+	disablePower = disPow;
 	accuracy = acc;
+	active = false;
+	hovered = false;
+	held = false;
+	changedPower = 0;
+
+	defence = 0;
+	damage = dmg;
+	activeTurns = act;
+	requiredPower = reqPow;
+	activeLostOnHit = 1;
+	
 	string tmpTxt = numToStr(currentHealth) + "/" + numToStr(maxHealth);
 	healthText = new Text(ren, tmpTxt.c_str(), DIR_FONTS + "Custom_Orange.png");
 	healthText->setPosition(dstRect->x + 4, dstRect->y + 4);
@@ -58,22 +70,38 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 	if (dmg) {
 		//Turret uses rockets
 		icoStr = DIR_MISC + "Rocket.png";
+
+		//Set data that are specific to hull
+		if (hullId == ELECTRICAL)
+		{
+			damage += 3;
+			defence -= 3;
+		}
+		else if (hullId == REINFORCED)
+		{
+			defence += 3;
+			requiredPower += 1;
+		}
 	}
 	else if (act) {
 		//Shields uses shiled bubbles
 		icoStr = DIR_MISC + "Shield_Barrier.png";
+
+		//Set data that are specific to hull
+		if (hullId == ELECTRICAL)
+		{
+			activeTurns += 1;
+			activeLostOnHit += 3;
+		}
+		else if (hullId == REINFORCED)
+		{
+			activeTurns -= 1;
+			activeLostOnHit -= 0;
+		}
 	}
 	iconActivate = IMG_LoadTexture(ren, icoStr.c_str());
-
-	requiredPower = reqPow;
-	damage = dmg;
-	disablePower = disPow;
-	hovered = false;
-	held = false;
-
-	activeTurns = act;
+	
 	activeLeft = activeTurns;
-	active = false;
 
 	clearTarget();
 }
@@ -215,6 +243,7 @@ bool Module::addEnergy()
 	{
 		add = ((currentPower < requiredPower) ? 1 : 0);
 		currentPower += add;
+		changedPower += add;
 	}
 
 	return add;
@@ -227,8 +256,15 @@ bool Module::removeEnergy()
 
 	if (!active)
 	{
-		remove = ((currentPower > 0) ? 1 : 0);
-		currentPower -= remove;
+		if (changedPower > 0)
+		{
+			remove = ((currentPower > 0) ? 1 : 0);
+			currentPower -= remove;
+		}
+		else
+		{
+			cout << "You tried to remove energy from last round (or it is empty)!\n";
+		}
 	}
 
 	return remove;
@@ -236,10 +272,17 @@ bool Module::removeEnergy()
 
 void Module::resetEnergy()
 {
+	//Make sure energy from last round can't be moved
+	changedPower = 0;
+
 	//Remove if used
 	if (currentPower == requiredPower)
 	{
-		currentPower = 0;
+		if (hasTarget() || getType() == SHIELD)
+		{
+			currentPower = 0;
+			clearTarget();
+		}
 	}
 	
 	//If effect is active
@@ -270,22 +313,10 @@ int Module::getReqPower(){
 	return requiredPower;
 }
 
-bool Module::activate()
+bool Module::canActivate()
 {
 	//Check if able to use
-	bool charged = false;
-	int charge = ((currentPower == requiredPower) ? currentPower : 0);
-	if (charge)
-	{
-		resetEnergy();
-		charged = true;
-
-		if (activeTurns)
-		{
-			active = true;
-		}
-	}
-
+	bool charged = ((currentPower == requiredPower) ? true : false);
 	return charged;
 }
 
@@ -316,7 +347,7 @@ void Module::setTarget(int x, int y, int posX, int posY)
 {
 	if ((targetX != x || targetY != y) && !activeTurns)
 	{
-		cout << "Target: " << x << ", " << y << endl;
+		cout << "Target (" << x << ", " << y << ", " << posX << ", " << posY << ")\n";
 		targetX = x;
 		targetY = y;
 		targetPosX = posX;
@@ -374,7 +405,7 @@ void Module::setTargetLineToMouse(int mouseX, int mouseY)
 
 bool Module::hasTarget()
 {
-	return ((targetX != -1) ? true : false);
+	return ((targetX != -1 || getType() == SHIELD) ? true : false);
 }
 
 void Module::drawInterface()
@@ -463,10 +494,16 @@ void Module::drawInterface()
 bool Module::isShielding()
 {
 	bool shield = false;
+	//Is shield, active and alive?
 	if (active && activeTurns && currentHealth)
 	{
 		shield = true;
-		resetEnergy();
+
+		//Countdown durability
+		for (int i = 0; i < activeLostOnHit; i++)
+		{
+			resetEnergy();
+		}
 	}
 	return shield;
 }
@@ -533,6 +570,48 @@ bool Module::runRocketAnimation(Module *end)
 string Module::registerAttack(int x, int y)
 {
 	string attack = "";
-	attack = "Rocket " + to_string(x) + " " + to_string(y) + " " + to_string(targetX) + " " + to_string(targetY);
+
+	if (getType() == TURRET)
+	{
+		attack = "Rocket " + to_string(x) + " " + to_string(y) + " " + to_string(targetX) + " " + to_string(targetY);
+	}
+	else if (getType() == SHIELD)
+	{
+		attack = "Shield " + to_string(x) + " " + to_string(y);
+	}
+
 	return attack;
+}
+
+int Module::getType()
+{
+	return (nameId - 1);
+}
+
+void Module::setActive()
+{
+	if (activeTurns && currentPower == requiredPower)
+	{
+		active = true;
+	}
+}
+
+int Module::getChangedEnergy()
+{
+	return changedPower;
+}
+
+int Module::getDamage()
+{
+	return damage;
+}
+
+int Module::getDefence()
+{
+	return defence;
+}
+
+int Module::getActiveLeft()
+{
+	return activeLeft;
 }

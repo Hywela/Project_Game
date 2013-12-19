@@ -87,10 +87,15 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 void Combat::makeMoves()
 {
 	//For all attacks registered
+	cout << "Enemy moves:\n";
 	for (int i = 0; i < enemyAction.size(); i++)
 	{
 		//Draw animation
-		playAnimation(enemyAction[i]);
+		cout << enemyAction[i] << endl;
+		if (enemyAction[i].find("Power") == string::npos)
+		{
+			playAnimation(enemyAction[i]);
+		}
 	}
 	enemyAction.clear();
 	doneAnimating = true;
@@ -127,45 +132,28 @@ void Combat::makeMoves()
 			you->onMouseEvent(event);
 		}
 	}
-
-	//Activate modules
-	you->activate();
 }
 
 void Combat::listenForMoves(){
 	//For all attacks registered
+	cout << "Your moves:\n";
 	for (int i = 0; i < yourAction.size(); i++)
 	{
 		//Draw animation
-		playAnimation(yourAction[i]);
+		cout << yourAction[i] << endl;
+		if (yourAction[i].find("Power") == string::npos)
+		{
+			playAnimation(yourAction[i]);
+		}
 	}
 	yourAction.clear();
 	doneAnimating = true;
 
-	//The enemy's turn
-	cout << "Waiting for enemy:\n";
-
-	cout << "Attack: " << ai->getAttack() << " Power up: " << ai->placeEnergy() << endl;
-	//system("pause");
-
-	//For all attacks registered
-	for (int i = 0; i < yourAction.size(); i++)
-	{
-		//Draw combat
-		draw();
-
-		//Play some animation?
-		cout << "- " << yourAction[i] << endl;
-	}
-	yourAction.clear();
-
 	//Recieve answer
+	ai->aiActions();
+
 	setupAttacks();
-	enemyAction.push_back("Rocket 2 2 2 2");
-	enemyAction.push_back("Rocket 2 1 2 3");
-	enemyAction.push_back("Rocket 2 3 2 1");
-	enemyAction.push_back("Rocket 2 1 2 1");
-	cout << "Your enemy responded with:\n";
+
 	yourTurn = true;
 }
 
@@ -212,8 +200,10 @@ void Combat::draw()
 void Combat::playAnimation(string attackCode)
 {
 	//Animation data
-	Module *attacker = NULL;
-	Module *defender = NULL;
+	Space_Ship *attacker = ((yourTurn) ? enemy : you);
+	Space_Ship *defender = ((yourTurn) ? you : enemy);
+	Module *attackerModule = NULL;
+	Module *defenderModule = NULL;
 	vector <string> args;
 	string currentArg = "";
 
@@ -236,15 +226,19 @@ void Combat::playAnimation(string attackCode)
 	//Store last argument
 	args.push_back(currentArg);
 
+	int x1 = atoi(args[1].c_str());
+	int y1 = atoi(args[2].c_str());
+	attackerModule = attacker->getModule(y1, x1);
+
+	//Use energy
+	attackerModule->setActive();
+	attackerModule->resetEnergy();
+
 	if (args[0] == "Rocket")
 	{
-		cout << "Found a rocket!\n";
-		int x1 = atoi(args[1].c_str());
-		int y1 = atoi(args[2].c_str());
 		int x2 = atoi(args[3].c_str());
 		int y2 = atoi(args[4].c_str());
-		attacker = ((yourTurn) ? enemy->getModule(y1, x1) : you->getModule(y1, x1));
-		defender = ((yourTurn) ? you->getModule(y2, x2) : enemy->getModule(y2, x2));
+		defenderModule = defender->getModule(y2, x2);
 
 		//Run animation sequence
 		bool donePlaying = false;
@@ -254,14 +248,12 @@ void Combat::playAnimation(string attackCode)
 			draw();
 
 			//Draw animation
-			donePlaying = attacker->runRocketAnimation(defender);
+			donePlaying = attackerModule->runRocketAnimation(defenderModule);
 		}
 
 		//Execute damage
-		int posX, posY, dmg;
-		attacker->getTarget(posX, posY, dmg);
-		((yourTurn) ? you->attack(x2, y2, dmg) : enemy->attack(x2, y2, dmg));
-		attacker->clearTarget();
+		int rocketDamage = attackerModule->getDamage();
+		((yourTurn) ? you->attack(x2, y2, rocketDamage) : enemy->attack(x2, y2, rocketDamage));
 	}
 }
 

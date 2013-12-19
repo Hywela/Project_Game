@@ -4,6 +4,7 @@
 #include "Button.h"
 #include "Ai.h"
 #include <vector>
+#include <sstream>
 using namespace std;
 
 
