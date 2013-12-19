@@ -298,7 +298,6 @@ void Window::mainMenu()
 				string ship = server->getShip();
 				if(ship.length() > 5){
 				playerShip = new Space_Ship(ren, ship);
-				cout <<"\n "<< ship;
 	}
 #endif
 					//If you have a valid ship, go to battle
@@ -355,11 +354,13 @@ void Window::que(){
 	
 if(!server->ifServerFoundIt("matchFound", 1000)){
 
-
-
-                    }
+	string ship = server->getEnemyShip();
+	if(ship.length() > 5){
+	enemyShip = new Space_Ship(ren, ship);
+    }
+	Combat *combat = new Combat(playerShip, enemyShip, true, ren, win);
 }
-
+}
 void Window::build()
 {	
 
