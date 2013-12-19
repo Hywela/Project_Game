@@ -779,22 +779,25 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 			for (int x = posX - 1; x <= posX + 1; x++)
 			{
 				//If not out of bounderies
-				if (module_layer[y][x] != NULL)
+				if ((x >= 0 && x < SHIP_WIDTH) && (y >= 0 && y < SHIP_HEIGHT))
 				{
-					//If shield is active
-					if (module_layer[y][x]->isShielding())
+					if (module_layer[y][x] != NULL)
 					{
-						//Check if shield is in the corner (partly shielding)
-						if (x != posX && y != posY)
+						//If shield is active
+						if (module_layer[y][x]->isShielding())
 						{
-							if (shieldPercent < 50)
+							//Check if shield is in the corner (partly shielding)
+							if (x != posX && y != posY)
 							{
-								shieldPercent = 50;
+								if (shieldPercent < 50)
+								{
+									shieldPercent = 50;
+								}
 							}
-						}
-						else
-						{
-							shieldPercent = 100;
+							else
+							{
+								shieldPercent = 100;
+							}
 						}
 					}
 				}
