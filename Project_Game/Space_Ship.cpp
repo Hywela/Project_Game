@@ -749,22 +749,46 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 		//Calculate actual damage
 		int actualDamage = dmg - module_layer[posY][posX]->getDefence();
 
+		int shieldPercent = 0;
 		//Check if module is shielded
-		if  (	(module_layer[posY][posX - 1] != NULL && module_layer[posY][posX - 1]->isShielding())
-			||	(module_layer[posY - 1][posX] != NULL && module_layer[posY - 1][posX]->isShielding())
-			||	(module_layer[posY][posX + 1] != NULL && module_layer[posY][posX + 1]->isShielding())
-			||	(module_layer[posY + 1][posX] != NULL && module_layer[posY + 1][posX]->isShielding())
-			||	(module_layer[posY][posX] != NULL && module_layer[posY][posX]->isShielding()))
+		for (int y = posY - 1; y <= posY + 1; y++)
+		{
+			for (int x = posX - 1; x <= posX + 1; x++)
 			{
-				cout << "The attack was shielded!\n";
+				//If not out of bounderies
+				if ((x >= 0 && x < SHIP_WIDTH) && (y >= 0 && y < SHIP_HEIGHT))
+				{
+					if (module_layer[y][x] != NULL)
+					{
+						//If shield is active
+						if (module_layer[y][x]->isShielding())
+						{
+							//Check if shield is in the corner (partly shielding)
+							if (x != posX && y != posY)
+							{
+								if (shieldPercent < 50)
+								{
+									shieldPercent = 50;
+								}
+							}
+							else
+							{
+								shieldPercent = 100;
+							}
+						}
+					}
+				}
 			}
-		//Check if the module is partly shielded (50% damage taken)
-		else if((module_layer[posY - 1][posX - 1] != NULL && module_layer[posY - 1][posX - 1]->isShielding())
-			||	(module_layer[posY - 1][posX + 1] != NULL && module_layer[posY - 1][posX + 1]->isShielding())
-			||	(module_layer[posY + 1][posX - 1] != NULL && module_layer[posY + 1][posX - 1]->isShielding())
-			||	(module_layer[posY + 1][posX + 1] != NULL && module_layer[posY + 1][posX + 1]->isShielding()))
+		}
+
+		if  (shieldPercent == 100)
+			{
+				cout << "The attack was completly shielded!\n";
+			}
+		else if (shieldPercent == 50)
 			{
 				module_layer[posY][posX]->onHit(int(actualDamage / 2));
+				cout << "50% of the attack was shielded!\n";
 			}
 		else
 		{
