@@ -348,6 +348,7 @@ void Window::que(){
 	bool done = false;
 	while (!done) {
 		if (server->ifServerFoundIt("matchFound", 1000)) {
+			bool yourTurn = server->whoStarts();
 			cout << "\n in Match\n";
 	string ship = server->getShip();
 			if (ship.length() > 5) {
