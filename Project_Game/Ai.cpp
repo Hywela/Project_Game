@@ -118,7 +118,7 @@ void Ai::aiActions(){
 				int pixCoorX, pixCoorY; //pixel coordinates of target module...
 				target->getPosition(pixCoorX, pixCoorY);	//get coordinates from target module
 				atkModule->setTarget((modNr % SHIP_WIDTH), (modNr / SHIP_HEIGHT), pixCoorX, pixCoorY); //set attack modules target
-				moduleHp[collumn][row] -= atkModule->getDamage();		
+				moduleHp[(modNr % SHIP_WIDTH)][(modNr / SHIP_HEIGHT)] -= atkModule->getDamage();
 			}
 		}
 	}
