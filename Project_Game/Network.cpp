@@ -274,3 +274,15 @@ string Network:: getEnemyShip(){
 	send("e");
 	return reciveString(1000);
 }
+bool Network:: whoStarts(){
+	if(ifServerFoundIt("YouAreStarting", 1000)){
+
+		return true;
+	}else if (ifServerFoundIt("EnemyStarting", 1000)){
+		return false;
+	}
+
+
+
+
+}

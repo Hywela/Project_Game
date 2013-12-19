@@ -26,16 +26,6 @@ Hull::~Hull()
 {
 }
 
-string Hull::networkConstruction(){
-	stringstream hull;
-	hull  << srcRect->h << "/" << srcRect->w <<"/"<< srcRect->x 
-		<< "/"<< srcRect->y << "/"<< dstRect->h << "/" << dstRect->w <<"/"<< dstRect->x 
-		<< "/"<< dstRect->y << "/"<< armor << "/"<< specialAttack << "/"<< specialDefence 
-		<< isLocked << "/"<< isEmpty << "/"<<  numAnchors;
-	//TODO:: hva skal sendes ...
-return hull.str();
-}
-
 void Hull::drawBuild()
 {
 	if (!isEmpty || (isEmpty && isPlaceable))

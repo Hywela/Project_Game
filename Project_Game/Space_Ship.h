@@ -39,7 +39,7 @@ public:
 	Space_Ship(SDL_Renderer *rend, string structure);
 	~Space_Ship();
 
-	void networkConstruction();
+	
 	void draw();
 	bool buildHull();
 	void swapHull(int x, int y, int type);

@@ -366,7 +366,7 @@ if(server->ifServerFoundIt("matchFound", 1000)){
 	if(enemyship.length() > 5){
 	enemyShip = new Space_Ship(ren, enemyship);
     }
-	Combat *combat = new Combat(playerShip, enemyShip, true, ren, win);
+	Combat *combat = new Combat(playerShip, enemyShip,ren, win, server);
 }
 }
 void Window::build()

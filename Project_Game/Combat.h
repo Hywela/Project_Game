@@ -5,6 +5,7 @@
 #include "Ai.h"
 #include <vector>
 #include <sstream>
+#include "Network.h"
 using namespace std;
 
 
@@ -28,9 +29,11 @@ private:
 
 public:
 	Combat();
+	Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend, SDL_Window *wind ,  Network *instanceOfServer );
 	Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_Renderer *rend, SDL_Window *wind);
 	void makeMoves();
 	void listenForMoves();
+	void listenForMovesPVP();
 	void draw();
 	void playAnimation(string attackCode);
 	void setupAttacks();

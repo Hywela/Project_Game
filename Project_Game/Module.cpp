@@ -110,18 +110,6 @@ Module::~Module()
 {
 }
 
-string Module::networkConstruction(){
-	stringstream hull;
-	
-	hull  << srcRect->h << "/" << srcRect->w <<"/"<< srcRect->x 
-		<< "/"<< srcRect->y << "/"<< dstRect->h << "/" << dstRect->w <<"/"<< dstRect->x 
-		<< "/"<< dstRect->y << "/"<< nameId << "/"<< maxHealth << "/"<< currentHealth 
-		<< currentPower << "/"<< disabled << "/"<<  accuracy;
-	//TODO::
-
-return hull.str();
-}
-
 void Module::printData()
 {
 	cout << "Icon: ";

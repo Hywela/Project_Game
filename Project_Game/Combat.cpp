@@ -8,7 +8,84 @@
 Combat::Combat()
 {
 }
+Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend, SDL_Window *wind , Network *instanceOfServer){
+	//Copy renderer and window
+	ren = rend;
+	win = wind;
+	Network *server = instanceOfServer;
+	//Set up button properties
+	int winH, winW;
+	SDL_GetWindowSize(win, &winW, &winH);
 
+	int btnWidth = 140;
+	int btnHeight = 30;
+	int startY = 220;
+	int offsetY = 20;
+	int btnX = (winW / 2) - (btnWidth / 2);
+	int btnY = (winH / 8) - (btnHeight / 2);
+	float scaleX = btnX;
+	float scaleY = btnY;
+
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Green.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, "End turn", btnWidth, btnHeight));
+
+	//Create texture from image
+	string bgStr = DIR_BACKGROUNDS + "Space.png";
+	background = IMG_LoadTexture(ren, bgStr.c_str());
+
+	//Set game properties
+	you = yourShip;
+	enemy = enemyShip;
+	ai = new Ai(enemyShip, you, 1, 1);
+	yourTurn = server->whoStarts();
+
+	//Position ships
+	int ship1X = (winW / 4) - (((64 + 2) * 5) / 2);
+	int ship2X = ((winW / 4) * 3) - (((64 + 2) * 5) / 2);
+	int shipCentreY = 32 + (winH / 2) - (((64 + 2) * 5) / 2);
+
+	you->setPosition(ship1X, shipCentreY);
+	enemy->setPosition(ship2X, shipCentreY);
+
+	//Make interface
+	statusEnergyLeft = new Text(ren, "Energy: ?/?");
+	int statusCentreX = (winW / 2) - (statusEnergyLeft->getWidth() / 2) - 8;
+	int statusY = 14;
+	statusEnergyLeft->setPosition(statusCentreX, statusY);
+
+	//Set targets
+	you->setTarget(enemy);
+	enemy->setTarget(you);
+
+
+
+	//Ship health, calculates as a overall from modules. (Shields etc.)
+	bool youAlive = true;
+	bool enemyAlive = true;
+
+	//While both still alive
+	while(youAlive && enemyAlive)
+	{
+		//Wait for animations to finish
+		doneAnimating = false;
+
+		//Preform turn
+		((yourTurn) ? makeMoves() : listenForMovesPVP());
+
+		//Check if combat is over
+		youAlive = !you->isDead();
+		enemyAlive = !enemy->isDead();
+	}
+
+	//Game done, heal restore ships
+	you->restore();
+	
+
+
+
+
+
+
+}
 Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_Renderer *rend, SDL_Window *wind)
 {
 	//Copy renderer and window
@@ -133,7 +210,29 @@ void Combat::makeMoves()
 		}
 	}
 }
+void Combat::listenForMovesPVP(){
+	//For all attacks registered
+	cout << "Your moves:\n";
+	for (int i = 0; i < yourAction.size(); i++)
+	{
+		//Draw animation
+		cout << yourAction[i] << endl;
+		if (yourAction[i].find("Power") == string::npos)
+		{
+			playAnimation(yourAction[i]);
+		}
+	}
+	yourAction.clear();
+	doneAnimating = true;
 
+	//Recieve answer
+	//ai->aiActions();
+
+	setupAttacks();
+
+	yourTurn = true;
+
+}
 void Combat::listenForMoves(){
 	//For all attacks registered
 	cout << "Your moves:\n";
