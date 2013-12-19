@@ -12,7 +12,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend,
 	//Copy renderer and window
 	ren = rend;
 	win = wind;
-	Network *server = instanceOfServer;
+	server = instanceOfServer;
 	//Set up button properties
 	int winH, winW;
 	SDL_GetWindowSize(win, &winW, &winH);
@@ -35,7 +35,6 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend,
 	//Set game properties
 	you = yourShip;
 	enemy = enemyShip;
-	ai = new Ai(enemyShip, you, 1, 1);
 	yourTurn = server->whoStarts();
 
 	//Position ships
@@ -69,6 +68,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend,
 
 		//Wait for animations to finish
 		doneAnimating = false;
+		
 
 		//Preform turn
 		((yourTurn) ? makeMoves() : listenForMovesPVP());
@@ -165,6 +165,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 
 void Combat::makeMoves()
 {
+
 	//For all attacks registered
 	cout << "Enemy moves:\n";
 	for (int i = 0; i < enemyAction.size(); i++)
@@ -215,22 +216,17 @@ void Combat::makeMoves()
 void Combat::listenForMovesPVP(){
 	//For all attacks registered
 	cout << "Your moves:\n";
-	for (int i = 0; i < yourAction.size(); i++)
-	{
+	for (int i = 0; i < yourAction.size(); i++){
 		//Draw animation
 		cout << yourAction[i] << endl;
-		if (yourAction[i].find("Power") == string::npos)
-		{
+		if (yourAction[i].find("Power") == string::npos){
 			playAnimation(yourAction[i]);
 		}
 	}
 	yourAction.clear();
 	doneAnimating = true;
 
-	//Recieve answer
-	//ai->aiActions();
-
-	setupAttacks();
+	setupAttacksPVP();
 
 	yourTurn = true;
 
@@ -371,4 +367,72 @@ void Combat::setupAttacks()
 	{
 		enemyAction = attacks;
 	}
+}
+void Combat::setupAttacksPVP()
+{
+	
+
+	
+	if (yourTurn)
+	{
+		Space_Ship *attacker = you;
+		vector <string> attacks = attacker->activate();
+		yourAction = attacks; 
+		
+		string iterator = "f "+to_string(yourAction.size());
+		server->send(iterator);
+		for (int i = 0; i < yourAction.size(); i++){
+				server->send(yourAction[i]);
+		}
+	}
+	else
+	{
+		int count = atoi(server->reciveString(1000).c_str());
+		for (int i = 0; i < count; i++){
+				enemyAction.push_back(server->reciveString(1000));
+		}
+		prepareShip();
+	}
+}
+void Combat::prepareShip(){
+
+
+	for (int i = 0; i < enemyAction.size(); i++){
+		//Draw animation
+		cout << enemyAction[i] << endl;
+		vector <string> args;
+		string currentArg = "";
+
+		//Decode attack
+		for (char &c : enemyAction[i]){
+			if (c != ' '){
+				//Build string
+				currentArg += c;
+			}
+			else{
+				//Store string and reset
+				args.push_back(currentArg);
+				currentArg = "";
+			}
+		}//end - for(...)
+
+			//Store last argument
+			args.push_back(currentArg);
+
+			int x1 = atoi(args[1].c_str());
+			int y1 = atoi(args[2].c_str());
+			Module *currentModule = enemy->getModule(y1, x1);
+			if(args[0] == "Power"){
+				currentModule->addEnergy();
+			}else if(args[0] == "Rocket"){
+				int x2 = atoi(args[3].c_str());
+				int y2 = atoi(args[4].c_str());
+				Module *target = enemy->getModule(y2, x2);
+				int posX,posY;
+				target->getPosition(posX,posY);
+				currentModule->setTarget(x2, y2, posX, posY);
+			}
+
+	}//end - for(...)
+
 }

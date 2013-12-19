@@ -13,6 +13,7 @@ using namespace std;
 class Combat
 {
 private:
+	Network *server;
 	Space_Ship *you;
 	Space_Ship *enemy;
 	Ai *ai;
@@ -37,4 +38,6 @@ public:
 	void draw();
 	void playAnimation(string attackCode);
 	void setupAttacks();
+	void setupAttacksPVP();
+	void prepareShip();
 };
