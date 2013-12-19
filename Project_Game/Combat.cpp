@@ -65,6 +65,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend,
 	//While both still alive
 	while(youAlive && enemyAlive)
 	{
+
 		//Wait for animations to finish
 		doneAnimating = false;
 
