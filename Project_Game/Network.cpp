@@ -151,7 +151,7 @@ string Network::reciveString(int waitTime){
         {
             // Check if we got a response from the server
             int messageFromServer = SDLNet_SocketReady(clientSocket);
- 
+
             if (messageFromServer != 0)
             { 
                 //cout << "Got a response from the server... " << endl;
@@ -240,7 +240,7 @@ bool Network:: ifServerFoundIt(string testCase, int waitTime){
 				if (strcmp(buffer, testCase.c_str())== 0){
 					cout << "\n "<< testCase << "found";
 					return true;
-				}
+            }
             }
           
         }
