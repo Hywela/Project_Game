@@ -269,9 +269,6 @@ void Window::mainMenu()
 	//Start game loop
 	while (!done)
 	{
-#ifdef online
-		que();
-#endif
 		//Draw screen
 		currentScreen = SCREEN_MAIN_MENU;
 		draw();
@@ -296,14 +293,6 @@ void Window::mainMenu()
 				}
 				else if (hit == "Battle")
 				{
-				
-#ifdef online	
-				if(inQue)  server->send("m");// boots it out of the que if player goes into battlewith the ai;
-				string ship = server->getShip();
-				if(ship.length() > 5){
-				playerShip = new Space_Ship(ren, ship);
-				}
-#endif
 					//If you have a valid ship, go to battle
 					if (playerShip != NULL)
 					{
@@ -315,12 +304,11 @@ void Window::mainMenu()
 					}
 				}
                 else if (hit == "Queue"){
-                    server->send("m");
-					inQue = !inQue;
-					que();
-                    //sett a loop tingy 
-				
-                   
+#ifdef online
+    server->send("m");
+	inQue = true;
+	que();
+#endif
 				}
 				else if (hit == "Settings")
 				{
@@ -338,8 +326,9 @@ void Window::mainMenu()
 				else if (hit == "Logout")
 				{
 					//Go to settings
-					server->send("q");
-#ifdef online 		delete server;
+#ifdef online
+	server->send("q");
+ 	delete server;
 #endif
 					cout << "Go to login screen...\n";
 					done = true;
@@ -356,21 +345,49 @@ void Window::mainMenu()
 }
 
 void Window::que(){
-	
-if(server->ifServerFoundIt("matchFound", 1000)){
-	cout << "\n in Match";
-	string ship = server->getShip();
-	if(ship.length() > 5){
-	playerShip = new Space_Ship(ren, ship);
-	}
+	bool done = false;
+	while (!done) {
+		if (server->ifServerFoundIt("matchFound", 1000)) {
+			cout << "\n in Match\n";
+			string ship = server->getShip();
+			if (ship.length() > 5) {
+				cout << ship << endl;
+				playerShip = new Space_Ship(ren, ship);
+			}
 
-	string enemyship = server->getEnemyShip();
-	if(enemyship.length() > 5){
-	enemyShip = new Space_Ship(ren, enemyship);
-    }
-	//Combat *combat = new Combat(playerShip, enemyShip,ren, win, server);
-	Combat *combat = new Combat(playerShip, enemyShip, true, ren, win);
-}
+			string enemyship = server->getEnemyShip();
+			if (enemyship.length() > 5) {
+				cout << enemyship << endl;
+				enemyShip = new Space_Ship(ren, enemyship);
+			}
+
+			//Combat *combat = new Combat(playerShip, enemyShip,ren, win, server);
+			Combat *combat = new Combat(playerShip, enemyShip, true, ren, win);
+		}
+
+		//Handle incomming events
+		while (SDL_PollEvent(&event)) {
+			//Check if a key was PRESSED
+			if (event.key.state == SDL_PRESSED)
+			{
+				//Figure out what the key does
+				SDL_Keycode key = event.key.keysym.sym;
+			
+				cout << "[MATCH-KEY]: ";
+				switch (key)
+				{
+					case SDLK_ESCAPE:
+					{
+						cout << "Return";
+						server->send("m");
+						inQue = false;
+						done = true;
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 void Window::build()
 {	
