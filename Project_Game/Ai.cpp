@@ -24,7 +24,7 @@ int Ai::energyTarget(){
 			if (modu != NULL){	//if there is a module at position
 				if (modu->getCurrentHealth() > 0){	//if alive
 					if (modulePow[row][collumn] < modu->getReqPower()){//if not full of energy
-						cout << moduleIndex << " Current energy " << modulePow[collumn][row] << endl;
+						//cout << moduleIndex << " Current energy " << modulePow[collumn][row] << endl;
 						modules[moduleIndex] += SHIP_HEIGHT*SHIP_WIDTH;
 					}
 				}
@@ -37,13 +37,13 @@ int Ai::energyTarget(){
 
 	int topPri = -1;
 	for (int i = 0; i < SHIP_HEIGHT*SHIP_WIDTH; i++){
-		cout << i << " Is prioritized at " << modules[i] << endl;
+		//cout << i << " Is prioritized at " << modules[i] << endl;
 		if (modules[i] > 0 && modules[i] >topPri){
 			topPri = i;
 		}
 	}
 
-	cout << "Top pri: " << topPri << endl ;
+	//cout << "Top pri: " << topPri << endl ;
 	return topPri;
 }
 
@@ -108,16 +108,16 @@ void Ai::aiActions(){
 	//for each attack module with full energy
 	for (int row = 0; row < SHIP_HEIGHT; row++){
 		for (int collumn = 0; collumn < SHIP_WIDTH; collumn++){
-			Module *atkModule = aiShip->getModule(row, collumn);
+			Module *atkModule = aiShip->getModule(collumn, row);
 			//if an allive attack module with full power
-			if (atkModule != NULL && modulePow[collumn][row] == atkModule->getReqPower() && atkModule->getCurrentHealth() > 0 && atkModule->getType() == TURRET){
+			if (atkModule != NULL && modulePow[row][collumn] == atkModule->getReqPower() && atkModule->getCurrentHealth() > 0 && atkModule->getType() == TURRET){
 				int modNr = getAttack();
 
 				//Attack enemy module
-				Module *target = playerShip->getModule((modNr / SHIP_HEIGHT), (modNr % SHIP_WIDTH));
+				Module *target = playerShip->getModule((modNr % SHIP_WIDTH), (modNr / SHIP_HEIGHT));
 				int pixCoorX, pixCoorY; //pixel coordinates of target module...
 				target->getPosition(pixCoorX, pixCoorY);	//get coordinates from target module
-				atkModule->setTarget(row, collumn, pixCoorX, pixCoorY); //set attack modules target
+				atkModule->setTarget((modNr % SHIP_WIDTH), (modNr / SHIP_HEIGHT), pixCoorX, pixCoorY); //set attack modules target
 				moduleHp[collumn][row] -= atkModule->getDamage();		
 			}
 		}

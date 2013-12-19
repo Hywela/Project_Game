@@ -46,6 +46,7 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 	active = false;
 	hovered = false;
 	held = false;
+	changedPower = 0;
 
 	defence = 0;
 	damage = dmg;
@@ -346,7 +347,7 @@ void Module::setTarget(int x, int y, int posX, int posY)
 {
 	if ((targetX != x || targetY != y) && !activeTurns)
 	{
-		cout << "Target: " << x << ", " << y << endl;
+		cout << "Target (" << x << ", " << y << ", " << posX << ", " << posY << ")\n";
 		targetX = x;
 		targetY = y;
 		targetPosX = posX;

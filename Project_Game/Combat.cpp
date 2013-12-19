@@ -11,9 +11,6 @@ Combat::Combat()
 
 Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_Renderer *rend, SDL_Window *wind)
 {
-	cout << "You: " << yourShip->getShipStructure() << endl;
-	cout << "Enemy: " << enemyShip->getShipStructure() << endl;
-
 	//Copy renderer and window
 	ren = rend;
 	win = wind;
@@ -95,7 +92,7 @@ void Combat::makeMoves()
 	{
 		//Draw animation
 		cout << enemyAction[i] << endl;
-		if (!enemyAction[i].find("Power"))
+		if (enemyAction[i].find("Power") == string::npos)
 		{
 			playAnimation(enemyAction[i]);
 		}
@@ -144,30 +141,18 @@ void Combat::listenForMoves(){
 	{
 		//Draw animation
 		cout << yourAction[i] << endl;
-		playAnimation(yourAction[i]);
+		if (yourAction[i].find("Power") == string::npos)
+		{
+			playAnimation(yourAction[i]);
+		}
 	}
 	yourAction.clear();
 	doneAnimating = true;
 
-	//The enemy's turn
-	cout << "Waiting for enemy:\n";
-	//system("pause");
-
-	//For all attacks registered
-	for (int i = 0; i < yourAction.size(); i++)
-	{
-		//Draw combat
-		draw();
-
-		//Play some animation?
-		cout << "- " << yourAction[i] << endl;
-	}
-	yourAction.clear();
-
 	//Recieve answer
-	setupAttacks();
-	cout << "Your enemy responded with:\n";
 	ai->aiActions();
+
+	setupAttacks();
 
 	yourTurn = true;
 }
