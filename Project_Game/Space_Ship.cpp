@@ -923,12 +923,12 @@ void Space_Ship::restore()
 	isDestroyed = false;
 }
 
-Module* Space_Ship::getModule(int row, int collumn){
-	return module_layer[row][collumn];
+Module* Space_Ship::getModule(int y, int x){
+	return module_layer[y][x];
 }
 
-Hull* Space_Ship::getHull(int row, int collumn){
-	return hull_layer[row][collumn];
+Hull* Space_Ship::getHull(int y, int x){
+	return hull_layer[y][x];
 }
 
 int Space_Ship::getMaxEnergy(){

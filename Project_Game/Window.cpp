@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define online
+#define offline
 
 Window::Window()
 {

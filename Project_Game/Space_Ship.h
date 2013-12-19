@@ -57,8 +57,8 @@ public:
 	void checkModuleHealth();
 	bool isDead();
 	void restore();
-	Module* getModule(int row, int collumn);
-	Hull* getHull(int row, int collumn);
+	Module* getModule(int y, int x);
+	Hull* getHull(int y, int x);
 	int getMaxEnergy();
 	void drawBuild();
 	string getShipStructure();
