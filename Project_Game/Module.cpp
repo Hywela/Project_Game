@@ -91,7 +91,7 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 		else if (hullId == REINFORCED)
 		{
 			activeTurns -= 1;
-			activeLostOnHit -= 0;
+			activeLostOnHit = 0;
 		}
 	}
 
@@ -608,4 +608,9 @@ int Module::getDefence()
 int Module::getActiveLeft()
 {
 	return activeLeft;
+}
+
+int Module::getActiveLostOnHit()
+{
+	return activeLostOnHit;
 }

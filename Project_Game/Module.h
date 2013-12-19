@@ -98,4 +98,5 @@ public:
 	int getDamage();
 	int getDefence();
 	int getActiveLeft();
+	int getActiveLostOnHit();
 };
