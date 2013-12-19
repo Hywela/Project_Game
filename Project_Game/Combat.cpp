@@ -241,7 +241,6 @@ void Combat::playAnimation(string attackCode)
 		defenderModule = defender->getModule(y2, x2);
 
 		//Run animation sequence
-		attacker->resetEnergy();
 		bool donePlaying = false;
 		while (!donePlaying)
 		{
