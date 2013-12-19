@@ -8,7 +8,7 @@
 Combat::Combat()
 {
 }
-Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend, SDL_Window *wind , Network *instanceOfServer){
+Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend, SDL_Window *wind , Network *instanceOfServer, bool turn){
 	//Copy renderer and window
 	ren = rend;
 	win = wind;
@@ -35,7 +35,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend,
 	//Set game properties
 	you = yourShip;
 	enemy = enemyShip;
-	yourTurn = server->whoStarts();
+	yourTurn = turn;
 
 	//Position ships
 	int ship1X = (winW / 4) - (((64 + 2) * 5) / 2);

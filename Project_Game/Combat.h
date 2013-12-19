@@ -30,7 +30,7 @@ private:
 
 public:
 	Combat();
-	Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend, SDL_Window *wind ,  Network *instanceOfServer );
+	Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend, SDL_Window *wind ,  Network *instanceOfServer, bool turn );
 	Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_Renderer *rend, SDL_Window *wind);
 	void makeMoves();
 	void listenForMoves();

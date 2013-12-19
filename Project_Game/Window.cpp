@@ -359,6 +359,9 @@ void Window::que(){
 	
 if(server->ifServerFoundIt("matchFound", 1000)){
 	cout << "\n in Match";
+	string turn = server->reciveString(1000);
+	bool yourTurn= server->whoStarts();
+
 	string ship = server->getShip();
 	if(ship.length() > 5){
 	playerShip = new Space_Ship(ren, ship);
@@ -368,8 +371,8 @@ if(server->ifServerFoundIt("matchFound", 1000)){
 	if(enemyship.length() > 5){
 	enemyShip = new Space_Ship(ren, enemyship);
     }
-	//Combat *combat = new Combat(playerShip, enemyShip,ren, win, server);
-	Combat *combat = new Combat(playerShip, enemyShip, true, ren, win);
+	Combat *combat = new Combat(playerShip, enemyShip,ren, win, server, yourTurn);
+	//Combat *combat = new Combat(playerShip, enemyShip, true, ren, win);
 }
 }
 void Window::build()
