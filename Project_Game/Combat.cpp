@@ -370,9 +370,7 @@ void Combat::setupAttacks()
 }
 void Combat::setupAttacksPVP()
 {
-	
 
-	
 	if (yourTurn)
 	{
 		Space_Ship *attacker = you;
