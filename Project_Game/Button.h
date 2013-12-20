@@ -26,7 +26,10 @@ public:
 	~Button();
 
 	void setPosition(int x, int y);
+
+	/* Moves the button a distance calculated from scale */
 	void scale(float ratio);
+
 	bool isMouseOver(SDL_Event event);
 	string onMouseClick(SDL_Event event);
 	void draw();

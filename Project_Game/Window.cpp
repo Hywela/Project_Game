@@ -1,6 +1,7 @@
 #include "Window.h"
 
 #define offline
+//#define online
 
 Window::Window()
 {
@@ -124,14 +125,6 @@ void Window::login()
 	bool writeBlock = false;
 	bool caps = false;
 	bool tabbed = false;
-
-	queryLogin[0]->addChar('a');
-	queryLogin[0]->addChar('l');
-	queryLogin[0]->addChar('e');
-	queryLogin[0]->addChar('k');
-	queryLogin[0]->addChar('s');
-
-	queryLogin[1]->addChar('a');
 
 	//Start game loop
 	while (!quit)
@@ -262,7 +255,6 @@ void Window::login()
 
 void Window::mainMenu()
 {
-
 	bool done = false;
 	SDL_GetWindowSize(win, &winW, &winH);
 

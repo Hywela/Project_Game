@@ -1,18 +1,17 @@
 #include "Combat.h"
-/* Notes:
-- Send ships from database with current stats and statuses
-to be able to continue from a previously started game.
-*/
+
 
 
 Combat::Combat()
 {
 }
+
 Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool turnStart, SDL_Renderer *rend, SDL_Window *wind , Network *instanceOfServer){
 	//Copy renderer and window
 	ren = rend;
 	win = wind;
 	server = instanceOfServer;
+
 	//Set up button properties
 	int winH, winW;
 	SDL_GetWindowSize(win, &winW, &winH);
@@ -109,6 +108,7 @@ void Combat::makeMovesPVP()
 	//Use normal interface for setting up moves
 	makeMoves();
 }
+
 void Combat::makeMoves()
 {
 	//For all attacks registered
@@ -147,20 +147,20 @@ void Combat::makeMoves()
 				string hit = buttons[i]->onMouseClick(event);
 				if (hit == "End turn")
 				{
-
+					//Prepare animations
 					setupAttacks();
-					if(server != NULL){
-
+					if(server != NULL)
+					{
 						setupAttacksPVP();
 					}
-
 					yourTurn = false;
 				}
 				else if (hit == "Quit")
 				{
-
+					//Give up the battle
 					surrender = true;
-					if (server != NULL) {
+					if (server != NULL)
+					{
 						server->send("f 1/Surrender");
 					}
 					yourTurn = false;
@@ -194,6 +194,7 @@ void Combat::listenForMovesPVP(){
 
 	setupAttacksPVP();
 }
+
 void Combat::listenForMoves(){
 	//For all attacks registered
 	cout << "YOUR ACTIONS:\n";
@@ -334,44 +335,48 @@ void Combat::setupAttacksPVP()
 		sendAttack << yourAction.size();
 
 		//Send all events 
-		for (int i = 0; i < yourAction.size(); i++){
+		for (int i = 0; i < yourAction.size(); i++)
+		{
 			sendAttack <<"/" << yourAction[i];
 		}
-
 		server->send(sendAttack.str());
-
 	}
-	else
+	else //Enemy's turn, wait
 	{
-
-
 		//Wait for count to be read
 		string attackStr = server->reciveString(0);
 
-		if (attackStr.length() > 2) { //TODO:: Fiks so it wont have to loop 
-
+		if (attackStr.length() > 2)
+		{
+			//If recieved something
 			string item;
 			stringstream ss(attackStr.substr(+2));
 
 			//Read all events
-			std::getline(ss, item, '/');// get the number of attacks split it on delim /
+			std::getline(ss, item, '/');
+			//Get the number of attacks split it on delim
 			int numberOfAttacks = atoi(item.c_str());
 
-			for (int i =0; i< numberOfAttacks; i++){ // get the attacks split it on delim /
+			for (int i =0; i< numberOfAttacks; i++)
+			{
+				//Get the attacks split it on delim
 				std::getline(ss, item, '/');
 
 				if(item == "Surrender") surrender = true;
-
 				enemyAction.push_back(item);
 			}
 
 			//Update ship
-			if(!surrender) prepareShip();
+			if(!surrender)
+			{
+				prepareShip();
+			}
 
 			yourTurn = true;
 		}
 	}
 }
+
 void Combat::setupAttacks()
 {
 	Space_Ship *attacker = ((yourTurn) ? you : enemy);
@@ -387,17 +392,18 @@ void Combat::setupAttacks()
 	}
 }
 
-
-void Combat::prepareShip(){
-	for (int i = 0; i < enemyAction.size(); i++){
-		//Draw animation
-
+void Combat::prepareShip()
+{
+	for (int i = 0; i < enemyAction.size(); i++)
+	{
 		vector <string> args;
 		string currentArg = "";
 
 		//Decode attack
-		for (char &c : enemyAction[i]){
-			if (c != ' '){
+		for (char &c : enemyAction[i])
+		{
+			if (c != ' ')
+			{
 				//Build string
 				currentArg += c;
 			}
@@ -415,10 +421,14 @@ void Combat::prepareShip(){
 		int y1 = atoi(args[2].c_str());
 		Module *currentModule = enemy->getModule(y1, x1);
 
-		if(args[0] == "Power"){
+		if(args[0] == "Power")
+		{
+			//Add power
 			currentModule->addEnergy();
 		}
-		else if(args[0] == "Rocket"){
+		else if(args[0] == "Rocket")
+		{
+			//Set target
 			int x2 = atoi(args[3].c_str());
 			int y2 = atoi(args[4].c_str());
 			Module *target = enemy->getModule(y2, x2);
@@ -427,8 +437,5 @@ void Combat::prepareShip(){
 			target->getPosition(posX,posY);
 			currentModule->setTarget(x2, y2, posX, posY);
 		}
-
-
-
 	}//end - for(...)
 }
