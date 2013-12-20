@@ -306,7 +306,7 @@ void Window::mainMenu()
                 else if (hit == "Queue"){
 #ifdef online
                     server->send("m");
-	inQue = true;
+					inQue = true;
 					queue();
 #endif
 				}
@@ -328,7 +328,7 @@ void Window::mainMenu()
 					//Go to settings
 #ifdef online
 					server->send("q");
- 	delete server;
+ 					delete server;
 #endif
 					cout << "Go to login screen...\n";
 					done = true;
@@ -402,6 +402,7 @@ void Window::queue(){
 	}
 	buttonsQueue.clear();
 }
+
 void Window::build()
 {	
 

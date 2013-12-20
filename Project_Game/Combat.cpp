@@ -1,7 +1,7 @@
 #include "Combat.h"
 /* Notes:
-	- Send ships from database with current stats and statuses
-	  to be able to continue from a previously started game.
+- Send ships from database with current stats and statuses
+to be able to continue from a previously started game.
 */
 
 
@@ -16,7 +16,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool turnStart, SDL_
 	//Set up button properties
 	int winH, winW;
 	SDL_GetWindowSize(win, &winW, &winH);
-	
+
 	int btnWidth = 140;
 	int btnHeight = 30;
 	int startY = 220;
@@ -159,7 +159,7 @@ void Combat::makeMoves()
 					cout << "Ending turn!\n";
 					///setupAttacks();
 					if(server != NULL){
-					
+
 						setupAttacksPVP();
 					}
 
@@ -169,7 +169,9 @@ void Combat::makeMoves()
 				{
 					cout << "Quit game!\n";
 					surrender = true;
-					yourAction.push_back("Surrender");
+					if (server != NULL) {
+						server->send("f 1/Surrender");
+					}
 					yourTurn = false;
 				}
 			}
@@ -182,7 +184,7 @@ void Combat::makeMoves()
 
 void Combat::listenForMovesPVP(){
 	//For all attacks registered
-//	cout << "Your moves:\n";
+	//	cout << "Your moves:\n";
 	for (int i = 0; i < yourAction.size(); i++){
 		//Draw animation
 		cout << yourAction[i] << endl;
@@ -334,7 +336,7 @@ void Combat::setupAttacksPVP()
 		stringstream sendAttack; sendAttack << "f ";
 		//Send how many events
 		sendAttack << yourAction.size();
-	
+
 		//Send all events 
 		for (int i = 0; i < yourAction.size(); i++){
 			sendAttack <<"/" << yourAction[i];
@@ -346,10 +348,10 @@ void Combat::setupAttacksPVP()
 	else
 	{
 		cout << "Waiting for opponent!\n";
-		
+
 		//Wait for count to be read
 		string attackStr = server->reciveString(0);
-		
+
 		if (attackStr.length() > 2) { //TODO:: Fiks so it wont have to loop 
 			cout << "\n attac  "<< attackStr;
 			string item;
@@ -362,12 +364,16 @@ void Combat::setupAttacksPVP()
 
 			for (int i =0; i< numberOfAttacks; i++){ // get the attacks split it on delim /
 				std::getline(ss, item, '/');
+				if(item == "Surrender") surrender = true;
+
 				enemyAction.push_back(item);
 				cout << "\n ITEM " << item;
+
 			}
 
 			//Update ship
-			prepareShip();
+			if(!surrender) prepareShip();
+
 			yourTurn = true;
 		}
 	}
@@ -427,11 +433,8 @@ void Combat::prepareShip(){
 			target->getPosition(posX,posY);
 			currentModule->setTarget(x2, y2, posX, posY);
 		}
-		else if (args[0] == "Surrender") {
-			surrender = true;
-		if (server != NULL) {
-			server->send("f 1/Surrender");
-     }
-		}
-	}//end - for(...)
+
+
+	}
+}//end - for(...)
 }
