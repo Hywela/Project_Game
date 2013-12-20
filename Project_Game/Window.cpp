@@ -306,7 +306,7 @@ void Window::mainMenu()
                 else if (hit == "Queue"){
 #ifdef online
                     server->send("m");
-					inQue = true;
+	inQue = true;
 					queue();
 #endif
 				}
@@ -328,7 +328,7 @@ void Window::mainMenu()
 					//Go to settings
 #ifdef online
 					server->send("q");
- 					delete server;
+ 	delete server;
 #endif
 					cout << "Go to login screen...\n";
 					done = true;
@@ -356,22 +356,24 @@ void Window::queue(){
 		if (server->matchFound()) {
 			bool yourTurn = server->starting();
 			
-
-	string ship = server->getShip();
-
+			string ship = server->getShip();
 			if (ship.length() > 5) {
 				cout << ship << endl;
-	playerShip = new Space_Ship(ren, ship);
-	}
+				playerShip = new Space_Ship(ren, ship);
+			}
 
-	string enemyship = server->getEnemyShip();
+			string enemyship = server->getEnemyShip();
 			if (enemyship.length() > 5) {
 				cout << enemyship << endl;
-	enemyShip = new Space_Ship(ren, enemyship);
-    }
+				enemyShip = new Space_Ship(ren, enemyship);
+			}
 
 			Combat *combat = new Combat(playerShip, enemyShip, yourTurn, ren, win, server);
-}
+			//Leave queue
+			cout << "Return";
+			inQue = false;
+			done = true;
+		}
 
 		//Handle incomming events
 		while (SDL_PollEvent(&event)) {
@@ -385,7 +387,7 @@ void Window::queue(){
 				string hit = buttonsQueue[i]->onMouseClick(event);
 				if (hit == "Leave queue")
 					{
-					//Leave queue
+						//Leave queue
 						cout << "Return";
 						server->send("m");
 						inQue = false;
