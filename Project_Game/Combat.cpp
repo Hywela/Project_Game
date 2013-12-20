@@ -157,7 +157,7 @@ void Combat::makeMoves()
 				if (hit == "End turn")
 				{
 					cout << "Ending turn!\n";
-					///setupAttacks();
+					setupAttacks();
 					if(server != NULL){
 					
 						setupAttacksPVP();
@@ -169,7 +169,9 @@ void Combat::makeMoves()
 				{
 					cout << "Quit game!\n";
 					surrender = true;
-					yourAction.push_back("Surrender");
+					if (server != NULL) {
+						server->send("f 1/Surrender");
+					}
 					yourTurn = false;
 				}
 			}
@@ -345,7 +347,7 @@ void Combat::setupAttacksPVP()
 	}
 	else
 	{
-		cout << "Waiting for opponent!\n";
+		//cout << "Waiting for opponent!\n";
 		
 		//Wait for count to be read
 		string attackStr = server->reciveString(0);
@@ -362,12 +364,15 @@ void Combat::setupAttacksPVP()
 
 			for (int i =0; i< numberOfAttacks; i++){ // get the attacks split it on delim /
 				std::getline(ss, item, '/');
+				if(item == "Surrender")
+					surrender = true;
 				enemyAction.push_back(item);
 				cout << "\n ITEM " << item;
 			}
 
 			//Update ship
-			prepareShip();
+			if(!surrender)
+				prepareShip();
 			yourTurn = true;
 		}
 	}
