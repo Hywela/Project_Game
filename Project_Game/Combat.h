@@ -33,6 +33,7 @@ public:
 	Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend, SDL_Window *wind ,  Network *instanceOfServer, bool turn );
 	Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_Renderer *rend, SDL_Window *wind);
 	void makeMoves();
+	void makeMovesPVP();
 	void listenForMoves();
 	void listenForMovesPVP();
 	void draw();
