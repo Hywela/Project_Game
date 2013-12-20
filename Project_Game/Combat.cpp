@@ -1,7 +1,7 @@
 #include "Combat.h"
 /* Notes:
-	- Send ships from database with current stats and statuses
-	  to be able to continue from a previously started game.
+- Send ships from database with current stats and statuses
+to be able to continue from a previously started game.
 */
 
 
@@ -16,7 +16,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool turnStart, SDL_
 	//Set up button properties
 	int winH, winW;
 	SDL_GetWindowSize(win, &winW, &winH);
-	
+
 	int btnWidth = 140;
 	int btnHeight = 30;
 	int startY = 220;
@@ -156,10 +156,10 @@ void Combat::makeMoves()
 				string hit = buttons[i]->onMouseClick(event);
 				if (hit == "End turn")
 				{
-					
+
 					setupAttacks();
 					if(server != NULL){
-					
+
 						setupAttacksPVP();
 					}
 
@@ -167,7 +167,7 @@ void Combat::makeMoves()
 				}
 				else if (hit == "Quit")
 				{
-				
+
 					surrender = true;
 					if (server != NULL) {
 						server->send("f 1/Surrender");
@@ -202,7 +202,7 @@ void Combat::listenForMovesPVP(){
 }
 void Combat::listenForMoves(){
 	//For all attacks registered
-	
+
 	for (int i = 0; i < yourAction.size(); i++)
 	{
 		//Draw animation
@@ -336,7 +336,7 @@ void Combat::setupAttacksPVP()
 		stringstream sendAttack; sendAttack << "f ";
 		//Send how many events
 		sendAttack << yourAction.size();
-	
+
 		//Send all events 
 		for (int i = 0; i < yourAction.size(); i++){
 			sendAttack <<"/" << yourAction[i];
@@ -347,13 +347,13 @@ void Combat::setupAttacksPVP()
 	}
 	else
 	{
-		
-		
+
+
 		//Wait for count to be read
 		string attackStr = server->reciveString(0);
-		
+
 		if (attackStr.length() > 2) { //TODO:: Fiks so it wont have to loop 
-		
+
 			string item;
 			stringstream ss(attackStr.substr(+2));
 
@@ -395,7 +395,7 @@ void Combat::setupAttacks()
 void Combat::prepareShip(){
 	for (int i = 0; i < enemyAction.size(); i++){
 		//Draw animation
-	
+
 		vector <string> args;
 		string currentArg = "";
 
@@ -431,8 +431,8 @@ void Combat::prepareShip(){
 			target->getPosition(posX,posY);
 			currentModule->setTarget(x2, y2, posX, posY);
 		}
-	
-    
-		
+
+
+
 	}//end - for(...)
 }
