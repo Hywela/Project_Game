@@ -430,6 +430,6 @@ void Combat::prepareShip(){
 		}
 
 
-	}
-}//end - for(...)
+	
+	}//end - for(...)
 }
