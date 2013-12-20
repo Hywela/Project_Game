@@ -207,15 +207,60 @@ void Combat::makeMoves()
 }
 void Combat::makeMovesPVP()
 {
-	makeMoves();
+	
+		//For all attacks registered
+	cout << "Enemy moves:\n";
+	for (int i = 0; i < enemyAction.size(); i++)
+	{
+		//Draw animation
+		cout << enemyAction[i] << endl;
+		if (enemyAction[i].find("Power") == string::npos)
+		{
+			playAnimation(enemyAction[i]);
+		}
+	}
+	enemyAction.clear();
+	doneAnimating = true;
 
-	setupAttacksPVP();
+	//Refill energy
+	you->resetEnergy();
+
+	//This players turn
+	while (yourTurn)
+	{
+		//Draw combat
+		draw();
+
+		//Handle incomming events
+		while (SDL_PollEvent(&event))
+		{
+			//Mouse events for the buttons
+			for (int i = 0; i < buttons.size(); i++)
+			{
+				//Check if the mouse are hovering over any buttons
+				buttons[i]->isMouseOver(event);
+
+				//Check if it clicked it
+				string hit = buttons[i]->onMouseClick(event);
+				if (hit == "End turn")
+				{
+					cout << "Ending turn!\n";
+					setupAttacksPVP();
+					yourTurn = false;
+				}
+			}
+
+			//Connect events
+			you->onMouseEvent(event);
+		}
+	}
+	
 
 }
 
 void Combat::listenForMovesPVP(){
 	//For all attacks registered
-	cout << "Your moves:\n";
+	//cout << "Your moves:\n";
 
 	for (int i = 0; i < yourAction.size(); i++){
 		//Draw animation
@@ -379,41 +424,51 @@ void Combat::setupAttacksPVP()
 		yourAction = attacks;
 		stringstream sendAttack; sendAttack << "f ";
 		//Send how many events
-		sendAttack << "/" + to_string(yourAction.size());
+		sendAttack << yourAction.size();
 
 		//Send all events 
 	
-		for (int i = 0; i < yourAction.size(); i++){
+		for (int i = 0; i < yourAction.size()-1; i++){
 			
 			sendAttack <<"/" << yourAction[i];
-			
+		
 		}
-		server->send(sendAttack.str());
 
+		server->send(sendAttack.str());
+		cout <<"\n" <<sendAttack.str();
+		
 	}
 	else
 	{
-		cout << "Waiting for opponent!\n";
-	
+		//cout << "Waiting for opponent!\n";
+		
 		//Wait for count to be read
 		string attackStr = server->reciveString(0);
+		
 		if (attackStr.length() > 3) { //TODO:: Fiks so it wont have to loop 
-
+			cout << "\n attac  "<< attackStr;
 		string item;
 		stringstream ss(attackStr.substr(+2));
 		//Read all events
+		
 		std::getline(ss, item, '/');// get the number of attacks split it on delim /
+		
 		int numberOfAttacks = atoi(item.c_str());
-		while(std::getline(ss, item, '/')){ // get the attacks split it on delim /
-			enemyAction.push_back(item);
+		cout << "\n count " << numberOfAttacks;
+		for (int i =0; i< numberOfAttacks; i++){ // get the attacks split it on delim /
+				std::getline(ss, item, '/');
+				enemyAction.push_back(item);
+				cout << "\n ITEM " << item;
 		}
 		if(enemyAction.size() == numberOfAttacks){
-			yourTurn = true;
+			
 			//TODO:: some code that as the server to ask the user to return last attacks 
 			// probaly needs 
 		}
+			
 		//Update ship
 		prepareShip();
+		yourTurn = true;
 		}
 	}
 }
