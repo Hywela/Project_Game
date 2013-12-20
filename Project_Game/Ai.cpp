@@ -11,7 +11,6 @@ Ai::Ai(Space_Ship *ai_Ship, Space_Ship *player_Ship, int def_Pri, int attack_Pri
 }
 
 int Ai::energyTarget(){
-	static int priToFillUpModules = 3;
 	int moduleIndex = 0;
 	int modules[SHIP_HEIGHT*SHIP_WIDTH];
 	for(int i = 0; i < (SHIP_HEIGHT*SHIP_WIDTH); i++){ //reset pri array to 0
@@ -25,10 +24,10 @@ int Ai::energyTarget(){
 			if (modu != NULL){	//if there is a module at position
 				if (modu->getCurrentHealth() > 0){	//if alive
 					if (modulePow[y][x] < modu->getReqPower() && !modu->getActive()){//if not full of energy
-						cout << "\n\nModule: " << moduleIndex;
+						cout << "::::::Module: " << moduleIndex;
 						modules[moduleIndex] += SHIP_HEIGHT*SHIP_WIDTH;
 						if (modu->getType() == TURRET){			//check if turret
-							cout << " TURRET add \nattackPri \t\t + " << attackPri << endl;
+							cout << " TURRET add ::::::\nattackPri \t\t + " << attackPri << endl;
 							modules[moduleIndex] += attackPri;
 						}
 						else{	//check if shield
@@ -50,8 +49,8 @@ int Ai::energyTarget(){
 								cout << "Damage \t\t\t + " << modu->getDamage() << endl;
 							}
 							else{	//check if shield
-								modules[moduleIndex] += getSuroundingModulHp(aiShip, x, y);
-								cout << "SurroundingHP \t\t + " << getSuroundingModulHp(aiShip, x, y) << endl;
+								modules[moduleIndex] += getSuroundingModulDamage(aiShip, x, y) / enemyUnspentEnergy;
+								cout << "SurroundingDmg \t\t + " << getSuroundingModulDamage(aiShip, x, y) / enemyUnspentEnergy << endl;	//if enemy have modules with a lot of unused energy downpri shield to kill them
 							}
 						}
 						if (modu->getCurrentEnergy() > 0){		//if module is partly filled up already
@@ -82,42 +81,87 @@ int Ai::energyTarget(){
 	return topPriModule;
 }
 
-int Ai::getAttack(){
+int Ai::getAttack(Module *attackingModule){
 	int moduleIndex = 0;
-	int modules[SHIP_HEIGHT*SHIP_WIDTH] = { 0 };
+	int modules[SHIP_HEIGHT*SHIP_WIDTH];
+	for (int i = 0; i < (SHIP_HEIGHT*SHIP_WIDTH); i++){ //reset pri array to 0
+		modules[i] = 0;
+	}
+
 	//Look through modules 
 	for (int y = 0; y < SHIP_HEIGHT; y++){
 		for (int x = 0; x < SHIP_WIDTH; x++){
 			Module *modu = playerShip->getModule(y, x);
-			if (modu != NULL){
-				if (moduleHp[y][x] > 0){
-					modules[moduleIndex] += SHIP_HEIGHT*SHIP_WIDTH;
+			if (modu != NULL){		//if there is a module placed there
+				if (moduleHp[y][x] > 0){	//If module is allive
+					modules[moduleIndex] += (SHIP_HEIGHT*SHIP_WIDTH) + basePri;
+					if (modu->getType() == TURRET){			//check if turret
+						cout << "****ITS A TURRET "<< moduleIndex << endl;
+						modules[moduleIndex] -= enemyAtkModules;
+						modules[moduleIndex] += modu->getDamage();
+						cout << "enemyAtkMods\t\t - " << enemyAtkModules <<endl;
+						cout << "DamagePotet \t\t + " << modu->getDamage() << endl;
+					}
+					else{									//check if shield
+						cout << "****ITS A SHIELD " << moduleIndex << endl;
+						modules[moduleIndex] -= enemyDefModules;
+						modules[moduleIndex] += getSuroundingModulDamage(playerShip, x, y);
+						cout << "enemyDefMods\t\t - " << enemyDefModules << endl;
+						cout << "SurDamagePot\t\t + " << getSuroundingModulDamage(playerShip, x, y) << endl;
+
+					}
+					modules[moduleIndex] += (modu->getCurrentEnergy() * priToPoweredModules);	//Add pri to take out modules with energy
+					modules[moduleIndex] -= moduleHp[y][x];							//Add pri to taking out modules low on health
+					modules[moduleIndex] -= (playerShip->isShielded(x, y)/10);					//Avoid shielded modules
+					modules[moduleIndex] += (moduleHp[y][x] - attackingModule->getDamage());	//downpri attack overkill
+					cout << "currenEnergy\t\t + " << (modu->getCurrentEnergy() * priToPoweredModules) << endl;
+					cout << "moduleHealth\t\t - " << moduleHp[y][x] << endl;
+					cout << "isMoShielded\t\t - " << (playerShip->isShielded(x, y) / 10) << endl;
+					cout << "overKillDamg\t\t - " << (moduleHp[y][x] - attackingModule->getDamage()) << endl;
+					cout << "TOTAL PRIORI\t\t = " << modules[moduleIndex] << endl;
 				}
+				
 			}
 			moduleIndex++;
 		}
 	}
 
 	int topPri = -1;
+	int topPriModule = -1;
 	for (int i = 0; i < SHIP_HEIGHT*SHIP_WIDTH; i++){
-		if (modules[i] > 0 && modules[i] >topPri){
-			topPri = i;
+		if (modules[i] > 0 && modules[i] > topPri){
+			topPri = modules[i];
+			topPriModule = i;
 		}
 	}
 
-	return topPri;
+	cout << "Top Pri: " << topPriModule << endl;
+	return topPriModule;
 }
 
 void Ai::aiActions(){
 	
 
 	//load in ship information
+	enemyAtkModules = 0;
+	enemyDefModules = 0;
+	enemyUnspentEnergy = 1;
 	energyLeft = aiShip->getMaxEnergy();
 
 	for (int y = 0; y < SHIP_HEIGHT; y++){
 		for (int x = 0; x < SHIP_WIDTH; x++){
-			if (playerShip->getModule(y, x) != NULL){
-				moduleHp[y][x] = playerShip->getModule(y, x)->getCurrentHealth();
+			Module *modu = playerShip->getModule(y, x);
+			if (modu != NULL){
+				moduleHp[y][x] = modu->getCurrentHealth();
+				if (modu->getType() == TURRET){			//check if turret
+					enemyAtkModules++;
+				}
+				else if(modu->getType() == SHIELD){	//check if shield
+					enemyDefModules++;
+				}
+				if (modu->getCurrentEnergy()>enemyUnspentEnergy){ //find highest number of unspent energy in enemy module
+					enemyUnspentEnergy = modu->getCurrentEnergy();
+				}
 			}else{
 				moduleHp[y][x] = 0;
 			}
@@ -151,7 +195,7 @@ void Ai::aiActions(){
 			Module *atkModule = aiShip->getModule(y, x);
 			//if an allive attack module with full power
 			if (atkModule != NULL && modulePow[y][x] == atkModule->getReqPower() && atkModule->getCurrentHealth() > 0 && atkModule->getType() == TURRET){
-				int modNr = getAttack();
+				int modNr = getAttack(atkModule);
 				if (modNr >= 0){
 					//Attack enemy module
 					Module *target = playerShip->getModule((modNr / SHIP_HEIGHT), (modNr % SHIP_WIDTH));
@@ -173,7 +217,7 @@ Ai::~Ai()
 }
 
 
-int Ai::getSuroundingModulHp(Space_Ship *ship, int modulX, int modulY)
+int Ai::getSuroundingModulDamage(Space_Ship *ship, int modulX, int modulY)
 {
 	int surroundingHp = 0;
 	//Check if module is shielded
@@ -186,7 +230,9 @@ int Ai::getSuroundingModulHp(Space_Ship *ship, int modulX, int modulY)
 			{
 				if (ship->getModule(y, x) != NULL)
 				{
-					surroundingHp += ship->getModule(y, x)->getCurrentHealth();
+					if (ship->getModule(y, x)->getType() == TURRET){
+						surroundingHp += ship->getModule(y, x)->getDamage();
+					}
 				}
 			}
 		}
