@@ -90,6 +90,7 @@ public:
 	bool hasTarget();
 	void drawInterface();
 	bool isShielding();
+	void damageShield();
 	bool runRocketAnimation(Module *end);
 	string registerAttack(int x, int y);
 	int getType();

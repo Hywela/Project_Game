@@ -488,19 +488,17 @@ void Module::drawInterface()
 
 bool Module::isShielding()
 {
-	bool shield = false;
 	//Is shield, active and alive?
-	if (active && activeTurns && currentHealth)
-	{
-		shield = true;
+	return (active && activeTurns && currentHealth);
+}
 
-		//Countdown durability
-		for (int i = 0; i < activeLostOnHit; i++)
-		{
-			resetEnergy();
-		}
+void Module::damageShield()
+{
+	//Countdown durability
+	for (int i = 0; i < activeLostOnHit; i++)
+	{
+		resetEnergy();
 	}
-	return shield;
 }
 
 bool Module::runRocketAnimation(Module *end)

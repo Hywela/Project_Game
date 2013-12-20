@@ -749,7 +749,7 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 		//Calculate actual damage
 		int actualDamage = dmg - module_layer[posY][posX]->getDefence();
 
-		int shieldPercent = isShielded(posX, posY);
+		int shieldPercent = isShielded(posX, posY, true);
 
 		if  (shieldPercent == 100)
 			{
@@ -770,7 +770,7 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 	checkModuleHealth();
 }
 
-int Space_Ship::isShielded(int posX, int posY)
+int Space_Ship::isShielded(int posX, int posY, bool suffer)
 {
 	int shieldPercent = 0;
 	//Check if module is shielded
@@ -786,6 +786,12 @@ int Space_Ship::isShielded(int posX, int posY)
 					//If shield is active
 					if (module_layer[y][x]->isShielding())
 					{
+						//Suffer shiled durability if attacked
+						if (suffer)
+						{
+							module_layer[y][x]->damageShield();
+						}
+
 						//Check if shield is in the corner (partly shielding)
 						if (x != posX && y != posY)
 						{

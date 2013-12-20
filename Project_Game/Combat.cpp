@@ -200,7 +200,7 @@ void Combat::listenForMoves(){
 	for (int i = 0; i < yourAction.size(); i++)
 	{
 		//Draw animation
-
+		cout << " - " + yourAction[i] << endl;
 		if (yourAction[i].find("Power") == string::npos)
 		{
 			playAnimation(yourAction[i]);
@@ -210,7 +210,6 @@ void Combat::listenForMoves(){
 	doneAnimating = true;
 
 	//Refill energy
-	//cout << "I will now reset your energy!\n";
 	enemy->resetEnergy();
 
 	//Force update
@@ -218,9 +217,7 @@ void Combat::listenForMoves(){
 
 	//Recieve answer
 	ai->aiActions();
-
 	setupAttacks();
-
 	yourTurn = true;
 }
 
@@ -299,10 +296,11 @@ void Combat::playAnimation(string attackCode)
 
 	//Use energy
 	attackerModule->setActive();
-	attackerModule->resetEnergy();
+	//attackerModule->resetEnergy();
 
 	if (args[0] == "Rocket")
 	{
+		attackerModule->resetEnergy();
 		int x2 = atoi(args[3].c_str());
 		int y2 = atoi(args[4].c_str());
 		defenderModule = defender->getModule(y2, x2);
