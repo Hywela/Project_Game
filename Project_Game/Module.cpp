@@ -254,6 +254,7 @@ bool Module::removeEnergy()
 		{
 			remove = ((currentPower > 0) ? 1 : 0);
 			currentPower -= remove;
+			changedPower -= remove;
 		}
 		else
 		{
@@ -341,7 +342,7 @@ void Module::setTarget(int x, int y, int posX, int posY)
 {
 	if ((targetX != x || targetY != y) && !activeTurns)
 	{
-		cout << "Target (" << x << ", " << y << ", " << posX << ", " << posY << ")\n";
+		//cout << "[" << ((getType() == TURRET) ? "TURRET" : "SHIELD") << "]: Target (" << x << ", " << y << ", " << posX << ", " << posY << ")\n";
 		targetX = x;
 		targetY = y;
 		targetPosX = posX;

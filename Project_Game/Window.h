@@ -53,11 +53,12 @@ private:
 	vector <EditText*> queryLogin;
 	vector <Button*> buttonsMainMenu;
 	vector <Button*> buttonsSettings;
+	vector <Button*> buttonsQueue;
 
 public:
     Window();
     ~Window();
-	void que();
+	void queue();
 	int getWindowState();
 	void login();
 	void mainMenu();

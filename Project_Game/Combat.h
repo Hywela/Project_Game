@@ -27,19 +27,20 @@ private:
 	vector <string> enemyAction;
 	bool doneAnimating;
 	Text *statusEnergyLeft;
+	bool surrender;
 
 public:
 	Combat();
-	Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend, SDL_Window *wind ,  Network *instanceOfServer, bool turn );
-	Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_Renderer *rend, SDL_Window *wind);
-	void makeMoves();
+	Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool turnStart, SDL_Renderer *rend, SDL_Window *wind, Network *instanceOfServer = NULL);
+	void setupInterface();
 	void makeMovesPVP();
-	void listenForMoves();
+	void makeMoves();
 	void listenForMovesPVP();
+	void listenForMoves();
 	void draw();
 	void playAnimation(string attackCode);
-	void setupAttacks();
 	void setupAttacksPVP();
+	void setupAttacks();
 	void prepareShip();
 	
 };
