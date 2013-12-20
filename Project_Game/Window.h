@@ -8,6 +8,7 @@
 #include "Combat.h"
 #include "EditText.h"
 #include <SDL_mixer.h>
+#include <fstream>
 #include "Network.h"
 using namespace std;
 

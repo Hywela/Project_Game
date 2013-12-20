@@ -101,27 +101,18 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool turnStart, SDL_
 
 	//Game done, heal restore ships
 	you->restore();
-	if (instanceOfServer == NULL)
-	{
-		enemy->restore();
-	}
+	enemy->restore();
 }
 
 void Combat::makeMovesPVP()
 {
 	//Use normal interface for setting up moves
 	makeMoves();
-
-	//When done, post to server
-
-
-
 }
 void Combat::makeMoves()
 {
-
 	//For all attacks registered
-	//cout << "Enemy moves:\n";
+	cout << "ENEMY ACTIONS:\n";
 	for (int i = 0; i < enemyAction.size(); i++)
 	{
 		//Draw animation
@@ -195,6 +186,9 @@ void Combat::listenForMovesPVP(){
 	yourAction.clear();
 	doneAnimating = true;
 
+	//Refill energy
+	enemy->resetEnergy();
+
 	//Force update
 	draw();
 
@@ -202,7 +196,7 @@ void Combat::listenForMovesPVP(){
 }
 void Combat::listenForMoves(){
 	//For all attacks registered
-
+	cout << "YOUR ACTIONS:\n";
 	for (int i = 0; i < yourAction.size(); i++)
 	{
 		//Draw animation
@@ -214,6 +208,10 @@ void Combat::listenForMoves(){
 	}
 	yourAction.clear();
 	doneAnimating = true;
+
+	//Refill energy
+	//cout << "I will now reset your energy!\n";
+	enemy->resetEnergy();
 
 	//Force update
 	draw();

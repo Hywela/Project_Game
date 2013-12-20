@@ -1,12 +1,40 @@
 #include "Window.h"
 
-
-#define online
+#define offline
 
 Window::Window()
 {
 	PORT = 8881; //Standar PORT Used
 	serverName = "90.149.32.155"; //Standard IP
+
+	//Load server settings
+	string tmpLine = "";
+	string tmpLineValue = "";
+	const int SETTING_BUFFER = 32;
+	ifstream settingsFile(DIR_SETTINGS + "Server.txt");
+	if (settingsFile != NULL)
+	{
+		while (!settingsFile.eof())
+		{
+			//Grab the setting line
+			settingsFile >> tmpLine >> tmpLineValue;
+
+			//Remove space at the start
+			if (tmpLine.find("ip:") != string::npos)
+			{
+				serverName = tmpLineValue;
+			}
+			else if (tmpLine.find("port:") != string::npos)
+			{
+				PORT = atoi(tmpLineValue.c_str());
+			}
+		}
+
+		settingsFile.close();
+	}
+
+	cout << "Server settings:\n - IP: " << serverName << "\n - Port: " << PORT << endl;
+
 	inQue = false;
 	//Starting SDL, initializing main
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -62,7 +90,6 @@ int Window::getWindowState()
 
 void Window::login()
 {
-
 	SDL_GetWindowSize(win, &winW, &winH);
 
 	//Create texture from image, check for errors
@@ -97,6 +124,14 @@ void Window::login()
 	bool writeBlock = false;
 	bool caps = false;
 	bool tabbed = false;
+
+	queryLogin[0]->addChar('a');
+	queryLogin[0]->addChar('l');
+	queryLogin[0]->addChar('e');
+	queryLogin[0]->addChar('k');
+	queryLogin[0]->addChar('s');
+
+	queryLogin[1]->addChar('a');
 
 	//Start game loop
 	while (!quit)
@@ -240,7 +275,7 @@ void Window::mainMenu()
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Green.png", btnX, btnY + ((btnHeight + offsetY) * 1), "Battle", btnWidth, btnHeight));
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 2), "Settings", btnWidth, btnHeight));
 	buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 3), "Logout", btnWidth, btnHeight));
-    buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY + ((btnHeight + offsetY) * 4), "Queue", btnWidth, btnHeight));
+    buttonsMainMenu.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Green.png", btnX, btnY + ((btnHeight + offsetY) * 4), "Queue", btnWidth, btnHeight));
 
 	//Create default ship for testing
 	string strPlayerShip = "Ship"
@@ -250,10 +285,22 @@ void Window::mainMenu()
 	+string(" -1 -1")	+string(" -1 -1")	+string(" 0 0")		+string(" -1 -1")	+string(" -1 -1")
 	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1")	+string(" -1 -1");
 
-	playerShip = new Space_Ship(ren, strPlayerShip);
+	//playerShip = new Space_Ship(ren, strPlayerShip);
 	enemyShip = new Space_Ship(ren, strPlayerShip);
 	//Done creating default ship
 
+	//Try to load your ship from server
+#ifdef online
+	string shipStr = server->getShip();
+	if (shipStr.length() > 5) {
+		cout << shipStr << endl;
+		playerShip = new Space_Ship(ren, shipStr);
+	}
+
+	buttonsMainMenu[4]->setStyle(DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");
+#endif
+
+	//Check if has ship
 	if (playerShip != NULL)
 	{
 		buttonsMainMenu[1]->setStyle(DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png");

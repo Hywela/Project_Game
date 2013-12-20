@@ -28,6 +28,7 @@ const string DIR_AUDIO = "Audio/";
 const string DIR_EFFECTS = DIR_AUDIO + "Effects/";
 const string DIR_MUSIC = DIR_AUDIO + "Music/";
 const string DIR_MISC = DIR_TEXTURES + "Misc/";
+const string DIR_SETTINGS = "Settings/";
 
 const int SHIP_WIDTH = 5;
 const int SHIP_HEIGHT = 5;
