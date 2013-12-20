@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define offline
+#define online
 
 Window::Window()
 {
@@ -306,8 +306,8 @@ void Window::mainMenu()
                 else if (hit == "Queue"){
 #ifdef online
                     server->send("m");
-	inQue = true;
-					que();
+					inQue = true;
+					queue();
 #endif
 				}
 				else if (hit == "Settings")
@@ -344,50 +344,71 @@ void Window::mainMenu()
 	buttonsMainMenu.clear();
 }
 
-void Window::que(){
+void Window::queue(){
+	buttonsQueue.push_back(new Button(ren, DIR_BUTTONS + "Red.png", DIR_FONTS + "Custom_White.png", btnX, btnY + ((btnHeight + offsetY) * 4), "Leave queue", btnWidth, btnHeight));
+
 	bool done = false;
 	while (!done) {
-		if (server->ifServerFoundIt("matchFound", 1000)) {
+		//Draw screen
+		currentScreen = SCREEN_QUEUE;
+		draw();
+
+		if (server->ifServerFoundIt("matchFound", 0)) {
 			bool yourTurn = server->whoStarts();
 			cout << "\n in Match\n";
-	string ship = server->getShip();
+
+			string ship = server->getShip();
+
 			if (ship.length() > 5) {
 				cout << ship << endl;
-	playerShip = new Space_Ship(ren, ship);
-	}
+				playerShip = new Space_Ship(ren, ship);
+			}
 
-	string enemyship = server->getEnemyShip();
+			string enemyship = server->getEnemyShip();
 			if (enemyship.length() > 5) {
 				cout << enemyship << endl;
-	enemyShip = new Space_Ship(ren, enemyship);
-    }
-	Combat *combat = new Combat(playerShip, enemyShip,ren, win, server, yourTurn);
-	//Combat *combat = new Combat(playerShip, enemyShip, true, ren, win);
-}
+				enemyShip = new Space_Ship(ren, enemyship);
+			}
+
+			Combat *combat = new Combat(playerShip, enemyShip, yourTurn, ren, win, server);
+		}
 
 		//Handle incomming events
 		while (SDL_PollEvent(&event)) {
-			//Check if a key was PRESSED
-			if (event.key.state == SDL_PRESSED)
+			//Mouse events for the buttons
+			for (int i = 0; i < buttonsQueue.size(); i++)
 			{
-				//Figure out what the key does
-				SDL_Keycode key = event.key.keysym.sym;
-			
-				cout << "[MATCH-KEY]: ";
-				switch (key)
+				//Check if the mouse are hovering over any buttons
+				buttonsQueue[i]->isMouseOver(event);
+
+				//Check if it clicked it
+				string hit = buttonsQueue[i]->onMouseClick(event);
+				if (hit == "Leave queue")
 				{
-					case SDLK_ESCAPE:
-					{
-						cout << "Return";
-						server->send("m");
-						inQue = false;
-						done = true;
-						break;
-					}
+					//Leave queue
+					cout << "Return";
+					server->send("m");
+					inQue = false;
+					done = true;
 				}
 			}
+
+
+
+
+
+
+
+
+
 		}
 	}
+
+	//Clear interface
+	for (int i = 0; i < buttonsQueue.size(); i++) {
+		delete buttonsQueue[i];
+	}
+	buttonsQueue.clear();
 }
 void Window::build()
 {	
@@ -557,6 +578,14 @@ void Window::draw()
 		for (int i = 0; i < buttonsSettings.size(); i++)
 		{
 			buttonsSettings[i]->draw();
+		}
+	}
+	else if (currentScreen == SCREEN_QUEUE)
+	{
+		//Draw buttons
+		for (int i = 0; i < buttonsQueue.size(); i++)
+		{
+			buttonsQueue[i]->draw();
 		}
 	}
 

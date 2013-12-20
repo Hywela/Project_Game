@@ -8,7 +8,7 @@
 Combat::Combat()
 {
 }
-Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend, SDL_Window *wind , Network *instanceOfServer, bool turn){
+Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool turnStart, SDL_Renderer *rend, SDL_Window *wind , Network *instanceOfServer){
 	//Copy renderer and window
 	ren = rend;
 	win = wind;
@@ -21,12 +21,13 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend,
 	int btnHeight = 30;
 	int startY = 220;
 	int offsetY = 20;
-	int btnX = (winW / 2) - (btnWidth / 2);
+	int btnX = (winW / 2);
 	int btnY = (winH / 8) - (btnHeight / 2);
 	float scaleX = btnX;
 	float scaleY = btnY;
 
-	buttons.push_back(new Button(ren, DIR_BUTTONS + "Green.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, "End turn", btnWidth, btnHeight));
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Green.png", DIR_FONTS + "Custom_Orange.png", btnX - btnWidth - 20, btnY, "End turn", btnWidth, btnHeight));
+	buttons.push_back(new Button(ren, DIR_BUTTONS + "Red.png", DIR_FONTS + "Custom_White.png", btnX + 20, btnY, "Quit", btnWidth, btnHeight));
 
 	//Create texture from image
 	string bgStr = DIR_BACKGROUNDS + "Space.png";
@@ -35,7 +36,8 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend,
 	//Set game properties
 	you = yourShip;
 	enemy = enemyShip;
-	yourTurn = turn;
+	yourTurn = turnStart;
+	surrender = false;
 
 	//Position ships
 	int ship1X = (winW / 4) - (((64 + 2) * 5) / 2);
@@ -54,107 +56,67 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend,
 	//Set targets
 	you->setTarget(enemy);
 	enemy->setTarget(you);
-
-	//Ship health, calculates as a overall from modules. (Shields etc.)
-	bool youAlive = true;
-	bool enemyAlive = true;
 
 	//Force update
 	draw();
 
-	//While both still alive
-	while(youAlive && enemyAlive)
-	{
-
-		//Wait for animations to finish
-		doneAnimating = false;
-
-		//Preform turn
-		((yourTurn) ? makeMovesPVP() : listenForMovesPVP());
-
-		//Check if combat is over
-		youAlive = !you->isDead();
-		enemyAlive = !enemy->isDead();
-	}
-
-	//Game done, heal restore ships
-	you->restore();
-}
-Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_Renderer *rend, SDL_Window *wind)
-{
-	//Copy renderer and window
-	ren = rend;
-	win = wind;
-
-	//Set up button properties
-	int winH, winW;
-	SDL_GetWindowSize(win, &winW, &winH);
-
-	int btnWidth = 140;
-	int btnHeight = 30;
-	int startY = 220;
-	int offsetY = 20;
-	int btnX = (winW / 2) - (btnWidth / 2);
-	int btnY = (winH / 8) - (btnHeight / 2);
-	float scaleX = btnX;
-	float scaleY = btnY;
-
-	buttons.push_back(new Button(ren, DIR_BUTTONS + "Green.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, "End turn", btnWidth, btnHeight));
-
-	//Create texture from image
-	string bgStr = DIR_BACKGROUNDS + "Space.png";
-	background = IMG_LoadTexture(ren, bgStr.c_str());
-
-	//Set game properties
-	you = yourShip;
-	enemy = enemyShip;
-	ai = new Ai(enemyShip, you, 1, 1);
-	yourTurn = youStart;
-
-	//Position ships
-	int ship1X = (winW / 4) - (((64 + 2) * 5) / 2);
-	int ship2X = ((winW / 4) * 3) - (((64 + 2) * 5) / 2);
-	int shipCentreY = 32 + (winH / 2) - (((64 + 2) * 5) / 2);
-
-	you->setPosition(ship1X, shipCentreY);
-	enemy->setPosition(ship2X, shipCentreY);
-
-	//Make interface
-	statusEnergyLeft = new Text(ren, "Energy: ?/?");
-	int statusCentreX = (winW / 2) - (statusEnergyLeft->getWidth() / 2) - 8;
-	int statusY = 14;
-	statusEnergyLeft->setPosition(statusCentreX, statusY);
-
-	//Set targets
-	you->setTarget(enemy);
-	enemy->setTarget(you);
-
-	//Set enemy computer
-	enemy->setComputer(true);
-
 	//Ship health, calculates as a overall from modules. (Shields etc.)
 	bool youAlive = true;
 	bool enemyAlive = true;
 
+	if (instanceOfServer == NULL)
+	{
+		//Set enemy computer
+		enemy->setComputer(true);
+		ai = new Ai(enemyShip, you, 1, 1);
+	}
+
 	//While both still alive
-	while(youAlive && enemyAlive)
+	while(youAlive && enemyAlive && !surrender)
 	{
 		//Wait for animations to finish
 		doneAnimating = false;
 
 		//Preform turn
-		((yourTurn) ? makeMoves() : listenForMoves());
+		if (instanceOfServer == NULL)
+		{
+			//Make local battle configs
+			((yourTurn) ? makeMoves() : listenForMoves());
+		}
+		else
+		{
+			//Make server battle config
+			((yourTurn) ? makeMovesPVP() : listenForMovesPVP());
+		}
 
 		//Check if combat is over
 		youAlive = !you->isDead();
 		enemyAlive = !enemy->isDead();
 	}
 
+	if (surrender)
+	{
+		cout << ((yourTurn) ? "The opponent" : "You") << " have surrendered!\n";
+	}
+
 	//Game done, heal restore ships
 	you->restore();
-	enemy->restore();
+	if (instanceOfServer == NULL)
+	{
+		enemy->restore();
+	}
 }
 
+void Combat::makeMovesPVP()
+{
+	//Use normal interface for setting up moves
+	makeMoves();
+
+	//When done, post to server
+	yourTurn = true;
+	setupAttacksPVP();
+	yourTurn = false;
+}
 void Combat::makeMoves()
 {
 
@@ -198,54 +160,11 @@ void Combat::makeMoves()
 					setupAttacks();
 					yourTurn = false;
 				}
-			}
-
-			//Connect events
-			you->onMouseEvent(event);
-		}
-	}
-}
-void Combat::makeMovesPVP()
-{
-	
-		//For all attacks registered
-	cout << "Enemy moves:\n";
-	for (int i = 0; i < enemyAction.size(); i++)
-	{
-		//Draw animation
-		cout << enemyAction[i] << endl;
-		if (enemyAction[i].find("Power") == string::npos)
-		{
-			playAnimation(enemyAction[i]);
-		}
-	}
-	enemyAction.clear();
-	doneAnimating = true;
-
-	//Refill energy
-	you->resetEnergy();
-
-	//This players turn
-	while (yourTurn)
-	{
-		//Draw combat
-		draw();
-
-		//Handle incomming events
-		while (SDL_PollEvent(&event))
-		{
-			//Mouse events for the buttons
-			for (int i = 0; i < buttons.size(); i++)
-			{
-				//Check if the mouse are hovering over any buttons
-				buttons[i]->isMouseOver(event);
-
-				//Check if it clicked it
-				string hit = buttons[i]->onMouseClick(event);
-				if (hit == "End turn")
+				else if (hit == "Quit")
 				{
-					cout << "Ending turn!\n";
-					setupAttacksPVP();
+					cout << "Quit game!\n";
+					surrender = true;
+					yourAction.push_back("Surrender");
 					yourTurn = false;
 				}
 			}
@@ -254,14 +173,11 @@ void Combat::makeMovesPVP()
 			you->onMouseEvent(event);
 		}
 	}
-	
-
 }
 
 void Combat::listenForMovesPVP(){
 	//For all attacks registered
-	//cout << "Your moves:\n";
-
+	cout << "Your moves:\n";
 	for (int i = 0; i < yourAction.size(); i++){
 		//Draw animation
 		cout << yourAction[i] << endl;
@@ -271,12 +187,11 @@ void Combat::listenForMovesPVP(){
 	}
 	yourAction.clear();
 	doneAnimating = true;
+
 	//Force update
 	draw();
 
 	setupAttacksPVP();
-
-	
 }
 void Combat::listenForMoves(){
 	//For all attacks registered
@@ -292,6 +207,9 @@ void Combat::listenForMoves(){
 	}
 	yourAction.clear();
 	doneAnimating = true;
+
+	//Force update
+	draw();
 
 	//Recieve answer
 	ai->aiActions();
@@ -401,6 +319,51 @@ void Combat::playAnimation(string attackCode)
 	}
 }
 
+void Combat::setupAttacksPVP()
+{
+	if (yourTurn)
+	{
+		stringstream sendAttack; sendAttack << "f ";
+		//Send how many events
+		sendAttack << yourAction.size();
+
+		//Send all events 
+		for (int i = 0; i < yourAction.size(); i++){
+			sendAttack <<"/" << yourAction[i];
+		}
+
+		server->send(sendAttack.str());
+		cout <<"\n" <<sendAttack.str();
+	}
+	else
+	{
+		cout << "Waiting for opponent!\n";
+		
+		//Wait for count to be read
+		string attackStr = server->reciveString(0);
+		
+		if (attackStr.length() > 3) { //TODO:: Fiks so it wont have to loop 
+			cout << "\n attac  "<< attackStr;
+			string item;
+			stringstream ss(attackStr.substr(+2));
+
+			//Read all events
+			std::getline(ss, item, '/');// get the number of attacks split it on delim /
+			int numberOfAttacks = atoi(item.c_str());
+			cout << "\n count " << numberOfAttacks;
+
+			for (int i =0; i< numberOfAttacks; i++){ // get the attacks split it on delim /
+				std::getline(ss, item, '/');
+				enemyAction.push_back(item);
+				cout << "\n ITEM " << item;
+			}
+
+			//Update ship
+			prepareShip();
+			yourTurn = true;
+		}
+	}
+}
 void Combat::setupAttacks()
 {
 	Space_Ship *attacker = ((yourTurn) ? you : enemy);
@@ -415,66 +378,8 @@ void Combat::setupAttacks()
 		enemyAction = attacks;
 	}
 }
-void Combat::setupAttacksPVP()
-{
-	if (yourTurn)
-	{
-		Space_Ship *attacker = you;
-		vector <string> attacks = attacker->activate();
-		yourAction = attacks;
-		stringstream sendAttack; sendAttack << "f ";
-		//Send how many events
-		sendAttack << yourAction.size();
 
-		//Send all events 
-	
-		for (int i = 0; i < yourAction.size(); i++){
-			
-			sendAttack <<"/" << yourAction[i];
-		
-		}
-
-		server->send(sendAttack.str());
-		cout <<"\n" <<sendAttack.str();
-		
-	}
-	else
-	{
-		//cout << "Waiting for opponent!\n";
-		
-		//Wait for count to be read
-		string attackStr = server->reciveString(0);
-		
-		if (attackStr.length() > 3) { //TODO:: Fiks so it wont have to loop 
-			cout << "\n attac  "<< attackStr;
-		string item;
-		stringstream ss(attackStr.substr(+2));
-		//Read all events
-		
-		std::getline(ss, item, '/');// get the number of attacks split it on delim /
-		
-		int numberOfAttacks = atoi(item.c_str());
-		cout << "\n count " << numberOfAttacks;
-		for (int i =0; i< numberOfAttacks; i++){ // get the attacks split it on delim /
-				std::getline(ss, item, '/');
-				enemyAction.push_back(item);
-				cout << "\n ITEM " << item;
-		}
-		if(enemyAction.size() == numberOfAttacks){
-			
-			//TODO:: some code that as the server to ask the user to return last attacks 
-			// probaly needs 
-		}
-			
-		//Update ship
-		prepareShip();
-		yourTurn = true;
-		}
-	}
-}
 void Combat::prepareShip(){
-
-
 	for (int i = 0; i < enemyAction.size(); i++){
 		//Draw animation
 		cout << enemyAction[i] << endl;
@@ -494,23 +399,27 @@ void Combat::prepareShip(){
 			}
 		}//end - for(...)
 
-			//Store last argument
-			args.push_back(currentArg);
+		//Store last argument
+		args.push_back(currentArg);
 
-			int x1 = atoi(args[1].c_str());
-			int y1 = atoi(args[2].c_str());
-			Module *currentModule = enemy->getModule(y1, x1);
-			if(args[0] == "Power"){
-				currentModule->addEnergy();
-			}else if(args[0] == "Rocket"){
-				int x2 = atoi(args[3].c_str());
-				int y2 = atoi(args[4].c_str());
-				Module *target = enemy->getModule(y2, x2);
-				int posX,posY;
-				target->getPosition(posX,posY);
-				currentModule->setTarget(x2, y2, posX, posY);
-			}
+		int x1 = atoi(args[1].c_str());
+		int y1 = atoi(args[2].c_str());
+		Module *currentModule = enemy->getModule(y1, x1);
 
+		if(args[0] == "Power"){
+			currentModule->addEnergy();
+		}
+		else if(args[0] == "Rocket"){
+			int x2 = atoi(args[3].c_str());
+			int y2 = atoi(args[4].c_str());
+			Module *target = enemy->getModule(y2, x2);
+
+			int posX,posY;
+			target->getPosition(posX,posY);
+			currentModule->setTarget(x2, y2, posX, posY);
+		}
+		else if (args[0] == "Surrender") {
+			surrender = true;
+		}
 	}//end - for(...)
-
 }
