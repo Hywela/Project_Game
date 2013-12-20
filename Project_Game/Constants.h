@@ -17,6 +17,7 @@ const int ROCKET_SIZE_W = 32; //Pixels
 const int ROCKET_SIZE_H = 18; //Pixels
 const int ROCKET_MAX_SPEED = 5;
 
+//File directories
 const string DIR_TEXTURES = "Textures/";
 const string DIR_BACKGROUNDS = DIR_TEXTURES + "Backgrounds/";
 const string DIR_MODULES = DIR_TEXTURES + "Modules/";
@@ -33,11 +34,14 @@ const string DIR_SETTINGS = "Settings/";
 const int SHIP_WIDTH = 5;
 const int SHIP_HEIGHT = 5;
 
+//Renaming some indexes for easier code refrence
 enum hull_action {HUL_NOTHING, HUL_PLACE, HUL_REMOVE};
 enum hull_type {NORMAL, ELECTRICAL, REINFORCED, HULL_COUNT};
 
 enum module_action {MOD_NOTHING, MOD_PLACE, MOD_REMOVE};
 enum module_type {TURRET, SHIELD, MODULE_COUNT};
+
 enum screenType {SCREEN_LOGIN, SCREEN_MAIN_MENU, SCREEN_SETTINGS, SCREEN_QUEUE};
 
+//Converts a number to string
 string numToStr(int n);

@@ -75,8 +75,12 @@ Window::Window()
 
 Window::~Window()
 {
-	server->send("q");
-	delete server;
+	if (server != NULL)
+	{
+		server->send("q");
+		delete server;
+	}
+
 	//Close program
 	SDL_DestroyTexture(background);
 	SDL_DestroyRenderer(ren);
@@ -104,7 +108,7 @@ void Window::login()
 	string musicStr = DIR_MUSIC + "Harmonic Space.wav";
 	music = Mix_LoadWAV(musicStr.c_str());
 	Mix_VolumeChunk(music, 10);
-	//Mix_PlayChannelTimed(0, music, -1, NULL); //channel, sound, numLoops, playFor
+	Mix_PlayChannelTimed(0, music, -1, NULL); //channel, sound, numLoops, playFor
 
 	//Set up button properties
 	btnWidth = 200;
@@ -117,7 +121,7 @@ void Window::login()
 	scaleY = btnY;
 
 	//Set up buttons
-	buttonsLogin.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX - (btnWidth / 2) - 10, btnY * 3, "Create account", btnWidth, btnHeight));
+	buttonsLogin.push_back(new Button(ren, DIR_BUTTONS + "Red.png", DIR_FONTS + "Custom_White.png", btnX - (btnWidth / 2) - 10, btnY * 3, "Quit", btnWidth, btnHeight));
 	buttonsLogin.push_back(new Button(ren, DIR_BUTTONS + "Golden.png", DIR_FONTS + "Custom_Orange.png", btnX + (btnWidth / 2) + 10, btnY * 3, "Login", btnWidth, btnHeight));
 
 	queryLogin.push_back(new EditText(ren, DIR_EDITTEXTS + "White.png", DIR_FONTS + "Custom_Orange.png", btnX, btnY, btnWidth, btnHeight, "", "Enter username..."));
@@ -144,15 +148,14 @@ void Window::login()
 
 				//Check if it clicked it
 				string hit = buttonsLogin[i]->onMouseClick(event);
-				if (hit == "Create account")
+				if (hit == "Quit")
 				{
 					//Navigate to account creation
-					cout << "Go to new account...\n";
-					//crateAccount();
+					cout << "Bye bye\n";
+					quit = true;
 				}
 				else if (hit == "Login")
 				{
-	
 #ifdef offline 
 	mainMenu();
 #endif
@@ -184,7 +187,7 @@ void Window::login()
 	{
 		cout << "Server Not Online ! \n";
 	}
-#endif				
+#endif
 				}
 			}
 			

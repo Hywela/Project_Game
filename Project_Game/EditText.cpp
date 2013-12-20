@@ -54,14 +54,17 @@ EditText::~EditText()
 
 void EditText::addChar(char c)
 {
+	//Inputs a character into this field
 	content += c;
 	string newText = content;
 
+	//Checks if this is flagged as a password of sorts...
 	if (sensitiveText)
 	{
 		newText = "";
 		for (int i = 0; i < content.size(); i++)
 		{
+			//Set displayed texts as SYMBOL
 			newText += "*";
 		}
 	}
@@ -72,6 +75,7 @@ void EditText::addChar(char c)
 
 void EditText::backspace()
 {
+	//If something to remove
 	if (content != "")
 	{
 		content.pop_back();
