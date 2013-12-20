@@ -162,7 +162,6 @@ void Network::send(string input){
 		cout << "Failed to send message: " << SDLNet_GetError() << endl;
 		exit(-1);
 	}	
-
 }
 // random method
 bool Network::isServerOnlineMethod(){

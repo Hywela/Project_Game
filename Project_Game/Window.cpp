@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define online
+#define offline
 
 Window::Window()
 {
@@ -347,7 +347,7 @@ void Window::mainMenu()
 void Window::que(){
 	bool done = false;
 	while (!done) {
-		if (server->ifServerFoundIt("matchFound", 1000)) {
+		if (server->ifServerFoundIt("matchFound", 0)) {
 			bool yourTurn = server->whoStarts();
 			cout << "\n in Match\n";
 	string ship = server->getShip();
