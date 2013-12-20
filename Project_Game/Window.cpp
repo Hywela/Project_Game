@@ -1,7 +1,7 @@
 #include "Window.h"
 
 
-#define offline
+#define online
 
 Window::Window()
 {
@@ -393,14 +393,6 @@ void Window::queue(){
 					}
 				}
 
-
-
-
-
-
-
-
-
 			}
 		}
 
@@ -444,7 +436,7 @@ void Window::build()
 void Window::battle()
 {
 	//Start the combat
-	Combat *combat = new Combat(playerShip, enemyShip, true, ren, win);
+	Combat *combat = new Combat(playerShip, enemyShip, true, ren, win, NULL);
 }
 
 void Window::settings()

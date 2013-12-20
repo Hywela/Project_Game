@@ -16,7 +16,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool turnStart, SDL_
 	//Set up button properties
 	int winH, winW;
 	SDL_GetWindowSize(win, &winW, &winH);
-
+	
 	int btnWidth = 140;
 	int btnHeight = 30;
 	int startY = 220;
@@ -113,9 +113,9 @@ void Combat::makeMovesPVP()
 	makeMoves();
 
 	//When done, post to server
-	yourTurn = true;
-	setupAttacksPVP();
-	yourTurn = false;
+
+
+
 }
 void Combat::makeMoves()
 {
@@ -157,7 +157,11 @@ void Combat::makeMoves()
 				if (hit == "End turn")
 				{
 					cout << "Ending turn!\n";
-					setupAttacks();
+					///setupAttacks();
+					if(server != NULL){
+						setupAttacksPVP();
+					}
+
 					yourTurn = false;
 				}
 				else if (hit == "Quit")
@@ -323,6 +327,9 @@ void Combat::setupAttacksPVP()
 {
 	if (yourTurn)
 	{
+		Space_Ship *attacker = you;
+		vector <string> attacks = attacker->activate();
+		yourAction = attacks;
 		stringstream sendAttack; sendAttack << "f ";
 		//Send how many events
 		sendAttack << yourAction.size();
@@ -378,6 +385,7 @@ void Combat::setupAttacks()
 		enemyAction = attacks;
 	}
 }
+
 
 void Combat::prepareShip(){
 	for (int i = 0; i < enemyAction.size(); i++){

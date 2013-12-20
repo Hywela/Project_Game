@@ -42,5 +42,4 @@ public:
 	void setupAttacksPVP();
 	void setupAttacks();
 	void prepareShip();
-	
 };
