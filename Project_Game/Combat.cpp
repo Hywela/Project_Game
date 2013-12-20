@@ -159,6 +159,7 @@ void Combat::makeMoves()
 					cout << "Ending turn!\n";
 					///setupAttacks();
 					if(server != NULL){
+					
 						setupAttacksPVP();
 					}
 
