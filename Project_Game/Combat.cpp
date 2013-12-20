@@ -347,27 +347,22 @@ void Combat::setupAttacksPVP()
 	}
 	else
 	{
-		cout << "Waiting for opponent!\n";
-
 		//Wait for count to be read
 		string attackStr = server->reciveString(0);
 
 		if (attackStr.length() > 2) { //TODO:: Fiks so it wont have to loop 
-			cout << "\n attac  "<< attackStr;
 			string item;
 			stringstream ss(attackStr.substr(+2));
 
 			//Read all events
 			std::getline(ss, item, '/');// get the number of attacks split it on delim /
 			int numberOfAttacks = atoi(item.c_str());
-			cout << "\n count " << numberOfAttacks;
 
 			for (int i =0; i< numberOfAttacks; i++){ // get the attacks split it on delim /
 				std::getline(ss, item, '/');
 				if(item == "Surrender") surrender = true;
 
 				enemyAction.push_back(item);
-				cout << "\n ITEM " << item;
 
 			}
 
