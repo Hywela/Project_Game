@@ -1,12 +1,17 @@
 #include "Network.h"
 #include <windows.h>
 #include <sstream>
+
+
+
 Network::Network(unsigned short PORT ,string serverName)
-{   whoStarts = false;
+{   
+	whoStarts = false;
 	this->PORT = PORT;
 	isServerOnline = true;
 	this->serverName = serverName;
 	shutdownClient= false;
+
 	// Initialise SDL_net
 	if (SDLNet_Init() < 0){
 		cout << "Failed to intialise SDN_net: " << SDLNet_GetError() << "\n";
@@ -33,6 +38,7 @@ Network::Network(unsigned short PORT ,string serverName)
 		cout << "Successfully resolved host to IP: " << (unsigned short)dotQuad[0] << "." << (unsigned short)dotQuad[1] << "." << (unsigned short)dotQuad[2] << "." << (unsigned short)dotQuad[3];
 		cout << " port " << SDLNet_Read16(&serverIP.port) << endl << endl;
 	}
+
 	// Try to resolve the IP of the server, just for kicks
 	if ((host = SDLNet_ResolveIP(&serverIP)) == NULL){
 		cout << "Failed to resolve the server IP address: " << SDLNet_GetError() << endl;
@@ -41,11 +47,13 @@ Network::Network(unsigned short PORT ,string serverName)
 		cout << "Successfully resolved IP to host: " << host << endl;
 	}
 }
+
 Network::~Network()
 {
 	SDLNet_TCP_Close(clientSocket);
 	SDLNet_Quit();
 }
+
 //Methods
 void Network::checkServer()
 {
@@ -90,6 +98,7 @@ void Network::checkServer()
 		}
 	} // End of if we managed to open a connection to the server condition
 }
+
 //Recive Methods
 void Network::recive(){
 	// recives data from the server
@@ -112,6 +121,7 @@ void Network::recive(){
 		//cout << "No response from server..." << endl;
 	}
 }//End recive();
+
 string Network::reciveString(int waitTime){
 	// Gets the whole buffer from the server and returns a string witht he buffer
 	int socketActive = SDLNet_CheckSockets(socketSet, waitTime);
@@ -129,6 +139,7 @@ string Network::reciveString(int waitTime){
 	}else {//End-SocketActivity(
 		return "-1";}
 }//End Method reciveString(..);
+
 bool Network::ifServerFoundIt(string testCase, int waitTime){
 	// takes a test settence and checks if the server has recived that pakage
 	// Wait time is the time the socket should wait on the package
@@ -146,10 +157,12 @@ bool Network::ifServerFoundIt(string testCase, int waitTime){
 	}// end socketActivity
 	return false;
 }//end - ifServerFoundIt(..);
+
 bool Network::checkLogin()
 {	//Return true or false;
 	return ifServerFoundIt("OK",2000);
 }
+
 //Send Methods
 void Network::send(string input){   
 
@@ -164,24 +177,29 @@ void Network::send(string input){
 		exit(-1);
 	}	
 }
+
 // random method
 bool Network::isServerOnlineMethod(){
 	return isServerOnline; //well is it online ?
 }
+
 //ship saving and getting methods
 void Network::saveShip(string ship){
 	string shipToGO = "b "; // send the command b to ask it to save the string 
 	shipToGO.append(ship); // appends ship Data into the string
 	send(shipToGO);		// sends it into deep space
 }
+
 string Network::getShip(){
 	send("c");	//recives a a ship back after requesting it with command "c";
 	return reciveString(1000);
 }
+
 string Network:: getEnemyShip(){
 	send("e");// Gets the enemy ship from the server
 	return reciveString(1000);
 }
+
 bool Network:: matchFound(){ // Who starts the match 
 		string attackStr = reciveString(0);
 		
@@ -195,6 +213,7 @@ bool Network:: matchFound(){ // Who starts the match
 	}
 		return false;
 }
+
 //Debug Methods
 void Network::debug(){
 	// method for manuly sending packages
@@ -203,8 +222,8 @@ void Network::debug(){
 	getline(cin, input);
 	send(input);
 }
+
 bool Network::starting(){
 
 	return whoStarts;
 }
-

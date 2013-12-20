@@ -8,6 +8,7 @@ Hull::Hull()
 
 Hull::Hull(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int arm, int spAtk, int spDef, bool isLoc, bool isEmp, bool isPla)
 {
+	//Initialize hull data
 	ren = rend;
 
 	icon = IMG_LoadTexture(ren, ico.c_str());
@@ -28,6 +29,7 @@ Hull::~Hull()
 
 void Hull::drawBuild()
 {
+	//If occupied or placeable
 	if (!isEmpty || (isEmpty && isPlaceable))
 	{
 		SDL_RenderCopy(ren, icon, srcRect, dstRect);
@@ -36,6 +38,7 @@ void Hull::drawBuild()
 
 void Hull::draw()
 {
+	//If occupied
 	if (!isEmpty)
 	{
 		SDL_RenderCopy(ren, icon, srcRect, dstRect);
@@ -60,15 +63,18 @@ hull_action Hull::onMouseClick(SDL_Event event)
 	
 	if (isMouseOver(event)) {
 		cout << "[BUILD-CLICK]: ";
+		//Can't be removed
 		if (isLocked && !isEmpty)
 		{
 			cout << "This tile is LOCKED!";
 		}
+		//Placeable
 		else if (isEmpty && isPlaceable)
 		{
 			cout << "This tile is EMPTY!";
 			action = HUL_PLACE;
 		}
+		//Removable
 		else if (!isEmpty)
 		{
 			cout << "This hull is OPEN!";
@@ -106,6 +112,7 @@ bool Hull::isMouseOver(SDL_Event event)
 
 void Hull::setLocked(bool state)
 {
+	//If occupied
 	if (!isEmpty)
 	{
 		isLocked = state;
@@ -123,11 +130,13 @@ void Hull::setPlaceable(bool state)
 	{
 		if (state)
 		{
+			//Update number of tiles attached to this tile
 			numAnchors += 1;
 			isPlaceable = state;
 		}
 		else
 		{
+			//Update number of tiles attached to this tile
 			numAnchors -= 1;
 			if (numAnchors <= 0)
 			{

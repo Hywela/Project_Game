@@ -5,9 +5,11 @@
 #include <SDL_net.h>
 #include <vector>
 
+
+
 using namespace std;
 const unsigned short BUFFER_SIZE = 1024;
-class Network{
+class Network {
 private:
 	unsigned short PORT;		// The port we are connecting to
 	const char *host;         // Where we store the host name

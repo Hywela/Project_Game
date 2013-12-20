@@ -1,7 +1,8 @@
 #include "Window.h"
+//#define offline
+#define online
 
-#define offline
-//#define online
+
 
 Window::Window()
 {
@@ -156,11 +157,13 @@ void Window::login()
 				}
 				else if (hit == "Login")
 				{
+//Check server state
 #ifdef offline 
 	mainMenu();
 #endif
 
 #ifdef online 
+	//Connect to server
 	server = new Network(PORT,serverName);
 	server->checkServer();
 
@@ -169,6 +172,7 @@ void Window::login()
 		string u = queryLogin[0]->getContent();
 		string p = queryLogin[1]->getContent();
  	
+		//Check if login is valid
 		if (validateLogin(u, p))
 		{
 			cout << "Go to menu...\n";
@@ -191,6 +195,7 @@ void Window::login()
 				}
 			}
 			
+			//For all type-fields
 			for (int i = 0; i < queryLogin.size(); i++)
 			{
 				queryLogin[i]->onMouseClick(event);
@@ -198,6 +203,7 @@ void Window::login()
 				//Figure out what the key does
 				SDL_Keycode key = event.key.keysym.sym;
 
+				//If pressed key and this field is selected
 				if (event.key.state == SDL_PRESSED && !writeBlock && queryLogin[i]->isWriting())
 				{
 					if (key == SDLK_BACKSPACE)
@@ -225,7 +231,7 @@ void Window::login()
 					{
 						char c = ((caps) ? char(key - 32) : char(key));
 						queryLogin[i]->addChar(c);
-						writeBlock = true;
+						writeBlock = true; //To prevent this from running more than one time
 					}
 				}
 				else if (event.key.state == SDL_RELEASED)
@@ -346,10 +352,12 @@ void Window::mainMenu()
 					}
 				}
                 else if (hit == "Queue"){
+//Check server state
 #ifdef online
-                    server->send("m");
+	//Join matchmaking
+	server->send("m");
 	inQue = true;
-					queue();
+	queue();
 #endif
 				}
 				else if (hit == "Settings")
@@ -367,9 +375,9 @@ void Window::mainMenu()
 				}
 				else if (hit == "Logout")
 				{
-					//Go to settings
+					//Go to login screen
 #ifdef online
-					server->send("q");
+	server->send("q");
  	delete server;
 #endif
 					cout << "Go to login screen...\n";
@@ -395,22 +403,27 @@ void Window::queue(){
 		currentScreen = SCREEN_QUEUE;
 		draw();
 
+		//Look for match (other player)
 		if (server->matchFound()) {
 			bool yourTurn = server->starting();
 			
+			//Load player 1 ship
 			string ship = server->getShip();
 			if (ship.length() > 5) {
 				cout << ship << endl;
 				playerShip = new Space_Ship(ren, ship);
 			}
 
+			//Load player 2 ship
 			string enemyship = server->getEnemyShip();
 			if (enemyship.length() > 5) {
 				cout << enemyship << endl;
 				enemyShip = new Space_Ship(ren, enemyship);
 			}
 
+			//Start pvp combat
 			Combat *combat = new Combat(playerShip, enemyShip, yourTurn, ren, win, server);
+
 			//Leave queue
 			cout << "Return";
 			inQue = false;
@@ -449,7 +462,6 @@ void Window::queue(){
 
 void Window::build()
 {	
-
 	//Swap background
 	string bgStr = DIR_BACKGROUNDS + "Space.png";
 	background = IMG_LoadTexture(ren, bgStr.c_str());
@@ -457,22 +469,16 @@ void Window::build()
 	//Reset ships
 	delete playerShip;
 	delete enemyShip;
+
+	//Create new ships
+	playerShip = new Space_Ship(ren, background, "Build your ship...");
+	enemyShip = new Space_Ship(ren, background, "Build the enemy ship...");
+
 #ifdef online
-	
-	//Create new ships
-	playerShip = new Space_Ship(ren, background, "Build your ship...");
-	enemyShip = new Space_Ship(ren, background, "Build the enemy ship...");
+	//Store the playership on account
 	server->saveShip(playerShip->getShipStructure());
-
-
 #endif
 
-#ifdef offline
-	//Create new ships
-	playerShip = new Space_Ship(ren, background, "Build your ship...");
-	enemyShip = new Space_Ship(ren, background, "Build the enemy ship...");
-#endif
-	
 	//Change background back
 	string bgStr1 = DIR_BACKGROUNDS + "Main_Menu.png";
 	background = IMG_LoadTexture(ren, bgStr1.c_str());

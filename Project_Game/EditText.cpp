@@ -81,6 +81,7 @@ void EditText::backspace()
 		content.pop_back();
 		string newText = content;
 
+		//Checks if this is flagged as a password of sorts...
 		if (sensitiveText)
 		{
 			newText = "";

@@ -11,9 +11,9 @@ Module::Module()
 Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int namId, int maxHp, int acc, int hullId, int reqPow, int dmg, int disPow, int act)
 {
 	ren = rend;
-
 	runningAnimation = false;
 
+	//Set interface data
 	icon = IMG_LoadTexture(ren, ico.c_str());
 	srcRect = new SDL_Rect(src);
 	dstRect = new SDL_Rect(dst);
@@ -36,6 +36,7 @@ Module::Module(SDL_Renderer *rend, SDL_Rect src, SDL_Rect dst, string ico, int n
 	srcEffect->x = 0;
 	srcEffect->y = 0;
 
+	//Initialize module data
 	nameId = namId;
 	maxHealth = maxHp;
 	currentPower = 0;
@@ -328,6 +329,7 @@ bool Module::getHeld()
 
 void Module::clearTarget()
 {
+	//If any indexes are set
 	if (targetX != -1 || targetPosX != -1)
 	{
 		//cout << "Cleared target!\n";
@@ -340,6 +342,7 @@ void Module::clearTarget()
 
 void Module::setTarget(int x, int y, int posX, int posY)
 {
+	//If any indexes are set and not shield
 	if ((targetX != x || targetY != y) && !activeTurns)
 	{
 		//cout << "[" << ((getType() == TURRET) ? "TURRET" : "SHIELD") << "]: Target (" << x << ", " << y << ", " << posX << ", " << posY << ")\n";
@@ -379,6 +382,7 @@ void Module::restore()
 	healthText->setText(tmpTxt);
 	hovered = false;
 	held = false;
+	active = false;
 	clearTarget();
 }
 
@@ -400,6 +404,7 @@ void Module::setTargetLineToMouse(int mouseX, int mouseY)
 
 bool Module::hasTarget()
 {
+	//If set indexes or shield
 	return ((targetX != -1 || getType() == SHIELD) ? true : false);
 }
 
@@ -562,6 +567,7 @@ bool Module::runRocketAnimation(Module *end)
 
 string Module::registerAttack(int x, int y)
 {
+	//Create animation / server info string
 	string attack = "";
 
 	if (getType() == TURRET)
@@ -583,6 +589,7 @@ int Module::getType()
 
 void Module::setActive()
 {
+	//If shield and full power
 	if (activeTurns && currentPower == requiredPower)
 	{
 		active = true;

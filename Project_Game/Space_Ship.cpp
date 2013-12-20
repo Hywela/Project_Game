@@ -751,6 +751,7 @@ void Space_Ship::attack(int posX, int posY, int dmg)
 
 		int shieldPercent = isShielded(posX, posY, true);
 
+		//Check how much the shield protects
 		if  (shieldPercent == 100)
 			{
 				cout << "The attack was completly shielded!\n";
@@ -871,6 +872,7 @@ void Space_Ship::getHoveredModule(SDL_Event event, int &x1, int &y1, int &posX, 
 			//The modules
 			if (module_layer[y][x] != NULL)
 			{
+				//If module and alive
 				if (module_layer[y][x]->isMouseOver(event) && module_layer[y][x]->getCurrentHealth())
 				{
 					x1 = x;
