@@ -108,7 +108,7 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip, bool youStart, SDL_R
 	//Set game properties
 	you = yourShip;
 	enemy = enemyShip;
-	ai = new Ai(enemyShip, you, 100, 1);
+	ai = new Ai(enemyShip, you, 1, 1);
 	yourTurn = youStart;
 
 	//Position ships

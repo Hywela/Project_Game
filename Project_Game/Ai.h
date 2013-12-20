@@ -17,6 +17,7 @@ private:
 	int atkModules;
 	int shieldModules;
 	int energyLeft;
+	int getSuroundingModulHp(Space_Ship *ship, int modulX, int modulY);
 
 
 public:
