@@ -1,5 +1,5 @@
 #include "Network.h"
-
+#include <windows.h>
 Network::Network(unsigned short PORT ,string serverName)
 {   
 	this->PORT = PORT;
@@ -120,10 +120,13 @@ string Network::reciveString(int waitTime){
 		if (messageFromServer != 0){ //if there is a message
 			//cout << "Got a response from the server... " << endl;
 			int serverResponseByteCount = SDLNet_TCP_Recv(clientSocket, buffer, BUFFER_SIZE);
-			string tenp(buffer);
-			return tenp;
-		}//End-meesageFromServer
-	}//End-SocketActivity()
+			string temp(buffer);
+			return temp;
+		}else {//End-meesageFromServer
+			return "-1";
+		}
+	}else {//End-SocketActivity(
+		return "-1";}
 }//End Method reciveString(..);
 bool Network::ifServerFoundIt(string testCase, int waitTime){
 	// takes a test settence and checks if the server has recived that pakage
@@ -148,6 +151,7 @@ bool Network::checkLogin()
 }
 //Send Methods
 void Network::send(string input){   
+
 	// Copy our user's string into our char array called "buffer"
 	strcpy_s( buffer,input.c_str() );
 	inputLength = strlen(buffer) + 1;
@@ -157,7 +161,8 @@ void Network::send(string input){
 	{
 		cout << "Failed to send message: " << SDLNet_GetError() << endl;
 		exit(-1);
-	}
+	}	
+
 }
 // random method
 bool Network::isServerOnlineMethod(){

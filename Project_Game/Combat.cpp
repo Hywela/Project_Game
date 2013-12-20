@@ -1,7 +1,7 @@
 #include "Combat.h"
 /* Notes:
-	- Send ships from database with current stats and statuses
-	  to be able to continue from a previously started game.
+- Send ships from database with current stats and statuses
+to be able to continue from a previously started game.
 */
 
 
@@ -60,27 +60,25 @@ Combat::Combat(Space_Ship *yourShip, Space_Ship *enemyShip,  SDL_Renderer *rend,
 	//Ship health, calculates as a overall from modules. (Shields etc.)
 	bool youAlive = true;
 	bool enemyAlive = true;
-	server->send("f attack");
-	string attack = server->reciveString(1000);
+	//Force update
+	draw();
 	//While both still alive
 	while(youAlive && enemyAlive)
 	{
 
 		//Wait for animations to finish
 		doneAnimating = false;
-		
 
 		//Preform turn
-		((yourTurn) ? makeMoves() : listenForMovesPVP());
+		((yourTurn) ? makeMovesPVP() : listenForMovesPVP());
 
 		//Check if combat is over
 		youAlive = !you->isDead();
-		enemyAlive = !enemy->isDead();
 	}
 
 	//Game done, heal restore ships
 	you->restore();
-	
+
 
 
 
@@ -212,6 +210,14 @@ void Combat::makeMoves()
 			you->onMouseEvent(event);
 		}
 	}
+}
+void Combat::makeMovesPVP()
+{
+
+	makeMoves();
+	yourTurn = true;
+	setupAttacksPVP();
+	yourTurn = false;
 }
 void Combat::listenForMovesPVP(){
 	//For all attacks registered
@@ -376,19 +382,37 @@ void Combat::setupAttacksPVP()
 		Space_Ship *attacker = you;
 		vector <string> attacks = attacker->activate();
 		yourAction = attacks; 
-		
 		string iterator = "f "+to_string(yourAction.size());
 		server->send(iterator);
 		for (int i = 0; i < yourAction.size(); i++){
-				server->send(yourAction[i]);
+			Sleep(50);
+			server->send("f "+(yourAction[i]));
 		}
 	}
 	else
 	{
-		int count = atoi(server->reciveString(1000).c_str());
-		for (int i = 0; i < count; i++){
-				enemyAction.push_back(server->reciveString(1000));
+		cout << "Waiting for opponent!\n";
+
+		//Wait for count to be read
+		string countStr = server->reciveString(0);
+		while (countStr.find("-1") != string::npos) {
+			countStr = server->reciveString(0);
 		}
+		int count = atoi(countStr.substr(+2).c_str());
+		cout << "[FROM SERVER]: " << count << endl;
+
+		//Read all events
+		for (int i = 0; i < count; i++) {
+			//Wait for event to be read
+			string answer = server->reciveString(0);
+			while (answer.find("-1") != string::npos) {
+				answer = server->reciveString(0);
+			}
+			enemyAction.push_back(answer.substr(+2));
+			cout << "[FROM SERVER]: " << enemyAction[i] << endl;
+		}
+
+		//Update ship
 		prepareShip();
 	}
 }
@@ -414,22 +438,22 @@ void Combat::prepareShip(){
 			}
 		}//end - for(...)
 
-			//Store last argument
-			args.push_back(currentArg);
+		//Store last argument
+		args.push_back(currentArg);
 
-			int x1 = atoi(args[1].c_str());
-			int y1 = atoi(args[2].c_str());
-			Module *currentModule = enemy->getModule(y1, x1);
-			if(args[0] == "Power"){
-				currentModule->addEnergy();
-			}else if(args[0] == "Rocket"){
-				int x2 = atoi(args[3].c_str());
-				int y2 = atoi(args[4].c_str());
-				Module *target = enemy->getModule(y2, x2);
-				int posX,posY;
-				target->getPosition(posX,posY);
-				currentModule->setTarget(x2, y2, posX, posY);
-			}
+		int x1 = atoi(args[1].c_str());
+		int y1 = atoi(args[2].c_str());
+		Module *currentModule = enemy->getModule(y1, x1);
+		if(args[0] == "Power"){
+			currentModule->addEnergy();
+		}else if(args[0] == "Rocket"){
+			int x2 = atoi(args[3].c_str());
+			int y2 = atoi(args[4].c_str());
+			Module *target = enemy->getModule(y2, x2);
+			int posX,posY;
+			target->getPosition(posX,posY);
+			currentModule->setTarget(x2, y2, posX, posY);
+		}
 
 	}//end - for(...)
 
