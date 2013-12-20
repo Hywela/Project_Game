@@ -121,7 +121,7 @@ void Combat::makeMoves()
 {
 
 	//For all attacks registered
-	cout << "Enemy moves:\n";
+	//cout << "Enemy moves:\n";
 	for (int i = 0; i < enemyAction.size(); i++)
 	{
 		//Draw animation
@@ -182,7 +182,7 @@ void Combat::makeMoves()
 
 void Combat::listenForMovesPVP(){
 	//For all attacks registered
-	cout << "Your moves:\n";
+//	cout << "Your moves:\n";
 	for (int i = 0; i < yourAction.size(); i++){
 		//Draw animation
 		cout << yourAction[i] << endl;
@@ -200,7 +200,7 @@ void Combat::listenForMovesPVP(){
 }
 void Combat::listenForMoves(){
 	//For all attacks registered
-	cout << "Your moves:\n";
+	//cout << "Your moves:\n";
 	for (int i = 0; i < yourAction.size(); i++)
 	{
 		//Draw animation
@@ -334,7 +334,7 @@ void Combat::setupAttacksPVP()
 		stringstream sendAttack; sendAttack << "f ";
 		//Send how many events
 		sendAttack << yourAction.size();
-
+	
 		//Send all events 
 		for (int i = 0; i < yourAction.size(); i++){
 			sendAttack <<"/" << yourAction[i];
@@ -350,7 +350,7 @@ void Combat::setupAttacksPVP()
 		//Wait for count to be read
 		string attackStr = server->reciveString(0);
 		
-		if (attackStr.length() > 3) { //TODO:: Fiks so it wont have to loop 
+		if (attackStr.length() > 2) { //TODO:: Fiks so it wont have to loop 
 			cout << "\n attac  "<< attackStr;
 			string item;
 			stringstream ss(attackStr.substr(+2));
@@ -429,6 +429,9 @@ void Combat::prepareShip(){
 		}
 		else if (args[0] == "Surrender") {
 			surrender = true;
+		if (server != NULL) {
+			server->send("f 1/Surrender");
+     }
 		}
 	}//end - for(...)
 }

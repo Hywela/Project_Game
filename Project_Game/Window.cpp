@@ -353,9 +353,8 @@ void Window::queue(){
 		currentScreen = SCREEN_QUEUE;
 		draw();
 
-		if (server->ifServerFoundIt("matchFound", 1000)) {
-			bool yourTurn = server->whoStarts();
-			cout << "\n in Match\n" <<"  " <<  yourTurn;
+		if (server->matchFound()) {
+			bool yourTurn = server->starting();
 			
 
 	string ship = server->getShip();

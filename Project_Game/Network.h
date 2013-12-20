@@ -20,6 +20,7 @@ private:
     bool shutdownClient , isServerOnline; 
 	int hostResolved;
 	SDLNet_SocketSet socketSet;
+	bool whoStarts;
 	
 public:
 	Network(unsigned short port,string serverName);
@@ -38,8 +39,9 @@ public:
 	void saveShip(string ship);
 	string getShip();
 	string getEnemyShip();
-	bool whoStarts();
+	bool matchFound();
 	//Debug Method
 	void debug();
+	bool starting();
 };
 

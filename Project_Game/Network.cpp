@@ -1,7 +1,8 @@
 #include "Network.h"
 #include <windows.h>
+#include <sstream>
 Network::Network(unsigned short PORT ,string serverName)
-{   
+{   whoStarts = false;
 	this->PORT = PORT;
 	isServerOnline = true;
 	this->serverName = serverName;
@@ -181,12 +182,18 @@ string Network:: getEnemyShip(){
 	send("e");// Gets the enemy ship from the server
 	return reciveString(1000);
 }
-bool Network:: whoStarts(){ // Who starts the match 
-	if(ifServerFoundIt("YouAreStarting", 1000)){
+bool Network:: matchFound(){ // Who starts the match 
+		string attackStr = reciveString(0);
+		
+		if (attackStr == "matchFound/YouAreStarting") { //TODO:: Fiks so it wont have to loop 
+		
+			 whoStarts = true; 
 		return true;
-	}else if (ifServerFoundIt("EnemyStarting", 1000)){
-		return false;
+		}if (attackStr == "matchFound/EnemyStarting") { //TODO:: Fiks so it wont have to loop 
+			 whoStarts = false;
+			 return true;
 	}
+		return false;
 }
 //Debug Methods
 void Network::debug(){
@@ -195,5 +202,9 @@ void Network::debug(){
 	string input;
 	getline(cin, input);
 	send(input);
+}
+bool Network::starting(){
+
+	return whoStarts;
 }
 
