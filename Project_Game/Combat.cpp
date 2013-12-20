@@ -208,14 +208,15 @@ void Combat::makeMoves()
 void Combat::makeMovesPVP()
 {
 	makeMoves();
-	yourTurn = true;
+
 	setupAttacksPVP();
-	yourTurn = false;
+
 }
 
 void Combat::listenForMovesPVP(){
 	//For all attacks registered
 	cout << "Your moves:\n";
+
 	for (int i = 0; i < yourAction.size(); i++){
 		//Draw animation
 		cout << yourAction[i] << endl;
@@ -230,7 +231,7 @@ void Combat::listenForMovesPVP(){
 
 	setupAttacksPVP();
 
-	yourTurn = true;
+	
 }
 void Combat::listenForMoves(){
 	//For all attacks registered
@@ -376,44 +377,44 @@ void Combat::setupAttacksPVP()
 		Space_Ship *attacker = you;
 		vector <string> attacks = attacker->activate();
 		yourAction = attacks;
-		
+		stringstream sendAttack; sendAttack << "f ";
 		//Send how many events
-		string countStr = "f " + to_string(yourAction.size());
-		server->send(countStr);
-		string actionStr;
+		sendAttack << "/" + to_string(yourAction.size());
 
-		//Send all events
+		//Send all events 
+	
 		for (int i = 0; i < yourAction.size(); i++){
-			Sleep(50);
-			actionStr = "f " + yourAction[i];
-			server->send(actionStr);
+			
+			sendAttack <<"/" << yourAction[i];
+			
 		}
+		server->send(sendAttack.str());
+
 	}
 	else
 	{
 		cout << "Waiting for opponent!\n";
-
+	
 		//Wait for count to be read
-		string countStr = server->reciveString(0);
-		while (countStr.find("-1") != string::npos) {
-			countStr = server->reciveString(0);
-		}
-		int count = atoi(countStr.substr(+2).c_str());
-		cout << "[FROM SERVER]: " << count << endl;
+		string attackStr = server->reciveString(0);
+		if (attackStr.length() > 3) { //TODO:: Fiks so it wont have to loop 
 
+		string item;
+		stringstream ss(attackStr.substr(+2));
 		//Read all events
-		for (int i = 0; i < count; i++) {
-			//Wait for event to be read
-			string answer = server->reciveString(0);
-			while (answer.find("-1") != string::npos) {
-				answer = server->reciveString(0);
-			}
-			enemyAction.push_back(answer.substr(+2));
-			cout << "[FROM SERVER]: " << enemyAction[i] << endl;
+		std::getline(ss, item, '/');// get the number of attacks split it on delim /
+		int numberOfAttacks = atoi(item.c_str());
+		while(std::getline(ss, item, '/')){ // get the attacks split it on delim /
+			enemyAction.push_back(item);
 		}
-
+		if(enemyAction.size() == numberOfAttacks){
+			yourTurn = true;
+			//TODO:: some code that as the server to ask the user to return last attacks 
+			// probaly needs 
+		}
 		//Update ship
 		prepareShip();
+		}
 	}
 }
 void Combat::prepareShip(){
