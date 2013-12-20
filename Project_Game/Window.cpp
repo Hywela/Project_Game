@@ -12,7 +12,7 @@ Window::Window()
 	string tmpLineValue = "";
 	const int SETTING_BUFFER = 32;
 	ifstream settingsFile(DIR_SETTINGS + "Server.txt");
-	if (settingsFile != NULL)
+	if (!settingsFile.fail())
 	{
 		while (!settingsFile.eof())
 		{

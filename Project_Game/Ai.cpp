@@ -1,6 +1,11 @@
 #include "Ai.h"
 
-
+/*
+ai_Ship = the ship to be controlled by the ai
+player_Ship = the enemy ship
+def_pri = icrease if you want ai to prioritize shields rather than attacking (not fully implemented because tha lack of different modules)
+attack_Pri = increse if you want ai to prioritize attacking (not fully implemented because tha lack of different modules)
+*/
 Ai::Ai(Space_Ship *ai_Ship, Space_Ship *player_Ship, int def_Pri, int attack_Pri)
 {
 	aiShip = ai_Ship;
@@ -9,7 +14,9 @@ Ai::Ai(Space_Ship *ai_Ship, Space_Ship *player_Ship, int def_Pri, int attack_Pri
 	attackPri = attack_Pri + (SHIP_HEIGHT*SHIP_WIDTH);
 
 }
-
+/*
+Returns the target prioritized to put energy into
+*/
 int Ai::energyTarget(){
 	int moduleIndex = 0;
 	int modules[SHIP_HEIGHT*SHIP_WIDTH];
@@ -81,6 +88,12 @@ int Ai::energyTarget(){
 	return topPriModule;
 }
 
+
+/*
+Returns the module number to attack
+
+*AttackingModule = the module to find suitable attack for
+*/
 int Ai::getAttack(Module *attackingModule){
 	int moduleIndex = 0;
 	int modules[SHIP_HEIGHT*SHIP_WIDTH];
@@ -139,6 +152,9 @@ int Ai::getAttack(Module *attackingModule){
 	return topPriModule;
 }
 
+/*
+Set up the actions for the Ai controlled ship
+*/
 void Ai::aiActions(){
 	
 
@@ -179,7 +195,6 @@ void Ai::aiActions(){
 	for (int i = 0; i < aiShip->getMaxEnergy(); i++){
 		int modNr = energyTarget();
 		if (modNr >= 0){
-			//cout << modNr << " Placing energy: " << modNr % SHIP_WIDTH << " " << modNr / SHIP_HEIGHT << endl;
 			aiShip->getModule((modNr / SHIP_HEIGHT), (modNr % SHIP_WIDTH))->addEnergy();		//add energy
 			modulePow[(modNr / SHIP_HEIGHT)][(modNr % SHIP_WIDTH)]++;
 			energyLeft--;
@@ -203,8 +218,6 @@ void Ai::aiActions(){
 					target->getPosition(pixCoorX, pixCoorY);	//get coordinates from target module
 					atkModule->setTarget((modNr % SHIP_WIDTH), (modNr / SHIP_HEIGHT), pixCoorX, pixCoorY); //set attack modules target
 					moduleHp[(modNr / SHIP_HEIGHT)][(modNr % SHIP_WIDTH)] -= atkModule->getDamage();
-					//cout << "Module x:" << x << " y:" << y << " got Energy: " << modulePow[y][x] << endl;
-					//cout << modNr << " Placing Target: " << modNr % SHIP_WIDTH << " " << modNr / SHIP_HEIGHT << endl;
 				}
 			}
 		}
@@ -216,7 +229,14 @@ Ai::~Ai()
 {
 }
 
+/*
+Counts up the damage potential for the modules surounding the module sent by the coordinates
 
+*ship = the ship in witch to check the module in
+*modulX = the x position of the module to check
+*modulY = the y position of the module to check
+
+*/
 int Ai::getSuroundingModulDamage(Space_Ship *ship, int modulX, int modulY)
 {
 	int surroundingHp = 0;
