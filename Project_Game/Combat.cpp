@@ -428,7 +428,7 @@ void Combat::setupAttacksPVP()
 
 		//Send all events 
 	
-		for (int i = 0; i < yourAction.size()-1; i++){
+		for (int i = 0; i < yourAction.size(); i++){
 			
 			sendAttack <<"/" << yourAction[i];
 		
